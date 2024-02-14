@@ -2,7 +2,7 @@
 
 ## Project Goal
 
-Characterize the population genomics of the Channeled dogwhelk, Nucella canaliculata. 
+Characterize the population genomics of the channeled dogwhelk, Nucella canaliculata. 
 
 Analyze the fine scale demography of Nucella canaliculata across the species range using neutral markers to estimate the level of gene flow and migration between populations. Identify loci under selection by comparing genotypes with environmental variables.
 
