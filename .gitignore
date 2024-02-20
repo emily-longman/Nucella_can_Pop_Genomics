@@ -7,6 +7,6 @@
 
 # Directories with large data files
 scratch/*
-data/raw/*
+data/raw/enviro/MARINe*
 data/processed/*
 output/*
