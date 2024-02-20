@@ -7,7 +7,6 @@
 
 # Directories with large data files
 scratch/*
-data/*
 data/raw/*
 data/processed/*
 output/*
