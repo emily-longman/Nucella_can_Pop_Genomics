@@ -13,8 +13,9 @@ The files in this project are organized in the following structure:
      - raw/
      - processed/
  - src/
+    - 00_enviro/
  - output/
-     - figs/
+     - figures/
      - tables/
  - docs/
  - scratch/
