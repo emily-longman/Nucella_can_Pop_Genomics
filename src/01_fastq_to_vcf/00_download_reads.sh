@@ -30,6 +30,12 @@
 
 # Download short reads
 
+cd /Volumes/One Touch/Nucella_population_genomics
+
+rsync -avL slimsdata.genomecenter.ucdavis.edu::slims/w97dompzyc/Un_DTSA1002/ .
+
+
+
 # Move to the directory where you want the output files to be saved (this is one folder higher than where first downloaded the data)
 cd /netfiles/pespenilab_share/Nucella/raw/Population_genomics
 
