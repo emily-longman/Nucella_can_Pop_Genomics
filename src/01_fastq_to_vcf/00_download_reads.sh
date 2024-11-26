@@ -8,16 +8,16 @@
 #SBATCH --job-name=download_short_reads
 
 # Specify partition
-#SBATCH --partition=bigmemwk
+#SBATCH --partition=week
 
 # Request nodes
 #SBATCH --ntasks-per-node=1 # this is number of CPUs you want to use for parallel computing [also referred to as threads] 
 
 # Reserve walltime -- hh:mm:ss --7 day limit
-#SBATCH --time=07-00:00:00 
+#SBATCH --time=04-00:00:00 
 
 # Request memory for the entire job -- you can request --mem OR --mem-per-cpu
-#SBATCH --mem=100G #<= this may depend on your resources
+#SBATCH --mem=4G #<= this may depend on your resources
 
 # Name output of this job using %x=job-name and %j=job-id
 #SBATCH --output=./slurmOutput/%x_%j.out # Standard output
@@ -30,14 +30,14 @@
 
 # Download short reads
 
-cd /Volumes/One Touch/Nucella_population_genomics
-
-rsync -avL slimsdata.genomecenter.ucdavis.edu::slims/w97dompzyc/Un_DTSA1002/ .
-
-
-
 # Move to the directory where you want the output files to be saved (this is one folder higher than where first downloaded the data)
 cd /netfiles/pespenilab_share/Nucella/raw/Population_genomics
 
 # Use rsync to download the data
 rsync -avL slimsdata.genomecenter.ucdavis.edu::slims/w97dompzyc/Un_DTSA1002/ .
+
+# Download short reads to external hard drive
+
+#cd /Volumes/One Touch/Nucella_population_genomics
+
+#rsync -avL slimsdata.genomecenter.ucdavis.edu::slims/w97dompzyc/Un_DTSA1002/ .
