@@ -38,6 +38,6 @@ rsync -avL slimsdata.genomecenter.ucdavis.edu::slims/w97dompzyc/Un_DTSA1002/ .
 
 # Download short reads to external hard drive
 
-#cd /Volumes/One Touch/Nucella_population_genomics
+#cd /Volumes/One\ Touch/Nucella_population_genomics
 
-#rsync -avL slimsdata.genomecenter.ucdavis.edu::slims/w97dompzyc/Un_DTSA1002/ .
+#rsync -avL slimsdata.genomecenter.ucdavis.edu::slims/w97dompzyc/ .
