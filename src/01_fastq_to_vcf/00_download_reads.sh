@@ -34,7 +34,7 @@
 cd /netfiles/pespenilab_share/Nucella/raw/Population_genomics
 
 # Use rsync to download the data
-rsync -avL slimsdata.genomecenter.ucdavis.edu::slims/w97dompzyc/Un_DTSA1002/ .
+rsync -avL slimsdata.genomecenter.ucdavis.edu::slims/w97dompzyc/ .
 
 # Download short reads to external hard drive
 
