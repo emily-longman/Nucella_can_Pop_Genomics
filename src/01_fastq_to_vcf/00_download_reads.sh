@@ -34,7 +34,10 @@
 cd /netfiles/pespenilab_share/Nucella/raw/Population_genomics
 
 # Use rsync to download the data
-rsync -avL slimsdata.genomecenter.ucdavis.edu::slims/w97dompzyc/ .
+## First lane of data:
+#rsync -avL slimsdata.genomecenter.ucdavis.edu::slims/w97dompzyc/ .
+## Second lane of data:
+rsync -avL slimsdata.genomecenter.ucdavis.edu::slims/xtzg2b6e8n/ .
 
 # Download short reads to external hard drive
 
