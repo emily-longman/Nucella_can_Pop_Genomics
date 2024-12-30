@@ -30,7 +30,7 @@
 
 # Download short reads
 
-# Move to the directory where you want the output files to be saved (this is one folder higher than where first downloaded the data)
+# Move to the directory where you want the output files to be saved
 cd /netfiles/pespenilab_share/Nucella/raw/Population_genomics
 
 # Use rsync to download the data
@@ -38,6 +38,8 @@ cd /netfiles/pespenilab_share/Nucella/raw/Population_genomics
 #rsync -avL slimsdata.genomecenter.ucdavis.edu::slims/w97dompzyc/ .
 ## Second lane of data:
 rsync -avL slimsdata.genomecenter.ucdavis.edu::slims/xtzg2b6e8n/ .
+
+#--------------------------------------------------------------------------------
 
 # Download short reads to external hard drive
 
