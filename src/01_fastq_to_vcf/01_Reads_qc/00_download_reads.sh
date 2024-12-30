@@ -52,3 +52,25 @@ rsync -avL slimsdata.genomecenter.ucdavis.edu::slims/xtzg2b6e8n/ .
 
 ## Second lane of data:
 #rsync -avL slimsdata.genomecenter.ucdavis.edu::slims/xtzg2b6e8n/ .
+
+#--------------------------------------------------------------------------------
+
+# Make directory for all short reads
+
+# Change directory
+cd /netfiles/pespenilab_share/Nucella/raw/Population_genomics
+
+# Generating new folders 
+if [ -d "All_shortreads" ]
+then echo "Working All_shortreads folder exist"; echo "Let's move on"; date
+else echo "Working All_shortreads folder doesnt exist. Let's fix that"; mkdir /netfiles/pespenilab_share/Nucella/raw/Population_genomics/All_shortreads; date
+fi
+
+# Change directory
+cd All_shortreads
+
+# Copy reads from lane L006
+scp /netfiles/pespenilab_share/Nucella/raw/Population_genomics/Un_DTSA1002/Project_ELEL_Nova1179P_Longman/*fastq.gz .
+
+# Copy reads from lane L008
+scp /netfiles/pespenilab_share/Nucella/raw/Population_genomics/Un_DTSA1030/Project_ELEL_Nova1179P_Longman/*fastq.gz .
