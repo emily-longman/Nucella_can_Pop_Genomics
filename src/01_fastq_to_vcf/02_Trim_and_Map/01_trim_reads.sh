@@ -14,14 +14,14 @@
 #SBATCH --nodes=1 
 #SBATCH --ntasks-per-node=6
 
-# Reserve walltime -- hh:mm:ss --30 hrs max
+# Reserve walltime -- hh:mm:ss
 #SBATCH --time=1:00:00 
 
 # Request memory for the entire job -- you can request --mem OR --mem-per-cpu
 #SBATCH --mem=10G 
 
 # Submit job array
-#SBATCH --array=1-576%20
+#SBATCH --array=1-38%20
 
 # Name output of this job using %x=job-name and %j=job-id
 #SBATCH --output=./slurmOutput/Trim_reads.%A_%a.out # Standard output
@@ -39,34 +39,30 @@ fastp=/gpfs1/home/e/l/elongman/software/fastp
 
 #--------------------------------------------------------------------------------
 
-#Define important file locations
+# Define important file locations
 
-# RAW READS indicates the folder where the raw reads are stored.
-RAW_READS=/netfiles/pespenilab_share/Nucella/raw/Shortreads/All_shortreads
+# RAW_READS indicates the folder where the raw reads are stored.
+RAW_READS=/netfiles/pespenilab_share/Nucella/raw/Population_genomics/All_shortreads
 
-# Working folder is core folder where this pipeline is being run.
-WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_drilling_genomics/data/processed/fastq_to_GL
+# WORKING_FOLDER is the core folder where this pipeline is being run.
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed/fastq_to_bam
 
 # Name of pipeline
 PIPELINE=Trim_reads
 
 #--------------------------------------------------------------------------------
 
-## PREPARE GUIDE FILES
-## Read guide files
+# Read guide files
 # This is a file with the name all the samples to be processed. One sample name per line with all the info.
-
-GUIDE_FILE=$WORKING_FOLDER/guide_files/Guide_File_trim_map.txt
+GUIDE_FILE=$WORKING_FOLDER/guide_files/Trim_map.txt
 
 #Example: -- the headers are just for descriptive purposes. The actual file has no headers.
-##               File1                             File2              Snail_ID  Sample#  Lane#    Paired_name    Bam_lanes_merged_name
-## FB1-1_S84_L002_R1_001.fastq.gz    FB1-1_S84_L002_R2_001.fastq.gz    FB1-1     S84     L002    FB1-1_S84_L002       FB1-1_S84
-## FB1-1_S84_L007_R1_001.fastq.gz    FB1-1_S84_L007_R2_001.fastq.gz    FB1-1     S84     L007    FB1-1_S84_L007       FB1-1_S84
-## FB1-1_S84_L008_R1_001.fastq.gz    FB1-1_S84_L008_R2_001.fastq.gz    FB1-1     S84     L008    FB1-1_S84_L008       FB1-1_S84
-## FB1-2_S173_L002_R1_001.fastq.gz   FB1-2_S173_L002_R2_001.fastq.gz   FB1-2     S173    L002    FB1-2_S173_L002      FB1-2_S173
+##             Read 1                            Read 2             Population   Sample#   Lane#    Paired_name    
+## ARA_S168_L006_R1_001.fastq.gz	ARA_S168_L006_R2_001.fastq.gz	    ARA 	   S168	   L006	   ARA_S168_L006
+## BMR_S156_L006_R1_001.fastq.gz	BMR_S156_L006_R2_001.fastq.gz	    BMR	       S156    L006	   BMR_S156_L006
+## CBL_S169_L006_R1_001.fastq.gz	CBL_S169_L006_R2_001.fastq.gz	    CBL	       S169	   L006	   CBL_S169_L006
 ## ...
-## MP9-10_S26_L007_R1_001.fastq.gz   MP9-10_S26_L007_R2_001.fastq.gz   MP9-10    S26     L007    MP9-10_S26_L007      MP9-10_S26
-## MP9-10_S26_L008_R1_001.fastq.gz   MP9-10_S26_L008_R2_001.fastq.gz   MP9-10    S26     L008    MP9-10_S26_L008      MP9-10_S26
+## VD_S6_L008_R1_001.fastq.gz	    VD_S6_L008_R2_001.fastq.gz	        VD	        S6	   L008	    VD_S6_L008
 
 #--------------------------------------------------------------------------------
 
@@ -130,7 +126,7 @@ cd $WORKING_FOLDER
 # This script uses an array and matches left and right reads and cleans the raw data using fastp according to parameters set below
 # Decide on the trimming parameters based on fastQC step done before this script.
 
-echo ${i} "Trimming reads"
+echo "Trimming reads for sample:" ${i}
 
 # Call fastp and do some light trimming
 $fastp \
@@ -153,8 +149,7 @@ $fastp \
 # o & O = outputs (.json and html for qc)
 
 # For PE data you can specify adapter sequence auto-detection by specifying --detect_adapter_for_pe
-# For PE data the front trimming settings are --trim_front1
-### You can also do trimming on each read separately by specifying trim_front2; if not specified then trim_front2=trim_front1
+# For PE data the front trimming settings are --trim_front1 (You can also do trimming on each read separately by specifying trim_front2; if not specified then trim_front2=trim_front1)
 # Detect and trim polyG in read tails using --trim_poly_g
 # Per read cutting by quality options:
 ### --cut_right: Move a sliding window from front to tail, if meet one window with mean quality < threshold, drop the bases in the window and the right part, then stop

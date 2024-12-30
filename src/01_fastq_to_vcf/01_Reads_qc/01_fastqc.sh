@@ -55,10 +55,10 @@ PIPELINE=fastqc
 
 # Read guide files
 # This is a file with the name all the samples to be processed. One sample name per line with all the info.
-GUIDE_FILE=$WORKING_FOLDER/guide_files/Guide_File_QC.txt
+GUIDE_FILE=$WORKING_FOLDER/guide_files/QC_reads.txt
 
 #Example: -- the headers are just for descriptive purposes. The actual file has no headers.
-##               File            Population  Sample#  Lane#  Forward/Reverse
+##               Read            Population  Sample#  Lane#  Forward/Reverse
 ## ARA_S168_L006_R1_001.fastq.gz	ARA	       S168	   L006	        R1
 ## ARA_S168_L006_R2_001.fastq.gz	ARA	       S168	   L006	        R2
 ## BMR_S156_L006_R1_001.fastq.gz	BMR	       S156	   L006	        R1
@@ -82,7 +82,7 @@ echo ${i}
 # Move to working directory
 cd $WORKING_FOLDER
 
-# Generating new folders 
+# Generating new folder
 if [ -d "qc_reads" ]
 then echo "Working qc_reads folder exist"; echo "Let's move on"; date
 else echo "Working qc_reads folder doesnt exist. Let's fix that"; mkdir $WORKING_FOLDER/qc_reads; date

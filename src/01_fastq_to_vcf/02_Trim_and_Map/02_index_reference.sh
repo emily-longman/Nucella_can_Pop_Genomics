@@ -30,22 +30,22 @@
 #--------------------------------------------------------------------------------
 
 # This script with index the reference genome.
-
 # Note: this step only needs to be done once
 
-#Load modules 
+# Load modules 
 spack load samtools@1.10
 bwa=/netfiles/nunezlab/Shared_Resources/Software/bwa-mem2-2.2.1_x64-linux/bwa-mem2.avx2
 PICARD=/netfiles/nunezlab/Shared_Resources/Software/picard/build/libs/picard.jar
 
 #--------------------------------------------------------------------------------
 
-#Define important file locations
+# Define important file locations
 
 # This is the location where the reference genome is stored.
-REFERENCE_FOLDER=/netfiles/pespenilab_share/Nucella/processed/Base_Genome/Base_Genome_Oct2024/Crassostrea_mask
+REFERENCE_FOLDER=/netfiles/pespenilab_share/Nucella/processed/Base_Genome/Base_Genome_Oct2024/Crassostrea_softmask
+
 # This is the path to the reference genome.
-REFERENCE=$REFERENCE_FOLDER/N.canaliculata_assembly.fasta.masked
+REFERENCE=$REFERENCE_FOLDER/N.canaliculata_assembly.fasta.softmasked
 
 #--------------------------------------------------------------------------------
 

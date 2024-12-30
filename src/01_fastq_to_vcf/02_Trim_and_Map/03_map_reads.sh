@@ -14,14 +14,17 @@
 #SBATCH --nodes=1 
 #SBATCH --ntasks-per-node=1
 
-# Reserve walltime -- hh:mm:ss --30 hrs max
+# Reserve walltime -- hh:mm:ss
 #SBATCH --time=3:00:00 
 
 # Request memory for the entire job -- you can request --mem OR --mem-per-cpu
 #SBATCH --mem=20G 
 
+# Request CPU
+#SBATCH --cpus-per-task=7
+
 # Submit job array
-#SBATCH --array=1-576%20
+#SBATCH --array=1-38%20
 
 # Name output of this job using %x=job-name and %j=job-id
 #SBATCH --output=./slurmOutput/Map_reads.%A_%a.out # Standard output
@@ -42,13 +45,13 @@ bwa=/netfiles/nunezlab/Shared_Resources/Software/bwa-mem2-2.2.1_x64-linux/bwa-me
 
 #--------------------------------------------------------------------------------
 
-#Define important file locations
+# Define important file locations
 
-# Working folder is core folder where this pipeline is being run.
-WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_drilling_genomics/data/processed/fastq_to_GL
+# RAW_READS indicates the folder where the raw reads are stored.
+RAW_READS=/netfiles/pespenilab_share/Nucella/raw/Population_genomics/All_shortreads
 
-# This is the location where the reference genome and all its indexes are stored.
-REFERENCE=/netfiles/pespenilab_share/Nucella/processed/Base_Genome/Base_Genome_Oct2024/Crassostrea_mask/N.canaliculata_assembly.fasta.masked
+# WORKING_FOLDER is the core folder where this pipeline is being run.
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed/fastq_to_bam
 
 # Name of pipeline
 PIPELINE=Map_reads
@@ -56,28 +59,24 @@ PIPELINE=Map_reads
 #--------------------------------------------------------------------------------
 
 # Define parameters
-CPU=$SLURM_CPUS_ON_NODE
-echo "using #CPUs ==" $SLURM_CPUS_ON_NODE
+CPU=$7
+echo "using #CPUs ==" $CPU
 QUAL=40 # Quality threshold for samtools
 JAVAMEM=18G # Java memory
 
 #--------------------------------------------------------------------------------
 
-## PREPARE GUIDE FILES
-## Read guide files
+# Read guide files
 # This is a file with the name all the samples to be processed. One sample name per line with all the info.
-
-GUIDE_FILE=/gpfs2/scratch/elongman/Nucella_can_drilling_genomics/data/processed/fastq_to_GL/guide_files/Guide_File_trim_map.txt
+GUIDE_FILE=$WORKING_FOLDER/guide_files/Trim_map.txt
 
 #Example: -- the headers are just for descriptive purposes. The actual file has no headers.
-##               File1                             File2              Snail_ID  Sample#  Lane#    Paired_name  
-## FB1-1_S84_L002_R1_001.fastq.gz    FB1-1_S84_L002_R2_001.fastq.gz    FB1-1     S84     L002    FB1-1_S84_L002
-## FB1-1_S84_L007_R1_001.fastq.gz    FB1-1_S84_L007_R2_001.fastq.gz    FB1-1     S84     L007    FB1-1_S84_L007
-## FB1-1_S84_L008_R1_001.fastq.gz    FB1-1_S84_L008_R2_001.fastq.gz    FB1-1     S84     L008    FB1-1_S84_L008
-## FB1-2_S173_L002_R1_001.fastq.gz   FB1-2_S173_L002_R2_001.fastq.gz   FB1-2     S173    L002    FB1-2_S173_L002
+##             Read 1                            Read 2             Population   Sample#   Lane#    Paired_name    
+## ARA_S168_L006_R1_001.fastq.gz	ARA_S168_L006_R2_001.fastq.gz	    ARA 	   S168	   L006	   ARA_S168_L006
+## BMR_S156_L006_R1_001.fastq.gz	BMR_S156_L006_R2_001.fastq.gz	    BMR	       S156    L006	   BMR_S156_L006
+## CBL_S169_L006_R1_001.fastq.gz	CBL_S169_L006_R2_001.fastq.gz	    CBL	       S169	   L006	   CBL_S169_L006
 ## ...
-## MP9-10_S26_L007_R1_001.fastq.gz   MP9-10_S26_L007_R2_001.fastq.gz   MP9-10    S26     L007    MP9-10_S26_L007
-## MP9-10_S26_L008_R1_001.fastq.gz   MP9-10_S26_L008_R2_001.fastq.gz   MP9-10    S26     L008    MP9-10_S26_L008
+## VD_S6_L008_R1_001.fastq.gz	    VD_S6_L008_R2_001.fastq.gz	        VD	        S6	   L008	    VD_S6_L008
 
 #--------------------------------------------------------------------------------
 
@@ -141,11 +140,13 @@ $WORKING_FOLDER/trimmed_reads/${i}_R2_clean.fq.gz \
 
 #--------------------------------------------------------------------------------
 
-# I will now extract some summary stats
+# Extract sam summary stats
 samtools flagstat --threads $CPU \
 $WORKING_FOLDER/sams/${i}.sam \
 > $WORKING_FOLDER/mapping_stats/${i}.flagstats_raw.sam.txt
-# Remember to take a look at the flagstat outputs to check for inconsistencies.
+# Take a look at the flagstat outputs to check for inconsistencies.
+
+#--------------------------------------------------------------------------------
 
 # Build bam files
 samtools view -b -q $QUAL --threads $CPU  \
@@ -153,10 +154,11 @@ $WORKING_FOLDER/sams/${i}.sam \
 > $WORKING_FOLDER/bams/${i}.bam
 
 #--------------------------------------------------------------------------------
+
 # Inform that sample is done
 
 # This part of the pipeline will notify the completion of run i. 
 
-echo ${i} " completed" >> $WORKING_FOLDER/logs/${PIPELINE}.completion.log
+echo ${i} "completed" >> $WORKING_FOLDER/logs/${PIPELINE}.completion.log
 
 echo "pipeline completed" $(date)

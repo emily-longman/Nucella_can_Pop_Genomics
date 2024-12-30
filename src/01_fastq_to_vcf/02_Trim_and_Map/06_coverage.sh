@@ -5,7 +5,7 @@
 # Request cluster resources ----------------------------------------------------
 
 # Name this job
-#SBATCH --job-name=qualimap_multi_bamqc
+#SBATCH --job-name=bam_coverage
 
 # Specify partition
 #SBATCH --partition=bluemoon
@@ -18,7 +18,7 @@
 #SBATCH --time=3:00:00 
 
 # Request memory for the entire job -- you can request --mem OR --mem-per-cpu
-#SBATCH --mem=10G 
+#SBATCH --mem=20G 
 
 # Name output of this job using %x=job-name and %j=job-id
 #SBATCH --output=./slurmOutput/%x_%j.out # Standard output
@@ -31,13 +31,15 @@
 
 # This script will calculate average coverage across the lane merged bams. 
 
-#Load modules 
+# Load modules 
 qualimap=/netfiles/nunezlab/Shared_Resources/Software/qualimap_v2.2.1/qualimap
 
 #--------------------------------------------------------------------------------
 
-# Working folder is core folder where this pipeline is being run.
-WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_drilling_genomics/data/processed/fastq_to_GL
+# Define important file locations
+
+# WORKING_FOLDER is the core folder where this pipeline is being run.
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed/fastq_to_bam
 
 #--------------------------------------------------------------------------------
 
@@ -46,10 +48,16 @@ JAVAMEM=18G # Java memory
 
 #--------------------------------------------------------------------------------
 
-## Read guide files
+# Read guide files
 # This is a file with the name all the samples to be processed and the path to each Qualimap.
+GUIDE_FILE=$WORKING_FOLDER/guide_files/Merge_bams.txt
 
-GUIDE_FILE=/gpfs2/scratch/elongman/Nucella_can_drilling_genomics/data/processed/fastq_to_GL/guide_files/Qualimap_bam_list.txt
+#Example: -- the headers are just for descriptive purposes. The actual file has no headers.
+## Population     Path to qualimap
+##   ARA	      /gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed/fastq_to_bam/bams_merged_qualimap/Qualimap_LaneMerged_ARA
+##   BMR	      /gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed/fastq_to_bam/bams_merged_qualimap/Qualimap_LaneMerged_BM
+##   ...
+##   VD	          /gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed/fastq_to_bam/bams_merged_qualimap/Qualimap_LaneMerged_VD
 
 #--------------------------------------------------------------------------------
 

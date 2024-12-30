@@ -18,10 +18,10 @@
 #SBATCH --time=1:00:00 
 
 # Request memory for the entire job -- you can request --mem OR --mem-per-cpu
-#SBATCH --mem=60G 
+#SBATCH --mem=2G 
 
 # Submit job array
-#SBATCH --array=1-576%20
+#SBATCH --array=1-38%20
 
 # Name output of this job using %x=job-name and %j=job-id
 #SBATCH --output=./slurmOutput/Clean_bams.%A_%a.out # Standard output
@@ -33,7 +33,7 @@
 #--------------------------------------------------------------------------------
 
 # This script will clean the bam files. More specifically it will filter, sort, remove duplicates and index the bams. 
-# I will also conduct an intermediary QC step with Qualimap. 
+# It will also conduct an intermediary QC step with Qualimap. 
 
 # Load modules  
 spack load samtools@1.10
@@ -44,8 +44,8 @@ qualimap=/netfiles/nunezlab/Shared_Resources/Software/qualimap_v2.2.1/qualimap
 
 # Define important file locations
 
-# Working folder is core folder where this pipeline is being run.
-WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_drilling_genomics/data/processed/fastq_to_GL
+# WORKING_FOLDER is the core folder where this pipeline is being run.
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed/fastq_to_bam
 
 # Name of pipeline
 PIPELINE=Clean_bams
@@ -60,21 +60,17 @@ JAVAMEM=18G # Java memory
 
 #--------------------------------------------------------------------------------
 
-## PREPARE GUIDE FILES
-## Read guide files
+# Read guide files
 # This is a file with the name all the samples to be processed. One sample name per line with all the info.
-
-GUIDE_FILE=/gpfs2/scratch/elongman/Nucella_can_drilling_genomics/data/processed/fastq_to_GL/guide_files/Guide_File_trim_map.txt
+GUIDE_FILE=$WORKING_FOLDER/guide_files/Trim_map.txt
 
 #Example: -- the headers are just for descriptive purposes. The actual file has no headers.
-##               File1                             File2              Snail_ID  Sample#  Lane#    Paired_name    
-## FB1-1_S84_L002_R1_001.fastq.gz    FB1-1_S84_L002_R2_001.fastq.gz    FB1-1     S84     L002    FB1-1_S84_L002   
-## FB1-1_S84_L007_R1_001.fastq.gz    FB1-1_S84_L007_R2_001.fastq.gz    FB1-1     S84     L007    FB1-1_S84_L007 
-## FB1-1_S84_L008_R1_001.fastq.gz    FB1-1_S84_L008_R2_001.fastq.gz    FB1-1     S84     L008    FB1-1_S84_L008
-## FB1-2_S173_L002_R1_001.fastq.gz   FB1-2_S173_L002_R2_001.fastq.gz   FB1-2     S173    L002    FB1-2_S173_L002
+##             Read 1                            Read 2             Population   Sample#   Lane#    Paired_name    
+## ARA_S168_L006_R1_001.fastq.gz	ARA_S168_L006_R2_001.fastq.gz	    ARA 	   S168	   L006	   ARA_S168_L006
+## BMR_S156_L006_R1_001.fastq.gz	BMR_S156_L006_R2_001.fastq.gz	    BMR	       S156    L006	   BMR_S156_L006
+## CBL_S169_L006_R1_001.fastq.gz	CBL_S169_L006_R2_001.fastq.gz	    CBL	       S169	   L006	   CBL_S169_L006
 ## ...
-## MP9-10_S26_L007_R1_001.fastq.gz   MP9-10_S26_L007_R2_001.fastq.gz   MP9-10    S26     L007    MP9-10_S26_L007
-## MP9-10_S26_L008_R1_001.fastq.gz   MP9-10_S26_L008_R2_001.fastq.gz   MP9-10    S26     L008    MP9-10_S26_L008
+## VD_S6_L008_R1_001.fastq.gz	    VD_S6_L008_R2_001.fastq.gz	        VD	        S6	   L008	    VD_S6_L008
 
 #--------------------------------------------------------------------------------
 
@@ -119,10 +115,8 @@ fi
 
 # Clean the bam files
 
-# These steps will sort the bams, and duplicates will be removed. I will also conduct an intermediary QC step with Qualimap. 
-# Remember to take a look at the qualimap and the flagstat outputs to check for inconsistencies.
-
-# Start pipeline
+# These steps will sort the bams, and remove duplicates. It will also conduct an intermediary QC step with Qualimap. 
+# Take a look at the qualimap and the flagstat outputs to check for inconsistencies.
 
 # Move to working directory
 cd $WORKING_FOLDER
@@ -141,7 +135,7 @@ $WORKING_FOLDER/bams/${i}.bam \
 # 0x0008 = mate unmapped (0x8)*
 
 # Sort with picard
-# Notice that once a file has been sorted it is added the "srt" suffix
+# Once a file has been sorted, "srt" suffix is added
 java -Xmx$JAVAMEM -jar $PICARD SortSam \
 I=$WORKING_FOLDER/bams_clean/${i}.bam \
 O=$WORKING_FOLDER/bams_clean/${i}.srt.bam \
@@ -149,7 +143,7 @@ SO=coordinate \
 VALIDATION_STRINGENCY=SILENT
 
 # Remove duplicates with picard
-# Notice that once a file has duplicates removed it is added the "rmdp" suffix
+# Once a file has duplicates removed, "rmdp" suffix is added
 java -Xmx$JAVAMEM -jar $PICARD MarkDuplicates \
 I=$WORKING_FOLDER/bams_clean/${i}.srt.bam \
 O=$WORKING_FOLDER/bams_clean/${i}.srt.rmdp.bam \

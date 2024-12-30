@@ -18,10 +18,10 @@
 #SBATCH --time=1:00:00 
 
 # Request memory for the entire job -- you can request --mem OR --mem-per-cpu
-#SBATCH --mem=60G 
+#SBATCH --mem=10G 
 
 # Submit job array
-#SBATCH --array=1-192%20
+#SBATCH --array=1-19%10
 
 # Name output of this job using %x=job-name and %j=job-id
 #SBATCH --output=./slurmOutput/Merge_bams.%A_%a.out # Standard output
@@ -32,7 +32,7 @@
 
 #--------------------------------------------------------------------------------
 
-# This script will gather all sample data across the many lanes of sequencing.
+# This script will gather all data for each population across the 2 lanes of sequencing.
 
 # Load modules  
 spack load samtools@1.10
@@ -43,8 +43,8 @@ qualimap=/netfiles/nunezlab/Shared_Resources/Software/qualimap_v2.2.1/qualimap
 
 # Define important file locations
 
-# Working folder is core folder where this pipeline is being run.
-WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_drilling_genomics/data/processed/fastq_to_GL
+# WORKING_FOLDER is the core folder where this pipeline is being run.
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed/fastq_to_bam
 
 # Name of pipeline
 PIPELINE=Merge_bams
@@ -59,26 +59,23 @@ JAVAMEM=18G # Java memory
 
 #--------------------------------------------------------------------------------
 
-## PREPARE GUIDE FILES
-## Read guide files
+# Read guide files
 # This is a file with the name all the samples to be processed. One sample name per line with all the info.
-
-GUIDE_FILE=/gpfs2/scratch/elongman/Nucella_can_drilling_genomics/data/processed/fastq_to_GL/guide_files/Guide_File_merge.txt
+GUIDE_FILE=$WORKING_FOLDER/guide_files/Merge_bams.txt
 
 #Example: -- the headers are just for descriptive purposes. The actual file has no headers.
-## Snail_ID  Sample#   Merged_name 1    Merged_name 2    Merged_name 3   Merged_bam_name
-##  FB1-1     S84     FB1-1_S84_L002   FB1-1_S84_L007   FB1-1_S84_L008     FB1-1_S84
-##  FB1-2     S173    FB1-2_S173_L002  FB1-2_S173_L007  FB1-2_S173_L008    FB1-2_S173
-##  FB1-5     S109    FB1-5_S109_L002  FB1-5_S109_L007  FB1-5_S109_L008    FB1-5_S109
-##  ...
-##  MP9-9     S191    MP9-9_S191_L002  MP9-9_S191_L007  MP9-9_S191_L008    MP9-9_S191
-##  MP9-10    S26     MP9-10_S26_L002  MP9-10_S26_L007  MP9-10_S26_L008    MP9-10_S26
+## Population      Merged_name 1      Merged_name 2 
+##   ARA	       ARA_S168_L006	  ARA_S13_L008
+##   BMR	       BMR_S156_L006	  BMR_S1_L008
+##   CBL	       CBL_S169_L006	  CBL_S14_L008
+##   ...
+##   VD	           VD_S161_L006	      VD_S6_L008
 
 
 #--------------------------------------------------------------------------------
 
 # Determine sample to process, "i" and read files
-i=`awk -F "\t" '{print $6}' $GUIDE_FILE | sed "${SLURM_ARRAY_TASK_ID}q;d"`
+i=`awk -F "\t" '{print $1}' $GUIDE_FILE | sed "${SLURM_ARRAY_TASK_ID}q;d"`
 echo $i
 
 #--------------------------------------------------------------------------------
@@ -116,33 +113,33 @@ fi
 
 #--------------------------------------------------------------------------------
 
-# Start pipeline
-
-# Here I will merge the bam outputs for the multiple lanes of sequencing. These will be named 'Lanes merged'
+# Here I will merge the bam outputs for the 2 lanes of sequencing. These will be named 'Lanes merged'
 
 echo "I will merge these files" $WORKING_FOLDER/bams_clean/${i}_*.srt.rmdp.bam
 
 # Make temporary linefile with list of input BAM files
 ls $WORKING_FOLDER/bams_clean/${i}_*.srt.rmdp.bam > ${i}.guide.txt
 
-# Merge the 3 sequencing lanes
+# Merge the 2 sequencing lanes
 samtools merge \
 -b ${i}.guide.txt \
-$WORKING_FOLDER/bams_merged/${i}.Lanes_merged.bam
+$WORKING_FOLDER/bams_merged/${i}.lanes_merged.bam
 
-# Remove the temporary guide file
+# Housekeeping: Remove the temporary guide file
 rm ${i}.guide.txt
 
-# Assess quality of final file
+#--------------------------------------------------------------------------------
+
+# Assess quality of the final file
 $qualimap bamqc \
--bam $WORKING_FOLDER/bams_merged/${i}.Lanes_merged.bam \
+-bam $WORKING_FOLDER/bams_merged/${i}.lanes_merged.bam \
 -outdir $WORKING_FOLDER/bams_merged_qualimap/Qualimap_LaneMerged_${i} \
 --java-mem-size=$JAVAMEM
 
 #--------------------------------------------------------------------------------
 
 # Index bams with samtools
-samtools index $WORKING_FOLDER/bams_merged/${i}.Lanes_merged.bam
+samtools index $WORKING_FOLDER/bams_merged/${i}.lanes_merged.bam
 
 #--------------------------------------------------------------------------------
 
@@ -153,4 +150,3 @@ samtools index $WORKING_FOLDER/bams_merged/${i}.Lanes_merged.bam
 echo ${i} " completed" >> $WORKING_FOLDER/logs/${PIPELINE}.completion.log
 
 echo "pipeline completed" $(date)
-
