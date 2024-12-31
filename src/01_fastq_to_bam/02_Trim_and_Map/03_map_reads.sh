@@ -53,13 +53,19 @@ RAW_READS=/netfiles/pespenilab_share/Nucella/raw/Population_genomics/All_shortre
 # WORKING_FOLDER is the core folder where this pipeline is being run.
 WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed/fastq_to_bam
 
+# This is the location where the reference genome is stored.
+REFERENCE_FOLDER=/netfiles/pespenilab_share/Nucella/processed/Base_Genome/Base_Genome_Oct2024/Crassostrea_softmask
+
+# This is the path to the reference genome.
+REFERENCE=$REFERENCE_FOLDER/N.canaliculata_assembly.fasta.softmasked
+
 # Name of pipeline
 PIPELINE=Map_reads
 
 #--------------------------------------------------------------------------------
 
 # Define parameters
-CPU=$7
+CPU=7
 echo "using #CPUs ==" $CPU
 QUAL=40 # Quality threshold for samtools
 JAVAMEM=18G # Java memory
