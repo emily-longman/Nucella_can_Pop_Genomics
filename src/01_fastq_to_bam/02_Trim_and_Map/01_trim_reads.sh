@@ -135,7 +135,7 @@ $fastp \
 -o $WORKING_FOLDER/trimmed_reads/${i}_R1_clean.fq.gz \
 -O $WORKING_FOLDER/trimmed_reads/${i}_R2_clean.fq.gz \
 --detect_adapter_for_pe \
---trim_front1 12 \
+--trim_front1 8 \
 --trim_poly_g \
 --thread 6 \
 --cut_right \
