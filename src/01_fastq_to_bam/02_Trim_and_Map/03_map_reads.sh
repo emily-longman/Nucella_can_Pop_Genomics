@@ -15,16 +15,16 @@
 #SBATCH --ntasks-per-node=1
 
 # Reserve walltime -- hh:mm:ss
-#SBATCH --time=3:00:00 
+#SBATCH --time=20:00:00 
 
 # Request memory for the entire job -- you can request --mem OR --mem-per-cpu
 #SBATCH --mem=20G 
 
 # Request CPU
-#SBATCH --cpus-per-task=7
+#SBATCH --cpus-per-task=10
 
 # Submit job array
-#SBATCH --array=1-38%20
+#SBATCH --array=1-38%19
 
 # Name output of this job using %x=job-name and %j=job-id
 #SBATCH --output=./slurmOutput/Map_reads.%A_%a.out # Standard output
@@ -65,7 +65,7 @@ PIPELINE=Map_reads
 #--------------------------------------------------------------------------------
 
 # Define parameters
-CPU=7
+CPU=10
 echo "using #CPUs ==" $CPU
 QUAL=40 # Quality threshold for samtools
 JAVAMEM=18G # Java memory
