@@ -33,6 +33,7 @@
 
 # Load modules 
 module load gatk/4.6.1.0
+picard=/netfiles/nunezlab/Shared_Resources/Software/picard/build/libs/picard.jar
 
 #--------------------------------------------------------------------------------
 
@@ -109,8 +110,11 @@ fi
 #--------------------------------------------------------------------------------
 
 # Create dictionary and index files for reference
-singularity exec $GATK_SIF gatk CreateSequenceDictionary \
--R $REFERENCE
+
+# Make dictionary
+java -jar $picard CreateSequenceDictionary \
+R=$REFERENCE \
+O=$REFERENCE_FOLDER/N.canaliculata_assembly.fasta.softmasked.dict
 
 #--------------------------------------------------------------------------------
 
