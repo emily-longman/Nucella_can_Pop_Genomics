@@ -45,7 +45,7 @@ PICARD=/netfiles/nunezlab/Shared_Resources/Software/picard/build/libs/picard.jar
 REFERENCE_FOLDER=/netfiles/pespenilab_share/Nucella/processed/Base_Genome/Base_Genome_Oct2024/Crassostrea_softmask
 
 # This is the path to the reference genome.
-REFERENCE=$REFERENCE_FOLDER/N.canaliculata_assembly.fasta.softmasked
+REFERENCE=$REFERENCE_FOLDER/N.canaliculata_assembly.fasta.softmasked.fa
 
 #--------------------------------------------------------------------------------
 
@@ -57,7 +57,7 @@ $bwa index $REFERENCE
 
 # Generate the FASTA sequence dictionary file
 java -jar $PICARD CreateSequenceDictionary \
-R=$REFERENCE
+R=$REFERENCE 
 
 # Generate the fasta index file for the reference
 samtools faidx $REFERENCE
