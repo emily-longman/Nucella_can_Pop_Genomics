@@ -113,7 +113,7 @@ fi
 singularity exec $GATK_SIF gatk HaplotypeCaller \
 -R $REFERENCE \
 -I $WORKING_FOLDER/bams_merged/${i}.lanes_merged.bam \
--o $WORKING_FOLDER/haplotype_calling/${i}.g.vcf
+-O $WORKING_FOLDER/haplotype_calling/${i}.g.vcf
 
 #--------------------------------------------------------------------------------
 
