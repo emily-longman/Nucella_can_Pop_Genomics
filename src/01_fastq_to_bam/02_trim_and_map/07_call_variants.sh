@@ -108,6 +108,12 @@ fi
 
 #--------------------------------------------------------------------------------
 
+# Create dictionary and index files for reference
+singularity exec $GATK_SIF gatk CreateSequenceDictionary \
+-R $REFERENCE
+
+#--------------------------------------------------------------------------------
+
 # Haplotype calling
 
 singularity exec $GATK_SIF gatk HaplotypeCaller \
