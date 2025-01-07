@@ -15,13 +15,13 @@
 #SBATCH --ntasks-per-node=1
 
 # Reserve walltime -- hh:mm:ss --30 hrs max
-#SBATCH --time=1:00:00 
+#SBATCH --time=15:00:00 
 
 # Request memory for the entire job -- you can request --mem OR --mem-per-cpu
 #SBATCH --mem=10G 
 
 # Submit job array
-#SBATCH --array=1-19%10
+#SBATCH --array=1-19
 
 # Name output of this job using %x=job-name and %j=job-id
 #SBATCH --output=./slurmOutput/Merge_bams.%A_%a.out # Standard output
