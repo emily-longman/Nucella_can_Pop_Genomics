@@ -50,7 +50,7 @@ JAVAMEM=18G # Java memory
 
 # Read guide files
 # This is a file with the name all the samples to be processed and the path to each Qualimap.
-GUIDE_FILE=$WORKING_FOLDER/guide_files/Merge_bams.txt
+GUIDE_FILE=$WORKING_FOLDER/guide_files/Qualimap_bam_list.txt
 
 #Example: -- the headers are just for descriptive purposes. The actual file has no headers.
 ## Population     Path to qualimap
