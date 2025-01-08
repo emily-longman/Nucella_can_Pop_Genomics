@@ -5,7 +5,7 @@
 # Request cluster resources ----------------------------------------------------
 
 # Name this job
-#SBATCH --job-name=call_variants
+#SBATCH --job-name=haplotypecaller
 
 # Specify partition
 #SBATCH --partition=bluemoon
