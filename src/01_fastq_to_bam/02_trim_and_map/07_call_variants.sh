@@ -32,6 +32,7 @@
 # This script will call haplotypes (gVCFs) with GATK. 
 
 # Load modules 
+module load singularity
 module load gatk/4.6.1.0
 PICARD=/netfiles/nunezlab/Shared_Resources/Software/picard/build/libs/picard.jar
 TABIX=/netfiles/nunezlab/Shared_Resources/Software/htslib/tabix
@@ -135,8 +136,9 @@ RGSM=${i}
 #--------------------------------------------------------------------------------
 
 # Index bam files
-java -jar $PICARD BuildBamIndex \
-I=$WORKING_FOLDER/RGSM_final_bams/${i}.RG.bam
+java -Xmx$JAVAMEM -jar $PICARD BuildBamIndex \
+I=$WORKING_FOLDER/RGSM_final_bams/${i}.RG.bam \
+O=$WORKING_FOLDER/RGSM_final_bams/${i}.RG.bai
 
 #--------------------------------------------------------------------------------
 
