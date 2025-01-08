@@ -34,6 +34,8 @@
 # Load modules 
 module load gatk/4.6.1.0
 PICARD=/netfiles/nunezlab/Shared_Resources/Software/picard/build/libs/picard.jar
+TABIX=/netfiles/nunezlab/Shared_Resources/Software/htslib/tabix
+BGZIP=/netfiles/nunezlab/Shared_Resources/Software/htslib/bgzip
 
 #--------------------------------------------------------------------------------
 
@@ -46,7 +48,7 @@ WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed/f
 REFERENCE_FOLDER=/netfiles/pespenilab_share/Nucella/processed/Base_Genome/Base_Genome_Oct2024/Crassostrea_softmask
 
 # This is the path to the reference genome.
-REFERENCE=$REFERENCE_FOLDER/N.canaliculata_assembly.fasta.softmasked
+REFERENCE=$REFERENCE_FOLDER/N.canaliculata_assembly.fasta.softmasked.fa
 
 # Name of pipeline
 PIPELINE=HaplotypeCaller
@@ -57,6 +59,13 @@ PIPELINE=HaplotypeCaller
 CPU=$SLURM_CPUS_ON_NODE
 echo "using #CPUs ==" $SLURM_CPUS_ON_NODE
 JAVAMEM=18G # Java memory
+
+#--------------------------------------------------------------------------------
+
+#Read Information
+Group_library="Longman_2025"
+Library_Platform="NovaseqX"
+Group_platform="Longman_2025"
 
 #--------------------------------------------------------------------------------
 
@@ -102,6 +111,11 @@ cd $WORKING_FOLDER
 
 # This part of the script will check and generate, if necessary, all of the output folders used in the script
 
+if [ -d "RGSM_final_bams" ]
+then echo "Working RGSM_final_bams folder exist"; echo "Let's move on."; date
+else echo "Working RGSM_final_bams folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/RGSM_final_bams; date
+fi
+
 if [ -d "haplotype_calling" ]
 then echo "Working haplotype_calling folder exist"; echo "Let's move on."; date
 else echo "Working haplotype_calling folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/haplotype_calling; date
@@ -109,21 +123,29 @@ fi
 
 #--------------------------------------------------------------------------------
 
-# Create dictionary and index files for reference
-
-# Make dictionary
-java -jar $PICARD CreateSequenceDictionary \
-R=$REFERENCE \
-O=$REFERENCE_FOLDER/N.canaliculata_assembly.fasta.softmasked.dict
+# Create a uniform read group with picard
+java -Xmx$JAVAMEM -jar $PICARD AddOrReplaceReadGroups \
+I=$WORKING_FOLDER/bams_merged/${i}.lanes_merged.bam \
+O=$WORKING_FOLDER/RGSM_final_bams/${i}.RG.bam \
+RGLB=$Group_library \
+RGPL=$Library_Platform \
+RGPU=$Group_platform \
+RGSM=${i}
 
 #--------------------------------------------------------------------------------
 
 # Haplotype calling
 
-singularity exec $GATK_SIF gatk HaplotypeCaller \
+singularity exec $GATK_SIF gatk --java-options "-Xmx${JAVAMEM}" HaplotypeCaller \
 -R $REFERENCE \
--I $WORKING_FOLDER/bams_merged/${i}.lanes_merged.bam \
+-I $WORKING_FOLDER/RGSM_final_bams/${i}.RG.bam  \
 -O $WORKING_FOLDER/haplotype_calling/${i}.g.vcf
+
+#--------------------------------------------------------------------------------
+
+# Compress and index with Tabix
+$bgzip $WORKING_FOLDER/haplotype_calling/${i}.g.vcf
+$tabix $WORKING_FOLDER/haplotype_calling/${i}.g.vcf.gz
 
 #--------------------------------------------------------------------------------
 
