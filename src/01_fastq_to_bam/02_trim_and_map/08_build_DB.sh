@@ -64,6 +64,7 @@ JAVAMEM=150G # Java memory
 #--------------------------------------------------------------------------------
 
 # Read guide files
+
 # This is a file with the sample names and the path to the sample vcf per line. 
 SAMPLE_MAP=$WORKING_FOLDER/guide_files/Samples_to_haplotype.txt
 
@@ -76,16 +77,16 @@ SAMPLE_MAP=$WORKING_FOLDER/guide_files/Samples_to_haplotype.txt
 ##   VD       /gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed/fastq_to_bam/haplotype_calling/VD.g.vcf.gz
 
 
-# This is a file with the contig/scaffold names of the genome broken up into 30 partitions/chunks. 
-# We will utilize an array to work over 
+# This is a file with the contig/scaffold names of the genome broken up into 38 partitions/chunks with 500 contigs/scaffolds listed. 
+# We will utilize an array to work across the partitions.  
 DB_INTERVALS=$WORKING_FOLDER/guide_files/DB_intervals_array.txt
 
 #Example: -- the headers are just for descriptive purposes. The actual file has no headers. (dimensions: 18919, 2 ; 38 partitions)
-# Scaffold name       # Partition
-# Backbone_10001            1
-# Backbone_10003            1
-# ...
-# ntLink_9                  38
+## Scaffold name         Partition
+## Backbone_10001            1
+## Backbone_10003            1
+## ...
+## ntLink_9                  38
 
 #--------------------------------------------------------------------------------
 
@@ -141,8 +142,11 @@ singularity exec $GATK_SIF gatk --java-options "-Xmx${JAVAMEM}" GenomicsDBImport
 --reader-threads $CPU \
 -L $WORKING_FOLDER/guide_files/scaffold.names.${SLURM_ARRAY_TASK_ID}.list
 
+# --genomicsdb-workspace-path: workspace for GenomicsDB
+# --batch-size: batch size controls the number of samples for which readers are open at once and therefore provides a way to minimize memory consumption
+# --sample-name-map: is tab deliminated txt file; using it saves the tool from having to download the GVCF headers in order to determine the sample names
+# --temp-dir: temporary directory to use
 # -L: specifies the genomic intervals over which to operate
-# 
 
 #--------------------------------------------------------------------------------
 
