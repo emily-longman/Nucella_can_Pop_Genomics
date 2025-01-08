@@ -102,7 +102,6 @@ then echo "Completion log exist"; echo "Let's move on."; date
 else echo "Completion log doesnt exist. Let's fix that."; touch $WORKING_FOLDER/logs/${PIPELINE}.completion.log; date
 fi
 
-
 #--------------------------------------------------------------------------------
 
 # Generate Folders and files
