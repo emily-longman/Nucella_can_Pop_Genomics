@@ -18,7 +18,7 @@
 #SBATCH --time=20:00:00 
 
 # Submit job array
-#SBATCH --array=1
+#SBATCH --array=1-19
 
 # Name output of this job using %x=job-name and %j=job-id
 #SBATCH --output=./slurmOutput/Call_variants.%A_%a.out # Standard output
@@ -131,6 +131,12 @@ RGLB=$Group_library \
 RGPL=$Library_Platform \
 RGPU=$Group_platform \
 RGSM=${i}
+
+#--------------------------------------------------------------------------------
+
+# Index bam files
+java -jar $PICARD BuildBamIndex \
+I=$WORKING_FOLDER/RGSM_final_bams/${i}.RG.bam
 
 #--------------------------------------------------------------------------------
 
