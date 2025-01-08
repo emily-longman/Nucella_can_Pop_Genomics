@@ -12,10 +12,10 @@
 
 # Request nodes
 #SBATCH --nodes=1 
-#SBATCH --ntasks-per-node=1
+#SBATCH --ntasks-per-node=2
 
 # Reserve walltime -- hh:mm:ss --30 hrs max
-#SBATCH --time=15:00:00 
+#SBATCH --time=20:00:00 
 
 # Request memory for the entire job -- you can request --mem OR --mem-per-cpu
 #SBATCH --mem=10G 
