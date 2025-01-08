@@ -147,7 +147,8 @@ O=$WORKING_FOLDER/RGSM_final_bams/${i}.RG.bai
 singularity exec $GATK_SIF gatk --java-options "-Xmx${JAVAMEM}" HaplotypeCaller \
 -R $REFERENCE \
 -I $WORKING_FOLDER/RGSM_final_bams/${i}.RG.bam  \
--O $WORKING_FOLDER/haplotype_calling/${i}.g.vcf
+-O $WORKING_FOLDER/haplotype_calling/${i}.g.vcf \
+-ERC GVCF
 
 #--------------------------------------------------------------------------------
 
