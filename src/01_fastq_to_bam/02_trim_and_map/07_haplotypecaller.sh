@@ -8,14 +8,14 @@
 #SBATCH --job-name=haplotypecaller
 
 # Specify partition
-#SBATCH --partition=bluemoon
+#SBATCH --partition=week
 
 # Request nodes
 #SBATCH --nodes=1 
 #SBATCH --ntasks-per-node=1
 
 # Reserve walltime -- hh:mm:ss --30 hrs max
-#SBATCH --time=20:00:00 
+#SBATCH --time=4-00:00:00 
 
 # Submit job array
 #SBATCH --array=1-19
