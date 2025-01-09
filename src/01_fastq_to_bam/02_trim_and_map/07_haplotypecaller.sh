@@ -17,6 +17,9 @@
 # Reserve walltime -- hh:mm:ss --30 hrs max
 #SBATCH --time=4-00:00:00 
 
+# Request CPU
+#SBATCH --cpus-per-task=10
+
 # Submit job array
 #SBATCH --array=1-19
 
@@ -57,8 +60,8 @@ PIPELINE=HaplotypeCaller
 #--------------------------------------------------------------------------------
 
 # Define parameters
-CPU=$SLURM_CPUS_ON_NODE
-echo "using #CPUs ==" $SLURM_CPUS_ON_NODE
+CPU=10
+echo "using #CPUs ==" $CPU
 JAVAMEM=18G # Java memory
 
 #--------------------------------------------------------------------------------
