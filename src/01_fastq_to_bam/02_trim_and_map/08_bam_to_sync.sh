@@ -65,6 +65,9 @@ REFERENCE=$REFERENCE_FOLDER/N.canaliculata_assembly.fasta.softmasked
 # This is the path to the gff file.
 GFF=/netfiles/pespenilab_share/Nucella/processed/Base_Genome/N.can.gff
 
+# This is the path to the pickled genome file.
+PICKLED=/netfiles/pespenilab_share/Nucella/processed/Base_Genome/N.canaliculata_assembly.fasta.softmasked_pickled_ref
+
 #--------------------------------------------------------------------------------
 
 # Define parameters
