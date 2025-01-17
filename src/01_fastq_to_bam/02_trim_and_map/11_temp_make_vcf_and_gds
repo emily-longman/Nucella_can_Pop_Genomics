@@ -25,13 +25,13 @@ bgzip=/netfiles/nunezlab/Shared_Resources/Software/htslib/bgzip
 
 ###
 ##### params
-  popSet="PoolSeq"
-  method="PoolSNP"
-  maf="001"
-  mac=5
-  version=ORCC
-  script_dir="/gpfs2/scratch/jcnunez/test_DEST/poolSNP/snpCalling/innerscripts"
-  wd="/users/j/c/jcnunez/scratch/Dsu.prelim.data/scatter"
+popSet="PoolSeq"
+method="PoolSNP"
+maf="001"
+mac=5
+version=ORCC
+script_dir="/gpfs2/scratch/jcnunez/test_DEST/poolSNP/snpCalling/innerscripts"
+wd="/users/j/c/jcnunez/scratch/Dsu.prelim.data/scatter"
 
 syncPath1orig="/gpfs2/scratch/jcnunez/Dsu.prelim.data/BAM_to_SYNC/synfiles_KY/*/*masked.sync.gz"  
 syncPath2orig="/gpfs2/scratch/jcnunez/Dsu.prelim.data/BAM_to_SYNC/synfiles_KY/*/*masked.sync.gz"
@@ -39,28 +39,28 @@ syncPath2orig="/gpfs2/scratch/jcnunez/Dsu.prelim.data/BAM_to_SYNC/synfiles_KY/*/
 #####
 
 java -Xmx$JAVAMEM \
- -jar $PICARD MergeVcfs \
-  I=${wd}/sub_bcf/dest.chr2L.${popSet}.${method}.${maf}.${mac}.${version}.vcf \
-  I=${wd}/sub_bcf/dest.chr2R.${popSet}.${method}.${maf}.${mac}.${version}.vcf \
-  I=${wd}/sub_bcf/dest.chr3.${popSet}.${method}.${maf}.${mac}.${version}.vcf \
-  I=${wd}/sub_bcf/dest.chr4.${popSet}.${method}.${maf}.${mac}.${version}.vcf \
-  I=${wd}/sub_bcf/dest.chrX.${popSet}.${method}.${maf}.${mac}.${version}.vcf \
-  I=${wd}/sub_bcf/dest.chrY.${popSet}.${method}.${maf}.${mac}.${version}.vcf \
-  O=${wd}/$PROJNAME.${popSet}.${method}.${maf}.${mac}.${version}.vcf \
-  D=$DICT
+-jar $PICARD MergeVcfs \
+I=${wd}/sub_bcf/dest.chr2L.${popSet}.${method}.${maf}.${mac}.${version}.vcf \
+I=${wd}/sub_bcf/dest.chr2R.${popSet}.${method}.${maf}.${mac}.${version}.vcf \
+I=${wd}/sub_bcf/dest.chr3.${popSet}.${method}.${maf}.${mac}.${version}.vcf \
+I=${wd}/sub_bcf/dest.chr4.${popSet}.${method}.${maf}.${mac}.${version}.vcf \
+I=${wd}/sub_bcf/dest.chrX.${popSet}.${method}.${maf}.${mac}.${version}.vcf \
+I=${wd}/sub_bcf/dest.chrY.${popSet}.${method}.${maf}.${mac}.${version}.vcf \
+O=${wd}/$PROJNAME.${popSet}.${method}.${maf}.${mac}.${version}.vcf \
+D=$DICT
 
 echo "fix header" #this is now fixed in PoolSNP.py
-  sed -i '0,/CHROM/{s/AF,Number=1/AF,Number=A/}' ${wd}/$PROJNAME.${popSet}.${method}.${maf}.${mac}.${version}.vcf
-  sed -i '0,/CHROM/{s/AC,Number=1/AC,Number=A/}' ${wd}/$PROJNAME.${popSet}.${method}.${maf}.${mac}.${version}.vcf
-  sed -i '0,/CHROM/{s/AD,Number=1/AD,Number=A/}' ${wd}/$PROJNAME.${popSet}.${method}.${maf}.${mac}.${version}.vcf
-  sed -i '0,/CHROM/{s/FREQ,Number=1/FREQ,Number=A/}' ${wd}/$PROJNAME.${popSet}.${method}.${maf}.${mac}.${version}.vcf
+sed -i '0,/CHROM/{s/AF,Number=1/AF,Number=A/}' ${wd}/$PROJNAME.${popSet}.${method}.${maf}.${mac}.${version}.vcf
+sed -i '0,/CHROM/{s/AC,Number=1/AC,Number=A/}' ${wd}/$PROJNAME.${popSet}.${method}.${maf}.${mac}.${version}.vcf
+sed -i '0,/CHROM/{s/AD,Number=1/AD,Number=A/}' ${wd}/$PROJNAME.${popSet}.${method}.${maf}.${mac}.${version}.vcf
+sed -i '0,/CHROM/{s/FREQ,Number=1/FREQ,Number=A/}' ${wd}/$PROJNAME.${popSet}.${method}.${maf}.${mac}.${version}.vcf
 
 ####
 echo "make GDS"
-  Rscript --vanilla \
-  $vcf2gds \
-  ${wd}/$PROJNAME.${popSet}.${method}.${maf}.${mac}.${version}.vcf
+Rscript --vanilla \
+$vcf2gds \
+${wd}/$PROJNAME.${popSet}.${method}.${maf}.${mac}.${version}.vcf
 
 echo "bgzip & tabix"
-  $bgzip -c  ${wd}/$PROJNAME.${popSet}.${method}.${maf}.${mac}.${version}.vcf > ${wd}/$PROJNAME.${popSet}.${method}.${maf}.${mac}.${version}.vcf.gz
-  $tabix -p vcf ${wd}/$PROJNAME.${popSet}.${method}.${maf}.${mac}.${version}.vcf.gz
+$bgzip -c  ${wd}/$PROJNAME.${popSet}.${method}.${maf}.${mac}.${version}.vcf > ${wd}/$PROJNAME.${popSet}.${method}.${maf}.${mac}.${version}.vcf.gz
+$tabix -p vcf ${wd}/$PROJNAME.${popSet}.${method}.${maf}.${mac}.${version}.vcf.gz

@@ -60,7 +60,7 @@ wins[,i:=1:dim(wins)[1]]
 dim(wins)
 
 write.table(wins, file = "/Users/jcnunez/Library/CloudStorage/OneDrive-UniversityofVermont/Documents/GitHub/ky_swd/1.2.SNP_calling/SWD.jobs.txt", 
-            append = FALSE, quote = FALSE, sep = ",",
-            eol = "\n", na = "NA", dec = ".", row.names = FALSE,
-            col.names = FALSE, qmethod = c("escape", "double"),
-            fileEncoding = "")
+append = FALSE, quote = FALSE, sep = ",",
+eol = "\n", na = "NA", dec = ".", row.names = FALSE,
+col.names = FALSE, qmethod = c("escape", "double"),
+fileEncoding = "")

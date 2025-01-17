@@ -18,13 +18,13 @@ PICARD=/netfiles/nunezlab/Shared_Resources/Software/picard/build/libs/picard-2.2
 ###
 ##### params
 
-  popSet="PoolSeq"
-  method="PoolSNP"
-  maf="001"
-  mac=5
-  version=ORCC
-  script_dir="/gpfs2/scratch/jcnunez/test_DEST/poolSNP/snpCalling/innerscripts"
-  wd="/users/j/c/jcnunez/scratch/Dsu.prelim.data/scatter"
+popSet="PoolSeq"
+method="PoolSNP"
+maf="001"
+mac=5
+version=ORCC
+script_dir="/gpfs2/scratch/jcnunez/test_DEST/poolSNP/snpCalling/innerscripts"
+wd="/users/j/c/jcnunez/scratch/Dsu.prelim.data/scatter"
 
 syncPath1orig="/gpfs2/scratch/jcnunez/Dsu.prelim.data/BAM_to_SYNC/synfiles_KY/*/*masked.sync.gz"  
 syncPath2orig="/gpfs2/scratch/jcnunez/Dsu.prelim.data/BAM_to_SYNC/synfiles_KY/*/*masked.sync.gz"
@@ -45,7 +45,7 @@ date
 
 bcf_outdir="${wd}/sub_bcf"
 if [ ! -d $bcf_outdir ]; then
-    mkdir $bcf_outdir
+mkdir $bcf_outdir
 fi
 
 outdir=$wd/sub_vcfs
@@ -58,9 +58,9 @@ echo "Concatenating"
 
 ### Requires dictionary
 java -jar $PICARD MergeVcfs \
-          I=$outdir/vcfs_order.${chr}.${popSet}.${method}.${maf}.${mac}.${version}.sort.list  \
-          O=$bcf_outdir/dest.${chr}.${popSet}.${method}.${maf}.${mac}.${version}.vcf \
-          D=$DICT
+I=$outdir/vcfs_order.${chr}.${popSet}.${method}.${maf}.${mac}.${version}.sort.list  \
+O=$bcf_outdir/dest.${chr}.${popSet}.${method}.${maf}.${mac}.${version}.vcf \
+D=$DICT
           
 echo "done"
 date
