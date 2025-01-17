@@ -8,7 +8,7 @@
 #SBATCH --job-name=make_sync
 
 # Specify partition
-#SBATCH --partition=bluemoon
+#SBATCH --partition=general
 
 # Request nodes
 #SBATCH --nodes=1 
@@ -135,8 +135,7 @@ java -jar $gatk3 -T RealignerTargetCreator \
 -o $WORKING_FOLDER/syncfiles/${i}/${i}.hologenome.intervals
 
 # Perform local realignment for the target intervals using IndelRealigner 
-java -jar $gatk3 \
--T IndelRealigner \
+java -jar $gatk3 -T IndelRealigner \
 -R $REFERENCE \
 -I $WORKING_FOLDER/bams_merged/${i}.lanes_merged.bam \
 -targetIntervals $WORKING_FOLDER/syncfiles/${i}/${i}.hologenome.intervals \
@@ -172,8 +171,13 @@ python3 $MaskSYNC_snape_complete \
 
 #--------------------------------------------------------------------------------
 
+# Housekeeping
+
+# Rename files
 mv $WORKING_FOLDER/syncfiles/${i}/${i}_masked.sync.gz $WORKING_FOLDER/syncfiles/${i}/${i}.masked.sync.gz
+# Unzip sync files
 gunzip $WORKING_FOLDER/syncfiles/${i}/${i}.masked.sync.gz
+
 $bgzip $WORKING_FOLDER/syncfiles/${i}/${i}.masked.sync
 $tabix -s 1 -b 2 -e 2 $WORKING_FOLDER/syncfiles/${i}/${i}.masked.sync
 
