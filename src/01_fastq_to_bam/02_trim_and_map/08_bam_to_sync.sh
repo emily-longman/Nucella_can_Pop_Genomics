@@ -127,16 +127,6 @@ fi
 
 #--------------------------------------------------------------------------------
 
-## file needs
-root=/gpfs2/scratch/jcnunez/Dsu.prelim.data/bam_files_final
-####root=./
-genome=/netfiles/nunezlab/D_suzukii_resources/genomes/MG_INRA2024_genome/dsu_isojap1_chrlevel_ncbi.fa
-genome_pickled=/netfiles/nunezlab/D_suzukii_resources/genomes/MG_INRA2024_genome/dsu_isojap1_chrlevel_ncbi.fa.pickled.ref
-tegff=/netfiles/nunezlab/D_suzukii_resources/repeat_masking/for_MG_INRA2024_genome/dsu_isojap1_chrlevel_ncbi.fa.out.gf
-
-
-#--------------------------------------------------------------------------------
-
 # Use RealignerTargetCreator to identify and create a target intervals list
 java -jar $gatk3 -T RealignerTargetCreator \
 -nt $THREADS \
