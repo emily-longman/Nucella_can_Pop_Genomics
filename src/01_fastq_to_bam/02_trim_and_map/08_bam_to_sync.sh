@@ -38,10 +38,13 @@
 
 # Load modules 
 module load python3.10-anaconda/2023.03-1
+module load openjdk/1.8.0
+module load gcc/13.3.0-xp3epyt
+module load samtools/1.19.2-pfmpoam@1.10
 
 ### program dependencies
+PICARD=/netfiles/nunezlab/Shared_Resources/Software/picard/build/libs/picard.jar
 gatk3=/netfiles/nunezlab/Shared_Resources/Software/gatk3/gatk/GenomeAnalysisTK.jar
-samtools=/netfiles/nunezlab/Shared_Resources/Software/samtools-1.19/samtools
 tabix=/netfiles/nunezlab/Shared_Resources/Software/htslib/tabix
 bgzip=/netfiles/nunezlab/Shared_Resources/Software/htslib/bgzip
 
@@ -60,7 +63,7 @@ WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed/f
 REFERENCE_FOLDER=/netfiles/pespenilab_share/Nucella/processed/Base_Genome/Base_Genome_Oct2024/Crassostrea_softmask
 
 # This is the path to the reference genome.
-REFERENCE=$REFERENCE_FOLDER/N.canaliculata_assembly.fasta.softmasked
+REFERENCE=$REFERENCE_FOLDER/N.canaliculata_assembly.fasta.softmasked.fa
 
 # This is the path to the gff file.
 GFF=/netfiles/pespenilab_share/Nucella/processed/Base_Genome/N.can.gff
@@ -75,7 +78,12 @@ JAVAMEM=59G
 THREADS=5
 echo ${SLURM_ARRAY_TASK_ID}
 
-#GATK parameters
+# Read Information
+Group_library="Longman_2024"
+Library_platform="illumina"
+Group_platform="EKL2024"
+
+# GATK parameters
 base_quality_threshold=25
 illumina_quality_coding=1.8
 minIndel=5
@@ -112,6 +120,11 @@ cd $WORKING_FOLDER
 
 # This part of the script will check and generate, if necessary, all of the output folders used in the script
 
+if [ -d "RGSM_final_bams" ]
+then echo "Working RGSM_final_bams folder exist"; echo "Let's move on."; date
+else echo "Working RGSM_final_bams folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/RGSM_final_bams; date
+fi
+
 if [ -d "syncfiles" ]
 then echo "Working syncfiles folder exist"; echo "Let's move on."; date
 else echo "Working syncfiles folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/syncfiles; date
@@ -127,17 +140,33 @@ fi
 
 #--------------------------------------------------------------------------------
 
+# Force a uniform read group to the joint bam file
+java -jar $PICARD AddOrReplaceReadGroups \
+I=$WORKING_FOLDER/bams_merged/${i}.lanes_merged.bam \
+O=$WORKING_FOLDER/RGSM_final_bams/${i}.bam \
+RGLB=$Group_library \
+RGPL=$Library_platform \
+RGPU=$Group_platform \
+RGSM=${i}
+
+#--------------------------------------------------------------------------------
+
+# Index bams with samtools
+samtools index $WORKING_FOLDER/RGSM_final_bams/${i}.bam
+
+#--------------------------------------------------------------------------------
+
 # Use RealignerTargetCreator to identify and create a target intervals list
 java -jar $gatk3 -T RealignerTargetCreator \
 -nt $THREADS \
 -R $REFERENCE \
--I $WORKING_FOLDER/bams_merged/${i}.lanes_merged.bam \
+-I $WORKING_FOLDER/RGSM_final_bams/${i}.bam \
 -o $WORKING_FOLDER/syncfiles/${i}/${i}.hologenome.intervals
 
 # Perform local realignment for the target intervals using IndelRealigner 
 java -jar $gatk3 -T IndelRealigner \
 -R $REFERENCE \
--I $WORKING_FOLDER/bams_merged/${i}.lanes_merged.bam \
+-I $WORKING_FOLDER/RGSM_final_bams/${i}.bam \
 -targetIntervals $WORKING_FOLDER/syncfiles/${i}/${i}.hologenome.intervals \
 -o $WORKING_FOLDER/syncfiles/${i}/${i}.contaminated_realigned.bam
 ###rm $output/$sample/${sample}.dedup.bam*
