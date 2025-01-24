@@ -34,7 +34,7 @@
 
 #--------------------------------------------------------------------------------
 
-# This script will prep the bam files 
+# This script will prep the bam files. More specifically, it will add read group information and index the final bam files. 
 
 # Load modules 
 module load gcc/13.3.0-xp3epyt

@@ -39,12 +39,14 @@
 # Load modules 
 module load python3.10-anaconda/2023.03-1
 module load openjdk/1.8.0
+module load gcc/13.3.0-xp3epyt
+module load samtools/1.19.2-pfmpoam
 
 ### program dependencies
 PICARD=/netfiles/nunezlab/Shared_Resources/Software/picard/build/libs/picard.jar
 gatk3=/netfiles/nunezlab/Shared_Resources/Software/gatk3/gatk/GenomeAnalysisTK.jar
-tabix=/netfiles/nunezlab/Shared_Resources/Software/htslib/tabix
-bgzip=/netfiles/nunezlab/Shared_Resources/Software/htslib/bgzip
+#tabix=/netfiles/nunezlab/Shared_Resources/Software/htslib/tabix # loaded with samtools
+#bgzip=/netfiles/nunezlab/Shared_Resources/Software/htslib/bgzip # loaded with samtools
 
 # Load Mpileup2sync and 
 Mpileup2Sync=/netfiles/nunezlab/Shared_Resources/Software/DESTv2/mappingPipeline/scripts/Mpileup2Sync.py
@@ -75,11 +77,6 @@ PICKLED=/netfiles/pespenilab_share/Nucella/processed/Base_Genome/N.canaliculata_
 JAVAMEM=59G
 THREADS=5
 echo ${SLURM_ARRAY_TASK_ID}
-
-# Read Information
-Group_library="Longman_2024"
-Library_platform="illumina"
-Group_platform="EKL2024"
 
 # GATK parameters
 base_quality_threshold=25
@@ -148,14 +145,22 @@ java -jar $gatk3 -T IndelRealigner \
 -o $WORKING_FOLDER/syncfiles/${i}/${i}.contaminated_realigned.bam
 ###rm $output/$sample/${sample}.dedup.bam*
 
+#--------------------------------------------------------------------------------
+
 # Run mpileup step 
+echo "Run mpileup step"
+
 $samtools mpileup \
 $WORKING_FOLDER/syncfiles/${i}/${i}.contaminated_realigned.bam \
 -B \
 -Q ${base_quality_threshold} \
 -f $REFERENCE > $WORKING_FOLDER/syncfiles/${i}/${i}_mpileup.txt
 
+#--------------------------------------------------------------------------------
+
 # Transform Mpileup to Sync
+echo "Transform Mpileup to Sync"
+
 python3 $Mpileup2Sync \
 --mpileup $WORKING_FOLDER/syncfiles/${i}/${i}_mpileup.txt \
 --ref $genome_pickled \
@@ -165,6 +170,8 @@ python3 $Mpileup2Sync \
 --minIndel $minIndel
 
 # Prepare PoolSNP output
+echo "Prepare PoolSNP output"
+
 python3 $MaskSYNC_snape_complete \
 --sync $WORKING_FOLDER/syncfiles/${i}/${i}.sync.gz \
 --output $WORKING_FOLDER/syncfiles/${i}/${i} \
@@ -184,8 +191,14 @@ mv $WORKING_FOLDER/syncfiles/${i}/${i}_masked.sync.gz $WORKING_FOLDER/syncfiles/
 # Unzip sync files
 gunzip $WORKING_FOLDER/syncfiles/${i}/${i}.masked.sync.gz
 
-$bgzip $WORKING_FOLDER/syncfiles/${i}/${i}.masked.sync
-$tabix -s 1 -b 2 -e 2 $WORKING_FOLDER/syncfiles/${i}/${i}.masked.sync
+#--------------------------------------------------------------------------------
+
+# Compress files so compatible with gzip (samtools program)
+# This allows indexes to be built against the compressed file and you can still retrieve portions of the data without having to decompress.
+bgzip $WORKING_FOLDER/syncfiles/${i}/${i}.masked.sync
+
+# Index tab-deliminated genome position files (samtools program)
+tabix -s 1 -b 2 -e 2 $WORKING_FOLDER/syncfiles/${i}/${i}.masked.sync
 
 #--------------------------------------------------------------------------------
 
