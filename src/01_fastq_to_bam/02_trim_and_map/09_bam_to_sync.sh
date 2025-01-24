@@ -39,8 +39,6 @@
 # Load modules 
 module load python3.10-anaconda/2023.03-1
 module load openjdk/1.8.0
-module load gcc/13.3.0-xp3epyt
-module load samtools/1.19.2-pfmpoam@1.10
 
 ### program dependencies
 PICARD=/netfiles/nunezlab/Shared_Resources/Software/picard/build/libs/picard.jar
@@ -137,22 +135,6 @@ if [ -d "${i}" ]
 then echo "Working ${i} folder exist"; echo "Let's move on."; date
 else echo "Working ${i} folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/syncfiles/${i}; date
 fi
-
-#--------------------------------------------------------------------------------
-
-# Force a uniform read group to the joint bam file
-java -jar $PICARD AddOrReplaceReadGroups \
-I=$WORKING_FOLDER/bams_merged/${i}.lanes_merged.bam \
-O=$WORKING_FOLDER/RGSM_final_bams/${i}.bam \
-RGLB=$Group_library \
-RGPL=$Library_platform \
-RGPU=$Group_platform \
-RGSM=${i}
-
-#--------------------------------------------------------------------------------
-
-# Index bams with samtools
-samtools index $WORKING_FOLDER/RGSM_final_bams/${i}.bam
 
 #--------------------------------------------------------------------------------
 
