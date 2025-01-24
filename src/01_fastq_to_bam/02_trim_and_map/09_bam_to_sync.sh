@@ -118,11 +118,6 @@ cd $WORKING_FOLDER
 
 # This part of the script will check and generate, if necessary, all of the output folders used in the script
 
-if [ -d "RGSM_final_bams" ]
-then echo "Working RGSM_final_bams folder exist"; echo "Let's move on."; date
-else echo "Working RGSM_final_bams folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/RGSM_final_bams; date
-fi
-
 if [ -d "syncfiles" ]
 then echo "Working syncfiles folder exist"; echo "Let's move on."; date
 else echo "Working syncfiles folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/syncfiles; date
