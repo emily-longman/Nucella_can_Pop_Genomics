@@ -48,7 +48,7 @@ gatk3=/netfiles/nunezlab/Shared_Resources/Software/gatk3/gatk/GenomeAnalysisTK.j
 #tabix=/netfiles/nunezlab/Shared_Resources/Software/htslib/tabix # loaded with samtools
 #bgzip=/netfiles/nunezlab/Shared_Resources/Software/htslib/bgzip # loaded with samtools
 
-# Load Mpileup2sync and 
+# Load Mpileup2sync and MaskSYNC_snape_complete
 Mpileup2Sync=/netfiles/nunezlab/Shared_Resources/Software/DESTv2/mappingPipeline/scripts/Mpileup2Sync.py
 MaskSYNC_snape_complete=/netfiles/nunezlab/Shared_Resources/Software/DESTv2/mappingPipeline/scripts/MaskSYNC_snape_complete.py
 
@@ -69,7 +69,8 @@ REFERENCE=$REFERENCE_FOLDER/N.canaliculata_assembly.fasta.softmasked.fa
 GFF=/netfiles/pespenilab_share/Nucella/processed/Base_Genome/N.can.gff
 
 # This is the path to the pickled genome file.
-PICKLED=/netfiles/pespenilab_share/Nucella/processed/Base_Genome/N.canaliculata_assembly.fasta.softmasked_pickled_ref
+#PICKLED=/netfiles/pespenilab_share/Nucella/processed/Base_Genome/N.canaliculata_assembly.fasta.softmasked_pickled_ref.out
+PICKLED=/netfiles/pespenilab_share/Nucella/processed/Base_Genome/N.canaliculata_assembly.fasta.softmasked_pickled.ref
 
 #--------------------------------------------------------------------------------
 
@@ -131,26 +132,25 @@ fi
 #--------------------------------------------------------------------------------
 
 # Use RealignerTargetCreator to identify and create a target intervals list
-java -jar $gatk3 -T RealignerTargetCreator \
--nt $THREADS \
--R $REFERENCE \
--I $WORKING_FOLDER/RGSM_final_bams/${i}.bam \
--o $WORKING_FOLDER/syncfiles/${i}/${i}.hologenome.intervals
+#java -jar $gatk3 -T RealignerTargetCreator \
+#-nt $THREADS \
+#-R $REFERENCE \
+#-I $WORKING_FOLDER/RGSM_final_bams/${i}.bam \
+#-o $WORKING_FOLDER/syncfiles/${i}/${i}.hologenome.intervals
 
 # Perform local realignment for the target intervals using IndelRealigner 
-java -jar $gatk3 -T IndelRealigner \
--R $REFERENCE \
--I $WORKING_FOLDER/RGSM_final_bams/${i}.bam \
--targetIntervals $WORKING_FOLDER/syncfiles/${i}/${i}.hologenome.intervals \
--o $WORKING_FOLDER/syncfiles/${i}/${i}.contaminated_realigned.bam
-###rm $output/$sample/${sample}.dedup.bam*
+#java -jar $gatk3 -T IndelRealigner \
+#-R $REFERENCE \
+#-I $WORKING_FOLDER/RGSM_final_bams/${i}.bam \
+#-targetIntervals $WORKING_FOLDER/syncfiles/${i}/${i}.hologenome.intervals \
+#-o $WORKING_FOLDER/syncfiles/${i}/${i}.contaminated_realigned.bam
 
 #--------------------------------------------------------------------------------
 
 # Run mpileup step 
 echo "Run mpileup step"
 
-$samtools mpileup \
+samtools mpileup \
 $WORKING_FOLDER/syncfiles/${i}/${i}.contaminated_realigned.bam \
 -B \
 -Q ${base_quality_threshold} \
@@ -163,7 +163,7 @@ echo "Transform Mpileup to Sync"
 
 python3 $Mpileup2Sync \
 --mpileup $WORKING_FOLDER/syncfiles/${i}/${i}_mpileup.txt \
---ref $genome_pickled \
+--ref $PICKLED \
 --output $WORKING_FOLDER/syncfiles/${i} \
 --base-quality-threshold $base_quality_threshold \
 --coding $illumina_quality_coding \
