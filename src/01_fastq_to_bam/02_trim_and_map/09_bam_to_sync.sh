@@ -164,7 +164,7 @@ echo "Transform Mpileup to Sync"
 python3 $Mpileup2Sync \
 --mpileup $WORKING_FOLDER/syncfiles/${i}/${i}_mpileup.txt \
 --ref $PICKLED \
---output $WORKING_FOLDER/syncfiles/${i} \
+--output $WORKING_FOLDER/syncfiles/${i}/${i} \
 --base-quality-threshold $base_quality_threshold \
 --coding $illumina_quality_coding \
 --minIndel $minIndel
