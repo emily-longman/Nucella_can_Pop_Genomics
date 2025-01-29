@@ -20,7 +20,7 @@
 #SBATCH --mem=60G 
 
 # Request CPU
-#SBATCH --cpus-per-task=15
+#SBATCH --cpus-per-task=6
 
 # Submit job array
 #SBATCH --array=1-19
@@ -69,7 +69,6 @@ REFERENCE=$REFERENCE_FOLDER/N.canaliculata_assembly.fasta.softmasked.fa
 GFF=/netfiles/pespenilab_share/Nucella/processed/Base_Genome/N.can.gff
 
 # This is the path to the pickled genome file.
-#PICKLED=/netfiles/pespenilab_share/Nucella/processed/Base_Genome/N.canaliculata_assembly.fasta.softmasked_pickled_ref.out
 PICKLED=/netfiles/pespenilab_share/Nucella/processed/Base_Genome/N.canaliculata_assembly.fasta.softmasked_pickled.ref
 
 #--------------------------------------------------------------------------------
@@ -83,9 +82,6 @@ echo ${SLURM_ARRAY_TASK_ID}
 base_quality_threshold=25
 illumina_quality_coding=1.8
 minIndel=5
-maxsnape=0.9
-max_cov=0.95 
-min_cov=10 
 
 #--------------------------------------------------------------------------------
 
@@ -168,19 +164,6 @@ python3 $Mpileup2Sync \
 --base-quality-threshold $base_quality_threshold \
 --coding $illumina_quality_coding \
 --minIndel $minIndel
-
-# Prepare PoolSNP output
-echo "Prepare PoolSNP output"
-
-python3 $MaskSYNC_snape_complete \
---sync $WORKING_FOLDER/syncfiles/${i}/${i}.sync.gz \
---output $WORKING_FOLDER/syncfiles/${i}/${i} \
---indel $WORKING_FOLDER/syncfiles/${i}/${i}.indel \
---coverage $WORKING_FOLDER/syncfiles/${i}/${i}.cov \
---mincov $min_cov \
---maxcov $max_cov \
---te $GFF \
---maxsnape $maxsnape
 
 #--------------------------------------------------------------------------------
 
