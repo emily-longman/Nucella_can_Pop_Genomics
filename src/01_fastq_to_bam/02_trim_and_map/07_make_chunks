@@ -1,0 +1,48 @@
+#### Create guide file for array
+
+#--------------------------------------------------------------------------------
+
+# Define important file locations
+
+# WORKING_FOLDER is the core folder where this pipeline is being run.
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed/fastq_to_bam
+
+# This is the location where the reference genome is stored.
+REFERENCE_FOLDER=/netfiles/pespenilab_share/Nucella/processed/Base_Genome/Base_Genome_Oct2024/Crassostrea_softmask
+
+# This is the path to the reference genome.
+REFERENCE=$REFERENCE_FOLDER/N.canaliculata_assembly.fasta.softmasked.fa
+
+#--------------------------------------------------------------------------------
+
+# Change directory
+cd $WORKING_FOLDER/guide_files
+
+# Get all of the contig names 
+grep ">" $REFERENCE > $WORKING_FOLDER/guide_files/Scaffold_names.txt
+
+# Get rid of the ">"
+sed -i 's/>//g' Scaffold_names.txt
+
+#--------------------------------------------------------------------------------
+
+# Modify in R
+module load R/4.4.1
+
+R #to open R in VACC
+
+install.packages(c('data.table', 'tidyverse', 'groupdata2'))
+
+library(data.table)
+library(tidyverse)
+library(groupdata2)
+
+data <- fread("scaffold_names_5.txt", header = F)
+
+group(data, n=30, method = "greedy") -> guide_file_array
+
+write.table(guide_file_array, "guide_file_array_5.txt", col.names = F, row.names = F, quote = F)
+
+# Note guide_file_array has dimensions:  19014, 2 
+
+q()

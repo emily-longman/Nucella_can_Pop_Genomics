@@ -14,16 +14,16 @@
 #SBATCH --nodes=1 
 
 # Reserve walltime -- hh:mm:ss --30 hrs max
-#SBATCH --time=20:00:00 
+#SBATCH --time=30:00:00 
 
 # Request memory for the entire job -- you can request --mem OR --mem-per-cpu
 #SBATCH --mem=60G 
 
 # Request CPU
-#SBATCH --cpus-per-task=6
+#SBATCH --cpus-per-task=15
 
 # Name output of this job using %x=job-name and %j=job-id
-#SBATCH --output=./slurmOutput/Bam_sync.%A_%a.out # Standard output
+#SBATCH --output=./slurmOutput/%x_%j.out # Standard output
 
 # Receive emails when job begins and ends or fails
 #SBATCH --mail-type=ALL
@@ -31,7 +31,7 @@
 
 #--------------------------------------------------------------------------------
 
-# This script will .....
+# This script will use freebayes (https://github.com/freebayes/freebayes?tab=readme-ov-file#Development) to call variants.
 
 # Note: 
 # The freebayes algorithm exploits a neutral model of allele diffusion to impute most-confident genotypings across the
@@ -39,24 +39,9 @@
 # In other words, if your study has multiple individuals, you should run freebayes against them at the same time.
 # (i.e., don't use an array, instead give it a bamlist)
 
-module purge
-module load python3.12-anaconda/2024.06-1
-conda create -n freebayes
-#conda create --name freebayes #If you haven't already done so, create and name the environment
-source activate freebayes #activate the environment
-conda install bioconda::freebayes # If you haven't already done so, install the program
-conda activate multiqc 
-
-
 # Load modules 
-module purge
 module load gcc/13.3.0-xp3epyt
-module load samtools/1.19.2-pfmpoam
-module load vcftools/0.1.16
-
-
-
-
+module load freebayes/1.3.6-r67va2b
 
 #--------------------------------------------------------------------------------
 
@@ -94,48 +79,20 @@ fi
 cd $WORKING_FOLDER/RGSM_final_bams
 
 # Create bamlist for all Nucella samples
-ls -d "$PWD/"*.bam > $WORKING_FOLDER/guide_files/Nucella_pops_bam.list
+#ls -d "$PWD/"*.bam > $WORKING_FOLDER/guide_files/Nucella_pops_bam.list
+ls *.bam > $WORKING_FOLDER/guide_files/Nucella_pops_bam_names.list
 
-BAMLIST=$WORKING_FOLDER/guide_files/Nucella_pops_bam.list
+#BAMLIST=$WORKING_FOLDER/guide_files/Nucella_pops_bam.list
+BAMLIST=$WORKING_FOLDER/guide_files/Nucella_pops_bam_names.list
 
 #--------------------------------------------------------------------------------
 
 # Use freebayes to call variants
 
 freebayes \
--f $REFERENCE -L $BAMLIST \
+-f $REFERENCE -L $BAMLIST -r $REGION \
 -K -F 0.01 -C 1 -G 5 --limit-coverage 500 -n 4 -m 30 -q 20 \
-|gzip -c > $WORKING_FOLDER/vcf/${BAMLIST}.freebayes.vcf.gz
-
-#--------------------------------------------------------------------------------
-
-date
-echo "done"
-
-
-
-
-
-#--------------------------------------------------------------------------------
-#--------------------------------------------------------------------------------
-#--------------------------------------------------------------------------------
-
-
-
-module load bioinfo/freebayes/1.3.6
-
-BAMLIST=$1
-REGION=$2
-PATH_TO_ASSEMBLY=/work/project/gandhi/DSU_assembly/dsu_isojap1_Mito_wRI.fa
-
-
-freebayes -f $PATH_TO_ASSEMBLY -L $BAMLIST  -r $REGION -K -F 0.01 -C 1 -G 5 --limit-coverage 500 -n 4 -m 30 -q 20 |gzip -c > res_vcf/${BAMLIST}.${REGION}.freebayes.vcf.gz
-
-
-
-##########################
-###DETAIL OPTIONS CHOICES
-##########################
+| gzip -c > $WORKING_FOLDER/vcf_freebayes/Nucella.freebayes.vcf.gz
 
 # -K --pooled-continuous : Output all alleles which pass input filters, regardles of genotyping outcome or model.
 ## Least expensive option in time/memory because if we use pool-discrete it is necessary to specify a haploid pool size and it calculates the likelihoods for each possible configuration which can take a long time.
@@ -155,29 +112,24 @@ freebayes -f $PATH_TO_ASSEMBLY -L $BAMLIST  -r $REGION -K -F 0.01 -C 1 -G 5 --li
 
 # -m --min-mapping-quality Q : Exclude alignments from analysis if they have a mapping quality less than Q.  default: 1
 # -q --min-base-quality Q : Exclude alleles from analysis if their supporting base quality is less than Q.  default: 0
-## Criteres classiques de qualite (Note: pet etre a reajuster si on fait de la recalibration des Base Quality BQSR)?
+## Classic quality criteria (Note: may need to be readjusted if we recalibrate the Base Quality BQSR)?
 
-# -n --use-best-n-alleles N : Evaluate only the best N SNP alleles, ranked by sum of supporting quality scores.  (Set to 0 to use all; default: all)
-## Reduit a 4 (cf recommandation pour reduction cout computationnel). Attention cependant car les autres alleles ne sont tout simplement pas considere (i.e., le DP reel peut varier du DP realise, i.e., somme des couvertures des alleles reportes)
-## La plupart du temps, on ne retiendra que les bi-allelique (ou les alleles tres peu couverts seront vires: cf poolfstat)
-## (dans GATK HaplotypeCaller c'est 7 par defaut car --max-alternate-alleles 6)
+# -n --use-best-n-alleles N : Evaluate only the best N SNP alleles, ranked by sum of supporting quality scores.  (Set to 0 to use all (i.e., default))
+## Reduced to 4 (see recommendation for computational cost reduction). Be careful however because the other alleles are simply not considered (i.e., the real DP may vary from the actual DP, i.e., sum of coverage of the reported alleles)
+## Most of the time, we will only retain bi-allelics (or very poorly covered alleles will be removed: see poolfstat)(in GATK HaplotypeCaller it is 7 by default because --max-alternate-alleles 6)
 
 # --strict-vcf Generate strict VCF format (FORMAT/GQ will be an int)
-# Les Genotype QUality (pas utile ici puisque pooled-continuous) sont donnees par defaut en log10 scale likelihood (=>alourdi le fichier output)
+# Genotype quality (not useful here since pooled-continuous) are given by default in log10 scale likelihood (=> heavy the output file)
 
-#################
-#REMARQUES
-################
+#--------------------------------------------------------------------------------
 
-#De maniere generale les likelhood ou les GQ sont donnees en log10 scale (et pas en Phred). Dans le cas des GQ:
-# --strict-vcf Generate strict VCF format (FORMAT/GQ will be an int)
-# Les Genotype QUality (pas utile ici puisque pooled-continuous) sont donnees par defaut en log10 scale likelihood (=>alourdi le fichier output)
+date
+echo "done"
 
+#--------------------------------------------------------------------------------
 
-
-
-#Lorsque'on parrallelise analyse d'une region, ca ne sert a rien de faire overlapper les chunks overlapping car il tient compte de lenvironnement au dela de la limite
-#Par exemple (dans test preliminaire):
+#When we parallelize the analysis of a region, there is no point in overlapping the chunks because it takes into account the environment beyond the limit
+#For example (in preliminary test):
 #gunzip -c list.bam.dedup.chr1:39999000-41000000.freebayes.vcf.gz |grep -v "^#" |awk '$2<=40000000' - |awk '{print $1,$2,$3,$4,$5,$6,$7}' -
 #....
 #chr1 39999961 . TCT ACA,TTT,ACT 1.34697e-06 .
@@ -192,9 +144,9 @@ freebayes -f $PATH_TO_ASSEMBLY -L $BAMLIST  -r $REGION -K -F 0.01 -C 1 -G 5 --li
 #chr1 39999999 TTCCTCCATGTGGGC TTCCTACATCTGGGC,TTCCTCCATCTGGAT,TTCCTCCATCTGGGC 6464.2 15 47
 
 
-##########################
-#### INFO et FORMAT field du vcf
-#########################
+#--------------------------------------------------------------------------------
+
+#### INFO and FORMAT field of the vcf
 
 ##INFO=<ID=NS,Number=1,Type=Integer,Description="Number of samples with data">
 ##INFO=<ID=DP,Number=1,Type=Integer,Description="Total read depth at the locus">
