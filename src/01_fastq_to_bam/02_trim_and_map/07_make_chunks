@@ -37,11 +37,11 @@ library(data.table)
 library(tidyverse)
 library(groupdata2)
 
-data <- fread("scaffold_names_5.txt", header = F)
+data <- fread("Scaffold_names.txt", header = F)
 
 group(data, n=30, method = "greedy") -> guide_file_array
 
-write.table(guide_file_array, "guide_file_array_5.txt", col.names = F, row.names = F, quote = F)
+write.table(guide_file_array, "Guide_file_scaffold_array.txt", col.names = F, row.names = F, quote = F)
 
 # Note guide_file_array has dimensions:  19014, 2 
 
