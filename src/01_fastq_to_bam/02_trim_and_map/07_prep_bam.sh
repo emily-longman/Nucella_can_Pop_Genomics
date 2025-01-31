@@ -56,11 +56,6 @@ WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed/f
 JAVAMEM=18G
 echo ${SLURM_ARRAY_TASK_ID}
 
-# Read Information
-Group_library="Longman_2024"
-Library_platform="illumina"
-Group_platform="EKL2024"
-
 #--------------------------------------------------------------------------------
 
 # Read guide files
@@ -97,10 +92,16 @@ fi
 
 #--------------------------------------------------------------------------------
 
+# Read Information
+Group_library="Longman_2024"
+Library_platform="NovaSeq"
+Group_platform="EKL2024"
+
 # Force a uniform read group to the joint bam file
 java -jar $PICARD AddOrReplaceReadGroups \
 I=$WORKING_FOLDER/bams_merged/${i}.lanes_merged.bam \
 O=$WORKING_FOLDER/RGSM_final_bams/${i}.bam \
+RGID=${Group_library}.${i} \
 RGLB=$Group_library \
 RGPL=$Library_platform \
 RGPU=$Group_platform \
