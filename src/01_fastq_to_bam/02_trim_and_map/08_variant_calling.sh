@@ -89,10 +89,7 @@ BAMLIST=$WORKING_FOLDER/guide_files/Nucella_pops_bam_names.list
 
 # Use freebayes to call variants
 
-freebayes \
--f $REFERENCE -L $BAMLIST -r $REGION \
--K -F 0.01 -C 1 -G 5 --limit-coverage 500 -n 4 -m 30 -q 20 \
-| gzip -c > $WORKING_FOLDER/vcf_freebayes/Nucella.freebayes.vcf.gz
+freebayes -f $REFERENCE -L $BAMLIST -K -F 0.01 -C 1 -G 5 --limit-coverage 500 -n 4 -m 30 -q 20 | gzip -c > $WORKING_FOLDER/vcf_freebayes/Nucella.freebayes.vcf.gz
 
 # -K --pooled-continuous : Output all alleles which pass input filters, regardles of genotyping outcome or model.
 ## Least expensive option in time/memory because if we use pool-discrete it is necessary to specify a haploid pool size and it calculates the likelihoods for each possible configuration which can take a long time.

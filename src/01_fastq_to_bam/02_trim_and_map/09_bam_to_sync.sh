@@ -50,7 +50,6 @@ gatk3=/netfiles/nunezlab/Shared_Resources/Software/gatk3/gatk/GenomeAnalysisTK.j
 
 # Load Mpileup2sync and MaskSYNC_snape_complete
 Mpileup2Sync=/netfiles/nunezlab/Shared_Resources/Software/DESTv2/mappingPipeline/scripts/Mpileup2Sync.py
-MaskSYNC_snape_complete=/netfiles/nunezlab/Shared_Resources/Software/DESTv2/mappingPipeline/scripts/MaskSYNC_snape_complete.py
 
 #--------------------------------------------------------------------------------
 
