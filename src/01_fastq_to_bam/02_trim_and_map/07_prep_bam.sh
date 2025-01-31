@@ -92,12 +92,12 @@ fi
 
 #--------------------------------------------------------------------------------
 
-# Read Information
+# Read Group Information
 Group_library="Longman_2024"
 Library_platform="NovaSeq"
 Group_platform="EKL2024"
 
-# Force a uniform read group to the joint bam file
+# Add read group information to the bam files
 java -jar $PICARD AddOrReplaceReadGroups \
 I=$WORKING_FOLDER/bams_merged/${i}.lanes_merged.bam \
 O=$WORKING_FOLDER/RGSM_final_bams/${i}.bam \
