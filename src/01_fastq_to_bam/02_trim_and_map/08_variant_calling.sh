@@ -19,8 +19,8 @@
 # Request memory for the entire job -- you can request --mem OR --mem-per-cpu
 #SBATCH --mem=60G 
 
-# Request one task
-#SBATCH --ntasks=20
+# Request CPU
+#SBATCH --cpus-per-task=15
 
 # Name output of this job using %x=job-name and %j=job-id
 #SBATCH --output=./slurmOutput/%x_%j.out # Standard output
@@ -87,10 +87,10 @@ BAMLIST=$WORKING_FOLDER/guide_files/Nucella_pops_bam_names.list
 
 # Use freebayes to call variants
 
-#freebayes -f $REFERENCE -L $BAMLIST -K -F 0.01 -C 1 -G 5 --limit-coverage 500 -n 4 -m 30 -q 20 | gzip -c > $WORKING_FOLDER/vcf_freebayes/Nucella.freebayes.vcf.gz
+freebayes -f $REFERENCE -L $BAMLIST -K -F 0.01 -C 1 -G 5 --limit-coverage 500 -n 4 -m 30 -q 20 | gzip -c > $WORKING_FOLDER/vcf_freebayes/Nucella.freebayes.vcf.gz
 
-freebayes-parallel <(fasta_generate_regions.py $REFERENCE_FOLDER/N.canaliculata_assembly.fasta.softmasked.fa.fai 100000) 20 \
--f $REFERENCE -L $BAMLIST -K -F 0.01 -C 1 -G 5 --limit-coverage 500 -n 4 -m 30 -q 20 | gzip -c > $WORKING_FOLDER/vcf_freebayes/Nucella.freebayes.vcf.gz
+#freebayes-parallel <(fasta_generate_regions.py $REFERENCE_FOLDER/N.canaliculata_assembly.fasta.softmasked.fa.fai 100000) 20 \
+#-f $REFERENCE -L $BAMLIST -K -F 0.01 -C 1 -G 5 --limit-coverage 500 -n 4 -m 30 -q 20 | gzip -c > $WORKING_FOLDER/vcf_freebayes/Nucella.freebayes.vcf.gz
 
 # -K --pooled-continuous : Output all alleles which pass input filters, regardles of genotyping outcome or model.
 ## Least expensive option in time/memory because if we use pool-discrete it is necessary to specify a haploid pool size and it calculates the likelihoods for each possible configuration which can take a long time.
