@@ -8,19 +8,22 @@
 #SBATCH --job-name=variant_calling_freebayes
 
 # Specify partition
-#SBATCH --partition=week
+#SBATCH --partition=general
 
 # Request nodes
 #SBATCH --nodes=1 
 
 # Reserve walltime -- hh:mm:ss --30 hrs max
-#SBATCH --time=7-00:00:00 
+#SBATCH --time=30:00:00 
 
 # Request memory for the entire job -- you can request --mem OR --mem-per-cpu
 #SBATCH --mem=60G 
 
 # Request CPU
-#SBATCH --cpus-per-task=15
+#SBATCH --cpus-per-task=10
+
+# Submit job array
+#SBATCH --array=1-631%25
 
 # Name output of this job using %x=job-name and %j=job-id
 #SBATCH --output=./slurmOutput/%x_%j.out # Standard output
@@ -58,6 +61,31 @@ REFERENCE=$REFERENCE_FOLDER/N.canaliculata_assembly.fasta.softmasked.fa
 
 #--------------------------------------------------------------------------------
 
+## Import master partition file 
+GUIDE_FILE=$WORKING_FOLDER/guide_files/Scaffold_names_array.txt
+
+#Example: -- the headers are just for descriptive purposes. The actual file has no headers. (dimensions: 2, 18919; 631 partitions)
+# Scaffold name       # Partition
+# Backbone_10001            1
+# Backbone_10003            1
+# Backbone_10004            1
+# ....
+
+#--------------------------------------------------------------------------------
+
+# Determine partition to process 
+
+# Echo slurm array task ID
+echo ${SLURM_ARRAY_TASK_ID}
+
+# Change directory 
+cd $WORKING_FOLDER
+
+# Using the guide file, extract the scaffold names associated based on the Slurm array task ID for a given partition
+awk '$2=='${SLURM_ARRAY_TASK_ID}'' $GUIDE_FILE | awk '{print $1}' > genome.scaffold.names.${SLURM_ARRAY_TASK_ID}.txt
+
+#--------------------------------------------------------------------------------
+
 # Generate Folders and files
 
 # Move to working directory
@@ -68,6 +96,20 @@ cd $WORKING_FOLDER
 if [ -d "vcf_freebayes" ]
 then echo "Working vcf_freebayes folder exist"; echo "Let's move on."; date
 else echo "Working vcf_freebayes folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/vcf_freebayes; date
+fi
+
+cd $WORKING_FOLDER/vcf_freebayes
+
+if [ -d "partitions" ]
+then echo "Working partitions folder exist"; echo "Let's move on."; date
+else echo "Working partitions folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/vcf_freebayes/partitions; date
+fi
+
+cd $WORKING_FOLDER/vcf_freebayes/partitions
+
+if [ -d "genome.scaffold.names.${SLURM_ARRAY_TASK_ID}" ]
+then echo "Working genome.scaffold.names.${SLURM_ARRAY_TASK_ID} folder exist"; echo "Let's move on."; date
+else echo "Working genome.scaffold.names.${SLURM_ARRAY_TASK_ID} folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/vcf_freebayes/partitions/genome.scaffold.names.${SLURM_ARRAY_TASK_ID}; date
 fi
 
 #--------------------------------------------------------------------------------
@@ -87,7 +129,16 @@ BAMLIST=$WORKING_FOLDER/guide_files/Nucella_pops_bam_names.list
 
 # Use freebayes to call variants
 
-freebayes -f $REFERENCE -L $BAMLIST -K -F 0.01 -C 1 -G 5 --limit-coverage 500 -n 4 -m 30 -q 20 | gzip -c > $WORKING_FOLDER/vcf_freebayes/Nucella.freebayes.vcf.gz
+# For the scaffolds in a given partition, generate a vcf file for each scaffold then cat them together. 
+
+# Cat file of scaffold names and start while loop
+cat $WORKING_FOLDER/genome.scaffold.names.${SLURM_ARRAY_TASK_ID}.txt | \
+while read SCAFFOLD 
+do echo ${SCAFFOLD}
+
+freebayes -f $REFERENCE -L $BAMLIST -r ${SCAFFOLD} -K -F 0.01 -C 1 -G 5 --limit-coverage 500 -n 4 -m 30 -q 20 | gzip -c > $WORKING_FOLDER/vcf_freebayes/partitions/genome.scaffold.names.${SLURM_ARRAY_TASK_ID}/Nucella.freebayes.${SCAFFOLD}.vcf.gz
+
+done 
 
 #freebayes-parallel <(fasta_generate_regions.py $REFERENCE_FOLDER/N.canaliculata_assembly.fasta.softmasked.fa.fai 100000) 20 \
 #-f $REFERENCE -L $BAMLIST -K -F 0.01 -C 1 -G 5 --limit-coverage 500 -n 4 -m 30 -q 20 | gzip -c > $WORKING_FOLDER/vcf_freebayes/Nucella.freebayes.vcf.gz
@@ -118,6 +169,27 @@ freebayes -f $REFERENCE -L $BAMLIST -K -F 0.01 -C 1 -G 5 --limit-coverage 500 -n
 
 # --strict-vcf Generate strict VCF format (FORMAT/GQ will be an int)
 # Genotype quality (not useful here since pooled-continuous) are given by default in log10 scale likelihood (=> heavy the output file)
+
+#--------------------------------------------------------------------------------
+
+# Merge the vcf files from all of the scaffolds in a given partition
+
+# Set directory
+DIR=$WORKING_FOLDER/vcf_freebayes/partitions/genome.scaffold.names.${SLURM_ARRAY_TASK_ID}
+
+for file in $(find ${DIR} -name "*.vcf.gz"); do
+cmd="cat ${file};"
+eval $cmd
+done > $WORKING_FOLDER/vcf_freebayes/partitions/genome.scaffold.names.${SLURM_ARRAY_TASK_ID}.vcf.gz
+
+#--------------------------------------------------------------------------------
+
+# Change directory
+cd $WORKING_FOLDER
+
+# Housekeeping
+rm genome.scaffold.names.${SLURM_ARRAY_TASK_ID}.txt
+rm -R $WORKING_FOLDER/vcf_freebayes/partitions/genome.scaffold.names.${SLURM_ARRAY_TASK_ID}
 
 #--------------------------------------------------------------------------------
 
