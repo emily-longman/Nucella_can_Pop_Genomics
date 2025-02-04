@@ -57,7 +57,7 @@ WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed/f
 REFERENCE_FOLDER=/netfiles/pespenilab_share/Nucella/processed/Base_Genome/Base_Genome_Oct2024/Crassostrea_softmask
 
 # This is the path to the reference genome.
-REFERENCE=$REFERENCE_FOLDER/N.canaliculata_assembly.fasta.softmasked
+REFERENCE=$REFERENCE_FOLDER/N.canaliculata_assembly.fasta.softmasked.fa
 
 # Name of pipeline
 PIPELINE=Map_reads
