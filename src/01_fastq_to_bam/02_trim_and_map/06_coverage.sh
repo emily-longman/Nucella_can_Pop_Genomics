@@ -8,7 +8,7 @@
 #SBATCH --job-name=bam_coverage
 
 # Specify partition
-#SBATCH --partition=bluemoon
+#SBATCH --partition=general
 
 # Request nodes
 #SBATCH --nodes=1 

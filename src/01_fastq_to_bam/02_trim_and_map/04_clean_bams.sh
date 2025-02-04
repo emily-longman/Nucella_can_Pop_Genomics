@@ -23,7 +23,7 @@
 #SBATCH --array=1-38%19
 
 # Name output of this job using %x=job-name and %j=job-id
-#SBATCH --output=./slurmOutput/Clean_bams.%A_%a.out # Standard output
+#SBATCH --output=./slurmOutput/%x.%A_%a.out # Standard output
 
 # Receive emails when job begins and ends or fails
 #SBATCH --mail-type=ALL
@@ -35,7 +35,8 @@
 # It will also conduct an intermediary QC step with Qualimap. 
 
 # Load modules  
-spack load samtools@1.10
+module load gcc/13.3.0-xp3epyt
+module load samtools/1.19.2-pfmpoam
 PICARD=/netfiles/nunezlab/Shared_Resources/Software/picard/build/libs/picard.jar
 qualimap=/netfiles/nunezlab/Shared_Resources/Software/qualimap_v2.2.1/qualimap
 

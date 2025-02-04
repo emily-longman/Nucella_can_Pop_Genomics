@@ -33,7 +33,8 @@
 # Note: this step only needs to be done once
 
 # Load modules 
-spack load samtools@1.10
+module load gcc/13.3.0-xp3epyt
+module load samtools/1.19.2-pfmpoam
 bwa=/netfiles/nunezlab/Shared_Resources/Software/bwa-mem2-2.2.1_x64-linux/bwa-mem2.avx2
 PICARD=/netfiles/nunezlab/Shared_Resources/Software/picard/build/libs/picard.jar
 

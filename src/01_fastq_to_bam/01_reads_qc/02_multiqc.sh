@@ -8,7 +8,7 @@
 #SBATCH --job-name=multiqc 
 
 # Specify partition
-#SBATCH --partition=bluemoon
+#SBATCH --partition=general
 
 # Request nodes
 #SBATCH --nodes=1 
@@ -34,7 +34,7 @@
 
 # Load modules 
 # Call package (installed with conda)
-module load python3.11-anaconda/2023.09-0
+module load python3.11-anaconda/2024.02-1
 source ${ANACONDA_ROOT}/etc/profile.d/conda.sh
 #conda create --name multiqc #If you haven't already done so, create and name the environment
 source activate multiqc #activate the environment

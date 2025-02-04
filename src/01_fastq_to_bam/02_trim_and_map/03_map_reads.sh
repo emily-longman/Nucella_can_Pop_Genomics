@@ -8,7 +8,7 @@
 #SBATCH --job-name=Map_reads
 
 # Specify partition
-#SBATCH --partition=bluemoon
+#SBATCH --partition=general
 
 # Request nodes
 #SBATCH --nodes=1 
@@ -27,7 +27,7 @@
 #SBATCH --array=1-38%19
 
 # Name output of this job using %x=job-name and %j=job-id
-#SBATCH --output=./slurmOutput/Map_reads.%A_%a.out # Standard output
+#SBATCH --output=./slurmOutput/%x.%A_%a.out # Standard output
 
 # Receive emails when job begins and ends or fails
 #SBATCH --mail-type=ALL
@@ -39,8 +39,8 @@
 # After reads have been mapped, they will be compressed into bam files.
 
 # Load modules  
-spack load gcc@9.3.0
-spack load samtools@1.10
+module load gcc/13.3.0-xp3epyt
+module load samtools/1.19.2-pfmpoam
 bwa=/netfiles/nunezlab/Shared_Resources/Software/bwa-mem2-2.2.1_x64-linux/bwa-mem2.avx2
 
 #--------------------------------------------------------------------------------

@@ -8,7 +8,7 @@
 #SBATCH --job-name=Trim_reads
 
 # Specify partition
-#SBATCH --partition=bluemoon
+#SBATCH --partition=general
 
 # Request nodes
 #SBATCH --nodes=1 
@@ -24,7 +24,7 @@
 #SBATCH --array=1-38%20
 
 # Name output of this job using %x=job-name and %j=job-id
-#SBATCH --output=./slurmOutput/Trim_reads.%A_%a.out # Standard output
+#SBATCH --output=./slurmOutput/%x.%A_%a.out # Standard output
 
 # Receive emails when job begins and ends or fails
 #SBATCH --mail-type=ALL

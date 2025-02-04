@@ -8,7 +8,7 @@
 #SBATCH --job-name=fastqc 
 
 # Specify partition
-#SBATCH --partition=bluemoon
+#SBATCH --partition=general
 
 # Request nodes
 #SBATCH --nodes=1 
@@ -35,8 +35,8 @@
 # This script will initiate a pipeline which will do some quality QC on the reads. 
 
 # Load modules 
-# Call fastqc package 
-spack load fastqc@0.11.7
+module load gcc/13.3.0-xp3epyt
+module load fastqc/0.12.1-qxseug5
 
 #--------------------------------------------------------------------------------
 

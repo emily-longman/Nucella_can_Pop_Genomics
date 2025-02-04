@@ -8,7 +8,7 @@
 #SBATCH --job-name=Merge_bams
 
 # Specify partition
-#SBATCH --partition=bluemoon
+#SBATCH --partition=general
 
 # Request nodes
 #SBATCH --nodes=1 
@@ -24,7 +24,7 @@
 #SBATCH --array=1-19
 
 # Name output of this job using %x=job-name and %j=job-id
-#SBATCH --output=./slurmOutput/Merge_bams.%A_%a.out # Standard output
+#SBATCH --output=./slurmOutput/%x.%A_%a.out # Standard output
 
 # Receive emails when job begins and ends or fails
 #SBATCH --mail-type=ALL
@@ -35,7 +35,8 @@
 # This script will gather all data for each population across the 2 lanes of sequencing.
 
 # Load modules  
-spack load samtools@1.10
+module load gcc/13.3.0-xp3epyt
+module load samtools/1.19.2-pfmpoam
 qualimap=/netfiles/nunezlab/Shared_Resources/Software/qualimap_v2.2.1/qualimap
 
 #--------------------------------------------------------------------------------
