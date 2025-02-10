@@ -44,7 +44,7 @@ qualimap=/netfiles/nunezlab/Shared_Resources/Software/qualimap_v2.2.1/qualimap
 # Define important file locations
 
 # WORKING_FOLDER is the core folder where this pipeline is being run.
-WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed/fastq_to_bam
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed
 
 # Name of pipeline
 PIPELINE=Merge_bams
@@ -61,7 +61,7 @@ JAVAMEM=18G # Java memory
 
 # Read guide files
 # This is a file with the name all the samples to be processed. One sample name per line with all the info.
-GUIDE_FILE=$WORKING_FOLDER/guide_files/Merge_bams.txt
+GUIDE_FILE=$WORKING_FOLDER/fastq_to_vcf/guide_files/Merge_bams.txt
 
 #Example: -- the headers are just for descriptive purposes. The actual file has no headers.
 ## Population      Merged_name 1      Merged_name 2 
@@ -82,13 +82,13 @@ echo $i
 # This part of the pipeline will generate log files to record warnings and completion status
 
 # Move to logs directory
-cd $WORKING_FOLDER/logs
+cd $WORKING_FOLDER/fastq_to_vcf/logs
 
 echo $PIPELINE
 
 if [[ -e "${PIPELINE}.completion.log" ]]
 then echo "Completion log exist"; echo "Let's move on."; date
-else echo "Completion log doesnt exist. Let's fix that."; touch $WORKING_FOLDER/logs/${PIPELINE}.completion.log; date
+else echo "Completion log doesnt exist. Let's fix that."; touch $WORKING_FOLDER/fastq_to_vcf/logs/${PIPELINE}.completion.log; date
 fi
 
 #--------------------------------------------------------------------------------
@@ -96,28 +96,28 @@ fi
 # Generate Folders and files
 
 # Move to working directory
-cd $WORKING_FOLDER
+cd $WORKING_FOLDER/fastq_to_vcf
 
 # This part of the script will check and generate, if necessary, all of the output folders used in the script
 
 if [ -d "bams_merged" ]
 then echo "Working bams_merged folder exist"; echo "Let's move on."; date
-else echo "Working bams_merged folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/bams_merged; date
+else echo "Working bams_merged folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/fastq_to_vcf/bams_merged; date
 fi
 
 #--------------------------------------------------------------------------------
 
 # Here I will merge the bam outputs for the 2 lanes of sequencing. These will be named 'Lanes merged'
 
-echo "I will merge these files" $WORKING_FOLDER/bams_clean/${i}_*.srt.rmdp.bam
+echo "I will merge these files" $WORKING_FOLDER/fastq_to_vcf/bams_clean/${i}_*.srt.rmdp.bam
 
 # Make temporary linefile with list of input BAM files
-ls $WORKING_FOLDER/bams_clean/${i}_*.srt.rmdp.bam > ${i}.guide.txt
+ls $WORKING_FOLDER/fastq_to_vcf/bams_clean/${i}_*.srt.rmdp.bam > ${i}.guide.txt
 
 # Merge the 2 sequencing lanes
 samtools merge \
 -b ${i}.guide.txt \
-$WORKING_FOLDER/bams_merged/${i}.lanes_merged.bam
+$WORKING_FOLDER/fastq_to_vcf/bams_merged/${i}.lanes_merged.bam
 
 # Housekeeping: Remove the temporary guide file
 rm ${i}.guide.txt
@@ -125,7 +125,7 @@ rm ${i}.guide.txt
 #--------------------------------------------------------------------------------
 
 # Index bams with samtools
-samtools index $WORKING_FOLDER/bams_merged/${i}.lanes_merged.bam
+samtools index $WORKING_FOLDER/fastq_to_vcf/bams_merged/${i}.lanes_merged.bam
 
 #--------------------------------------------------------------------------------
 
@@ -133,6 +133,6 @@ samtools index $WORKING_FOLDER/bams_merged/${i}.lanes_merged.bam
 
 # This part of the pipeline will notify the completion of run i. 
 
-echo ${i} " completed" >> $WORKING_FOLDER/logs/${PIPELINE}.completion.log
+echo ${i} " completed" >> $WORKING_FOLDER/fastq_to_vcf/logs/${PIPELINE}.completion.log
 
 echo "pipeline completed" $(date)

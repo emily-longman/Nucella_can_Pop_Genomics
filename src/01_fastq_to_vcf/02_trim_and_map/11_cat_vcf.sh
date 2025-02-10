@@ -35,16 +35,16 @@
 # Define important file locations
 
 # WORKING_FOLDER is the core folder where this pipeline is being run.
-WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed/fastq_to_bam
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed
 
 #--------------------------------------------------------------------------------
 
 # Cat together the vcf files from all of the partitions
 
 # Set directory
-DIR=$WORKING_FOLDER/vcf_freebayes/partitions
+DIR=$WORKING_FOLDER/fastq_to_vcf/vcf_freebayes/partitions
 
 for file in $(find ${DIR} -name "*.vcf.gz"); do
 cmd="cat ${file};"
 eval $cmd
-done > $WORKING_FOLDER/vcf_freebayes/N_can_pops.vcf.gz
+done > $WORKING_FOLDER/fastq_to_vcf/vcf_freebayes/N_can_pops.vcf.gz

@@ -45,7 +45,7 @@ fastp=/gpfs1/home/e/l/elongman/software/fastp
 RAW_READS=/netfiles/pespenilab_share/Nucella/raw/Population_genomics/All_shortreads
 
 # WORKING_FOLDER is the core folder where this pipeline is being run.
-WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed/fastq_to_bam
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed
 
 # Name of pipeline
 PIPELINE=Trim_reads
@@ -54,7 +54,7 @@ PIPELINE=Trim_reads
 
 # Read guide files
 # This is a file with the name all the samples to be processed. One sample name per line with all the info.
-GUIDE_FILE=$WORKING_FOLDER/guide_files/Trim_map.txt
+GUIDE_FILE=$WORKING_FOLDER/fastq_to_vcf/guide_files/Trim_map.txt
 
 #Example: -- the headers are just for descriptive purposes. The actual file has no headers.
 ##             Read 1                            Read 2             Population   Sample#   Lane#    Paired_name    
@@ -77,24 +77,24 @@ echo "Sample i:" ${i} "Read 1:" ${read1} "Read 2:" ${read2}
 # This part of the pipeline will generate log files to record warnings and completion status
 
 # Move to working directory
-cd $WORKING_FOLDER
+cd $WORKING_FOLDER/fastq_to_vcf
 
 # This part of the script will check and generate, if necessary, all of the output folders used in the script
 
 # Create logs directory
 if [ -d "logs" ]
 then echo "Working logs folder exist"; echo "Let's move on."; date
-else echo "Working logs folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/logs; date
+else echo "Working logs folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/fastq_to_vcf/logs; date
 fi
 
 # Move to logs directory
-cd $WORKING_FOLDER/logs
+cd $WORKING_FOLDER/fastq_to_vcf/logs
 
 echo $PIPELINE
 
 if [[ -e "${PIPELINE}.completion.log" ]]
 then echo "Completion log exist"; echo "Let's move on."; date
-else echo "Completion log doesnt exist. Let's fix that."; touch $WORKING_FOLDER/logs/${PIPELINE}.completion.log; date
+else echo "Completion log doesnt exist. Let's fix that."; touch $WORKING_FOLDER/fastq_to_vcf/logs/${PIPELINE}.completion.log; date
 fi
 
 #--------------------------------------------------------------------------------
@@ -102,18 +102,18 @@ fi
 # Generate Folders and files
 
 # Move to working directory
-cd $WORKING_FOLDER
+cd $WORKING_FOLDER/fastq_to_vcf
 
 # This part of the script will check and generate, if necessary, all of the output folders used in the script
 
 if [ -d "trimmed_reads" ]
 then echo "Working trimmed_reads folder exist"; echo "Let's move on."; date
-else echo "Working trimmed_reads folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/trimmed_reads; date
+else echo "Working trimmed_reads folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/fastq_to_vcf/trimmed_reads; date
 fi
 
 if [ -d "trimmed_reads_reports" ]
 then echo "Working trimmed_reads_reports folder exist"; echo "Let's move on."; date
-else echo "Working trimmed_reads_reports folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/trimmed_reads_reports; date
+else echo "Working trimmed_reads_reports folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/fastq_to_vcf/trimmed_reads_reports; date
 fi
 
 #--------------------------------------------------------------------------------
@@ -121,7 +121,7 @@ fi
 # Start pipeline
 
 # Move to working directory
-cd $WORKING_FOLDER
+cd $WORKING_FOLDER/fastq_to_vcf
 
 # This script uses an array and matches left and right reads and cleans the raw data using fastp according to parameters set below
 # Decide on the trimming parameters based on fastQC step done before this script.
@@ -132,8 +132,8 @@ echo "Trimming reads for sample:" ${i}
 $fastp \
 -i $RAW_READS/${read1} \
 -I $RAW_READS/${read2} \
--o $WORKING_FOLDER/trimmed_reads/${i}_R1_clean.fq.gz \
--O $WORKING_FOLDER/trimmed_reads/${i}_R2_clean.fq.gz \
+-o $WORKING_FOLDER/fastq_to_vcf/trimmed_reads/${i}_R1_clean.fq.gz \
+-O $WORKING_FOLDER/fastq_to_vcf/trimmed_reads/${i}_R2_clean.fq.gz \
 --detect_adapter_for_pe \
 --trim_front1 8 \
 --trim_poly_g \
@@ -141,8 +141,8 @@ $fastp \
 --cut_right \
 --cut_right_window_size 6 \
 --qualified_quality_phred 20 \
---html $WORKING_FOLDER/trimmed_reads_reports/${i}_clean.html \
---json $WORKING_FOLDER/trimmed_reads_reports/${i}_clean.json
+--html $WORKING_FOLDER/fastq_to_vcf/trimmed_reads_reports/${i}_clean.html \
+--json $WORKING_FOLDER/fastq_to_vcf/trimmed_reads_reports/${i}_clean.json
 
 # i = read 1
 # I = read 2
@@ -161,6 +161,6 @@ $fastp \
 
 # This part of the pipeline will notify the completion of run i. 
 
-echo ${i} " completed" >> $WORKING_FOLDER/logs/${PIPELINE}.completion.log
+echo ${i} " completed" >> $WORKING_FOLDER/fastq_to_vcf/logs/${PIPELINE}.completion.log
 
 echo "pipeline completed" $(date)

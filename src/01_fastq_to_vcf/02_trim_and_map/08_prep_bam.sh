@@ -48,7 +48,7 @@ PICARD=/netfiles/nunezlab/Shared_Resources/Software/picard/build/libs/picard.jar
 # Define important file locations
 
 # WORKING_FOLDER is the core folder where this pipeline is being run.
-WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed/fastq_to_bam
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed
 
 #--------------------------------------------------------------------------------
 
@@ -60,7 +60,7 @@ echo ${SLURM_ARRAY_TASK_ID}
 
 # Read guide files
 # This is a file with the name all the samples to be processed. One sample name per line with all the info.
-GUIDE_FILE=$WORKING_FOLDER/guide_files/Merge_bams.txt
+GUIDE_FILE=$WORKING_FOLDER/fastq_to_vcf/guide_files/Merge_bams.txt
 
 #Example: -- the headers are just for descriptive purposes. The actual file has no headers.
 ## Population      Merged_name 1      Merged_name 2 
@@ -81,13 +81,13 @@ echo ${i}
 # Generate Folders and files
 
 # Move to working directory
-cd $WORKING_FOLDER
+cd $WORKING_FOLDER/fastq_to_vcf
 
 # This part of the script will check and generate, if necessary, all of the output folders used in the script
 
 if [ -d "RGSM_final_bams" ]
 then echo "Working RGSM_final_bams folder exist"; echo "Let's move on."; date
-else echo "Working RGSM_final_bams folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/RGSM_final_bams; date
+else echo "Working RGSM_final_bams folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/fastq_to_vcf/RGSM_final_bams; date
 fi
 
 #--------------------------------------------------------------------------------
@@ -99,8 +99,8 @@ Group_platform="EKL2024"
 
 # Add read group information to the bam files
 java -jar $PICARD AddOrReplaceReadGroups \
-I=$WORKING_FOLDER/bams_merged/${i}.lanes_merged.bam \
-O=$WORKING_FOLDER/RGSM_final_bams/${i}.bam \
+I=$WORKING_FOLDER/fastq_to_vcf/bams_merged/${i}.lanes_merged.bam \
+O=$WORKING_FOLDER/fastq_to_vcf/RGSM_final_bams/${i}.bam \
 RGID=${Group_library}.${i} \
 RGLB=$Group_library \
 RGPL=$Library_platform \
@@ -110,7 +110,7 @@ RGSM=${i}
 #--------------------------------------------------------------------------------
 
 # Index bams with samtools
-samtools index $WORKING_FOLDER/RGSM_final_bams/${i}.bam
+samtools index $WORKING_FOLDER/fastq_to_vcf/RGSM_final_bams/${i}.bam
 
 #--------------------------------------------------------------------------------
 

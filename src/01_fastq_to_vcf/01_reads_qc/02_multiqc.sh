@@ -49,7 +49,7 @@ conda activate multiqc
 RAW_READS=/netfiles/pespenilab_share/Nucella/raw/Population_genomics/All_shortreads
 
 # WORKING_FOLDER is the core folder where this pipeline is being run.
-WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed/fastq_to_bam
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed
 
 # Name of pipeline
 PIPELINE=multiqc
@@ -61,12 +61,12 @@ PIPELINE=multiqc
 # This part of the script will check and generate, if necessary, all of the output folders used in the script
 
 # Change directory
-cd $WORKING_FOLDER/qc_reads
+cd $WORKING_FOLDER/fastq_to_vcf/qc_reads
 
 # Generating new folder 
 if [ -d "multiqc" ]
 then echo "Working multiqc folder exist"; echo "Let's move on"; date
-else echo "Working multiqc folder doesnt exist. Let's fix that"; mkdir $WORKING_FOLDER/qc_reads/multiqc; date
+else echo "Working multiqc folder doesnt exist. Let's fix that"; mkdir $WORKING_FOLDER/fastq_to_vcf/qc_reads/multiqc; date
 fi
 
 #--------------------------------------------------------------------------------
@@ -75,23 +75,23 @@ fi
 # First run multiqc on all of the reads. Subsequently run multiqc on each lane separately.
 
 # Move to working directory
-cd $WORKING_FOLDER/qc_reads
+cd $WORKING_FOLDER/fastq_to_vcf/qc_reads
 
 # Run multiqc on all of the reads
-multiqc $WORKING_FOLDER/qc_reads/fastqc \
+multiqc $WORKING_FOLDER/fastq_to_vcf/qc_reads/fastqc \
 -n multiqc_report_all.html \
 -o multiqc
 
 # Run multiqc on each lane individually
 
 # Run multiqc on L006 
-multiqc $WORKING_FOLDER/qc_reads/fastqc \
+multiqc $WORKING_FOLDER/fastq_to_vcf/qc_reads/fastqc \
 -n multiqc_report_L006.html \
 --ignore "*L008*" \
 -o multiqc
 
 # Run multiqc on L008
-multiqc $WORKING_FOLDER/qc_reads/fastqc \
+multiqc $WORKING_FOLDER/fastq_to_vcf/qc_reads/fastqc \
 -n multiqc_report_L008.html \
 --ignore "*L006*" \
 -o multiqc
