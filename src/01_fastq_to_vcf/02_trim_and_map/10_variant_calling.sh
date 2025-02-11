@@ -34,17 +34,16 @@
 
 #--------------------------------------------------------------------------------
 
-# This script will use freebayes (https://github.com/freebayes/freebayes?tab=readme-ov-file#Development) to call variants.
+# This script will use freebayes to call variants.
 
-# Note: 
-# The freebayes algorithm exploits a neutral model of allele diffusion to impute most-confident genotypings across the
-# entire population. In practice, the discriminant power of the method will improve if you run multiple samples simultaneously. 
-# In other words, if your study has multiple individuals, you should run freebayes against them at the same time.
-# (i.e., don't use an array, instead give it a bamlist)
+# Note:
+# Since the N. canaliculata genome consistent of many scaffolds, I chunked the genome into 50 scaffolds partitions to utilize an array structure.
+# For each slurm array ID, freebayes is running over the 50 scaffolds using a loop then the vcf files are combined together.  
 
 # Load modules 
 module load gcc/13.3.0-xp3epyt
 module load freebayes/1.3.6-r67va2b
+module load bcftools/1.19-iq5mwek
 
 #--------------------------------------------------------------------------------
 
@@ -79,7 +78,7 @@ GUIDE_FILE=$WORKING_FOLDER/fastq_to_vcf/guide_files/Scaffold_names_array.txt
 echo ${SLURM_ARRAY_TASK_ID}
 
 # Change directory 
-cd $WORKING_FOLDER
+cd $WORKING_FOLDER/fastq_to_vcf
 
 # Using the guide file, extract the scaffold names associated based on the Slurm array task ID for a given partition
 awk '$2=='${SLURM_ARRAY_TASK_ID}'' $GUIDE_FILE | awk '{print $1}' > genome.scaffold.names.${SLURM_ARRAY_TASK_ID}.txt
@@ -129,6 +128,11 @@ BAMLIST=$WORKING_FOLDER/fastq_to_vcf/guide_files/Nucella_pops_bam_names.list
 
 # Use freebayes to call variants
 
+# Note: 
+# The freebayes algorithm exploits a neutral model of allele diffusion to impute most-confident genotypings across the
+# entire population. In practice, the discriminant power of the method will improve if you run multiple samples simultaneously. 
+# In other words, if your study has multiple individuals, you should run freebayes against them at the same time via a bamlist. 
+
 # For the scaffolds in a given partition, generate a vcf file for each scaffold then cat them together. 
 
 # Cat file of scaffold names and start while loop
@@ -139,9 +143,6 @@ do echo ${SCAFFOLD}
 freebayes -f $REFERENCE -L $BAMLIST -r ${SCAFFOLD} -K -F 0.01 -C 1 -G 5 --limit-coverage 500 -n 4 -m 30 -q 20 | gzip -c > $WORKING_FOLDER/fastq_to_vcf/vcf_freebayes/partitions/genome.scaffold.names.${SLURM_ARRAY_TASK_ID}/Nucella.freebayes.${SCAFFOLD}.vcf.gz
 
 done 
-
-#freebayes-parallel <(fasta_generate_regions.py $REFERENCE_FOLDER/N.canaliculata_assembly.fasta.softmasked.fa.fai 100000) 20 \
-#-f $REFERENCE -L $BAMLIST -K -F 0.01 -C 1 -G 5 --limit-coverage 500 -n 4 -m 30 -q 20 | gzip -c > $WORKING_FOLDER/vcf_freebayes/Nucella.freebayes.vcf.gz
 
 # -K --pooled-continuous : Output all alleles which pass input filters, regardles of genotyping outcome or model.
 ## Least expensive option in time/memory because if we use pool-discrete it is necessary to specify a haploid pool size and it calculates the likelihoods for each possible configuration which can take a long time.
@@ -172,20 +173,16 @@ done
 
 #--------------------------------------------------------------------------------
 
-# Merge the vcf files from all of the scaffolds in a given partition
+# Combine the vcf files from all of the scaffolds in a given partition
 
-# Set directory
-DIR=$WORKING_FOLDER/fastq_to_vcf/vcf_freebayes/partitions/genome.scaffold.names.${SLURM_ARRAY_TASK_ID}
-
-for file in $(find ${DIR} -name "*.vcf.gz"); do
-cmd="cat ${file};"
-eval $cmd
-done > $WORKING_FOLDER/fastq_to_vcf/vcf_freebayes/partitions/genome.scaffold.names.${SLURM_ARRAY_TASK_ID}.vcf.gz
+bcftools concat \
+$WORKING_FOLDER/fastq_to_vcf/vcf_freebayes/partitions/genome.scaffold.names.${SLURM_ARRAY_TASK_ID}/*.vcf.gz \
+-Oz -o $WORKING_FOLDER/fastq_to_vcf/vcf_freebayes/partitions/genome.scaffold.names.${SLURM_ARRAY_TASK_ID}.vcf.gz
 
 #--------------------------------------------------------------------------------
 
 # Change directory
-cd $WORKING_FOLDER
+cd $WORKING_FOLDER/fastq_to_vcf
 
 # Housekeeping
 rm genome.scaffold.names.${SLURM_ARRAY_TASK_ID}.txt
@@ -195,24 +192,6 @@ rm -R $WORKING_FOLDER/fastq_to_vcf/vcf_freebayes/partitions/genome.scaffold.name
 
 date
 echo "done"
-
-#--------------------------------------------------------------------------------
-
-#When we parallelize the analysis of a region, there is no point in overlapping the chunks because it takes into account the environment beyond the limit
-#For example (in preliminary test):
-#gunzip -c list.bam.dedup.chr1:39999000-41000000.freebayes.vcf.gz |grep -v "^#" |awk '$2<=40000000' - |awk '{print $1,$2,$3,$4,$5,$6,$7}' -
-#....
-#chr1 39999961 . TCT ACA,TTT,ACT 1.34697e-06 .
-#chr1 39999967 . G A 7.44002e-09 .
-#chr1 39999976 . A G 70.586 .
-#chr1 39999979 . AAGAGTTTTTTTTTATAAT AAGAGGTTTTTTTTTATAAT,AAGAGTTTTTTTTTTATAAT,AAGAGGTTTTTTTTTTATAAT,AAGAGGTTTTTTTTATAAT 9817.08 .
-#chr1 39999999 . TTCCTCCATGTGGGC TTCCTACATCTGGGC,TTCCTCCATCTGGAT,TTCCTCCATCTGGGC 6465.96 .
-
-#gunzip -c list.bam.dedup.chr1:38999000-40000000.freebayes.vcf.gz |tail -3 |awk '{print $1,$2,$4,$5,$6,length($4),length($5)}' -
-#chr1 39999976 A G 70.586 1 1
-#chr1 39999979 AAGAGTTTTTTTTTATAAT AAGAGGTTTTTTTTTATAAT,AAGAGTTTTTTTTTTATAAT,AAGAGGTTTTTTTTTTATAAT,AAGAGGTTTTTTTTATAAT 9816.32 19 83
-#chr1 39999999 TTCCTCCATGTGGGC TTCCTACATCTGGGC,TTCCTCCATCTGGAT,TTCCTCCATCTGGGC 6464.2 15 47
-
 
 #--------------------------------------------------------------------------------
 
