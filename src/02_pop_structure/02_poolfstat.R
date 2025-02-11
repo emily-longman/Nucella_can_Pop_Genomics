@@ -26,14 +26,108 @@ setwd(data_path_from_root)
 # ================================================================================== #
 
 # Load packages
-install.packages(c('poolfstat'))
-require(poolfstat)
+install.packages(c('poolfstat', 'ggplot2', 'RColorBrewer'))
+library(poolfstat)
+library(ggplot2)
+library(RColorBrewer)
 
 # ================================================================================== #
 
-# Create a pooldata object for Pool-Seq read count data (poolsize = haploid sizes of each pool, # of pools )
-# Note: 20 individuals per pool. N. canaliculata is a diploid species. So haploid size = 40 for most pools
-pooldata <-vcf2pooldata(vcf.file="fastq_to_vcf/vcf_freebayes/N_can_pops.vcf",poolsizes=rep(40,19))
-pooldata <-vcf2pooldata(vcf.file="fastq_to_vcf/vcf_clean/N_can_pops_output_snps-only.vcf.recode.vcf",poolsizes=rep(40,19))
+# Read in population names
+pops <- read.table("pop_structure/genotype_table/Nucella_pops.list", header=F)
 
-sim6p.readcount30X <-vcf2pooldata(vcf.file="sim6p.poolseq30X.vcf.gz",poolsizes=rep(50,6))
+# ================================================================================== #
+
+# Create a pooldata object for Pool-Seq read count data (poolsize = haploid sizes of each pool, # of pools)
+# Note: 20 individuals per pool. N. canaliculata is a diploid species. So haploid size = 40 for most pools
+
+pooldata <-vcf2pooldata(vcf.file="fastq_to_vcf/genome.scaffold.names.1.vcf.gz" ,poolsizes=rep(40,19), poolnames=pops$V1, 
+min.cov.per.pool = 10, min.rc = 1, max.cov.per.pool = 200, min.maf = 0.01, nlines.per.readblock = 1e+06)
+
+# min.cov.per.pool = the minimum allowed read count per pool for SNP to be called
+# min.rc =  the minimum # reads that an allele needs to have (across all pools) to be called 
+# max.cov.per.pool = the maximum read count per pool for SNP to be called 
+# min.maf = the minimum allele frequency (over all pools) for a SNP to be called (note this is obtained from dividing the read counts for the minor allele over the total read coverage) 
+# nlines.per.readblock = number of lines in sync file to be read simultaneously 
+
+# ================================================================================== #
+
+# Estimate genome wide Fst 
+
+# Use computeFST function
+pooldata.fst <- computeFST(pooldata,verbose=FALSE)
+pooldata.fst$Fst 
+
+# Block-Jackknife estimation of Fst standard error and confidence intervals
+pooldata.fst.bjack <- computeFST(pooldata, nsnp.per.bjack.block = 1000, verbose=FALSE)
+pooldata.fst.bjack$Fst
+
+# Compute multi-locus Fst over sliding window of SNPs
+pooldata.fst.sliding.window <- computeFST(pooldata, sliding.window.size=100)
+
+# Plot sliding window 
+pdf("fst.sliding.window.pdf", width = 10, height = 10)
+plot(pooldata.fst.sliding.window$sliding.windows.fvalues$CumMidPos/1e6, 
+pooldata.fst.sliding.window$sliding.windows.fvalues$MultiLocusFst,
+xlab="Cumulated Position (in Mb)", ylab="Muli-locus Fst",pch=16)
+abline(h=pooldata.fst.sliding.window$Fst,lty=2) # Dashed line indicates the estimated overall genome-wide Fst
+dev.off()
+
+# ================================================================================== #
+
+# Estimate pairwise-population Fst
+
+# Use compute.pairwiseFST function
+pooldata.pairwisefst <- compute.pairwiseFST(pooldata, verbose=FALSE)
+
+# Graph heatmap
+pdf("heatmap.pdf", width = 10, height = 10)
+heatmap(pooldata.pairwisefst)
+dev.off()
+
+# Block-Jackknife estimation of pairwise Fst standard error and confidence intervals
+pooldata.pairwisefst.bjack <- compute.pairwiseFST(pooldata, nsnp.per.bjack.block = 1000, verbose=FALSE)
+
+# Estimated pairwise Fst are stored in the slot values: 5 first estimated pairwise
+head(pooldata.pairwisefst.bjack@values)
+
+# Graph estimated pairwise-population FST with their 95% confidence intervals 
+plot(pooldata.pairwisefst.bjack)
+
+
+# ================================================================================== #
+
+# Principle Components Analysis with randomallele.pca
+
+#PCA on the read count data (the object)
+pooldata.pca = randomallele.pca(pooldata, col=1:19, pch=16, main="Read Count data")
+
+# Use colorspace to identify 19 colors
+colors <- hclplot(diverging_hcl(19, h = c(260, 0), c = 80, l = c(35, 95), power = 1))
+# Reorder colors so match sites N to S
+colors.reorder <- colors[c(4, 11, 5, 1, 10, 17, 8, 18, 16, 12, 13, 6, 15, 14, 3, 2, 7, 19, 9), ]
+
+# Get initial 3 colors from RdBu pallete
+cols <- brewer.pal(3, "RdBu")
+# Interpolate across those colors 
+pal <- colorRampPalette(cols)
+colors <- pal(19)
+# Reorder colors so match sites N to S
+colors.reorder <- colors[c(4, 11, 5, 1, 10, 17, 8, 18, 16, 12, 13, 6, 15, 14, 3, 2, 7, 19, 9)]
+
+# Plotting PC1 and PC2
+pdf("pca.pdf", width = 10, height = 10)
+pca <- plot(pooldata.pca$pop.loadings[,1],pooldata.pca$pop.loadings[,2],
+xlab=paste0("PC",1," (",round(pooldata.pca$perc.var[1],2),"%)"),
+ylab=paste0("PC",2," (",round(pooldata.pca$perc.var[2],2),"%)"),
+col=colors.reorder, pch=16, cex = 3, main="Read Count data")
+text(pooldata.pca$pop.loadings[,1], pooldata.pca$pop.loadings[,2], pooldata@poolnames)
+abline(h=0,lty=2,col="grey") ; abline(v=0,lty=2,col="grey")
+dev.off()
+
+# ================================================================================== #
+
+# Convert to BayPass input file 
+pooldata2genobaypass(pooldata, writing.dir = "pop_structure", subsamplesize = -1)
+# Three output files = genobaypass (allele counts), poolsize (haploid size per pool), & snpdet (snp info matrix). 
+# Subsample size can be used to sample to a smaller number of SNPs. If the subsample size is <0, then all SNPs are included in the BayPass files.
