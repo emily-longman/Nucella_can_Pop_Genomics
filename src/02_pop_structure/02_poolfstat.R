@@ -5,14 +5,9 @@ rm(list=ls())
 
 # ================================================================================== #
 
-# Note: to run script move gwas output to results dir 
-
 # Set path as main Github repo
 install.packages(c('rprojroot'))
 library(rprojroot)
-
-# List all files and directories below the root
-dir(find_root(has_file("README.md")))
 
 # Set relative path of results directory from root
 dir(find_root_file("data", "processed",  criterion = has_file("README.md")))
@@ -102,18 +97,12 @@ plot(pooldata.pairwisefst.bjack)
 #PCA on the read count data (the object)
 pooldata.pca = randomallele.pca(pooldata, col=1:19, pch=16, main="Read Count data")
 
-# Use colorspace to identify 19 colors
-colors <- hclplot(diverging_hcl(19, h = c(260, 0), c = 80, l = c(35, 95), power = 1))
-# Reorder colors so match sites N to S
-colors.reorder <- colors[c(4, 11, 5, 1, 10, 17, 8, 18, 16, 12, 13, 6, 15, 14, 3, 2, 7, 19, 9), ]
 
-# Get initial 3 colors from RdBu pallete
-cols <- brewer.pal(3, "RdBu")
-# Interpolate across those colors 
-pal <- colorRampPalette(cols)
-colors <- pal(19)
-# Reorder colors so match sites N to S
-colors.reorder <- colors[c(4, 11, 5, 1, 10, 17, 8, 18, 16, 12, 13, 6, 15, 14, 3, 2, 7, 19, 9)]
+# Color palette 
+nb.cols <- 19
+mycolors <- rev(colorRampPalette(brewer.pal(11, "RdBu"))(nb.cols))
+colors.reorder <- mycolors[c(4, 11, 5, 1, 10, 17, 8, 18, 16, 12, 13, 6, 15, 14, 3, 2, 7, 19, 9)]
+
 
 # Plotting PC1 and PC2
 pdf("pca.pdf", width = 10, height = 10)
