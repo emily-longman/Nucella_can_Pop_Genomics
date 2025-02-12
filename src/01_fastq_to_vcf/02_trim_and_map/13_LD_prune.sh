@@ -60,18 +60,18 @@ fi
 #--------------------------------------------------------------------------------
 
 # Create plink files from VCF 
-plink --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.vcf \
+$plink --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.vcf \
 --allow-extra-chr --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.recode.plink
 
-plink --bfile $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.recode.plink \
+$plink --bfile $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.recode.plink \
 --allow-extra-chr --recode --tab --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.recode.plink
 
 # Calculate r2 between all SNPs in dataset
-plink --file $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.recode.plink \
+$plink --file $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.recode.plink \
 --allow-extra-chr --r2 --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.recode.plink_r2 --threads 6
 
 # Make a list of SNPs with a r2 less than 0.8
-plink --file $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.recode.plink \
+$plink --file $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.recode.plink \
 --set-missing-var-ids @:# --allow-extra-chr --indep-pairwise 100 10 0.8 --r2 \
 --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LDN.canaliculata_pops_filter.recode.plink_indep_pairwise_100_10_0.8 --threads 6
 
@@ -82,7 +82,7 @@ plink --file $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filte
 # and variants are greedily pruned from the window until no such pairs remain
 
 # Lastly, extract the pruned SNPs from the vcf file and create a new vcf that contains only SNPs not in LD
-plink --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.recode.vcf \
+$plink --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.recode.vcf \
 --set-missing-var-ids @:# --recode vcf --allow-extra-chr \
 --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.recode.plink.LDfiltered_0.8 \
 --extract $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.recode.plink_indep_pairwise_100_10_0.8.prune.in
