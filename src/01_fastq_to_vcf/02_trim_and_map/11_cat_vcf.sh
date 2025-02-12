@@ -5,7 +5,7 @@
 # Request cluster resources ----------------------------------------------------
 
 # Name this job
-#SBATCH --job-name=variant_calling_freebayes
+#SBATCH --job-name=variant_calling_freebayes_cat
 
 # Specify partition
 #SBATCH --partition=general
