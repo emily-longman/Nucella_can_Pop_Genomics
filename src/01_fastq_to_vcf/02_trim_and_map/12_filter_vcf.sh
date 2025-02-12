@@ -42,7 +42,7 @@ module load vcftools/0.1.16
 WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed
 
 # VCF is the path to the vcf file created in step 11 (note, must unzip file)
-VCF=$WORKING_FOLDER/fastq_to_vcf/vcf_freebayes/N_can_pops.vcf
+VCF=$WORKING_FOLDER/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf.gz
 
 #--------------------------------------------------------------------------------
 
@@ -61,8 +61,8 @@ fi
 #--------------------------------------------------------------------------------
 
 # Filter vcf
-vcftools --vcf $VCF --minQ 20 --recode --recode-INFO-all --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N_can_pops_output_snps-only.vcf
+vcftools --gzvcf $VCF --minQ 20 --maf 0.01 --recode --recode-INFO-all \
+--out $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_recode.vcf
 
 # --minQ: Includes only sites with Quality value above this threshold.
 # --recode --recode-INFO-all: These options can be used with the above recode options to define an INFO key name to keep in the output file. This option can be used multiple times to keep more of the INFO fields. The second option is used to keep all INFO values in the original file
-

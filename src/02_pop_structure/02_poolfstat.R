@@ -1,4 +1,4 @@
-# Generate PCA of all SNPs
+# Calculate Fst statistics and gnerate PCA of all SNPs
 
 # Clear memory
 rm(list=ls()) 
@@ -9,14 +9,11 @@ rm(list=ls())
 install.packages(c('rprojroot'))
 library(rprojroot)
 
-# Set relative path of results directory from root
-dir(find_root_file("data", "processed",  criterion = has_file("README.md")))
-data_path_from_root <- find_root_file("data", "processed", criterion = has_file("README.md"))
-# List files in this folder to make sure you're in the right spot.
-list.files(data_path_from_root)
-
+# List all files and directories below the root
+dir(find_root_file(criterion = has_file("README.md")))
+root_path <- find_root_file(criterion = has_file("README.md"))
 # Set working directory as path from root
-setwd(data_path_from_root)
+setwd(root_path)
 
 # ================================================================================== #
 
@@ -29,14 +26,14 @@ library(RColorBrewer)
 # ================================================================================== #
 
 # Read in population names
-pops <- read.table("pop_structure/genotype_table/Nucella_pops.list", header=F)
+pops <- read.table("data/processed/pop_structure/guide_files/Nucella_pops.list", header=F)
 
 # ================================================================================== #
 
 # Create a pooldata object for Pool-Seq read count data (poolsize = haploid sizes of each pool, # of pools)
 # Note: 20 individuals per pool. N. canaliculata is a diploid species. So haploid size = 40 for most pools
 
-pooldata <-vcf2pooldata(vcf.file="fastq_to_vcf/genome.scaffold.names.1.vcf.gz" ,poolsizes=rep(40,19), poolnames=pops$V1, 
+pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf.gz" ,poolsizes=rep(40,19), poolnames=pops$V1, 
 min.cov.per.pool = 10, min.rc = 1, max.cov.per.pool = 200, min.maf = 0.01, nlines.per.readblock = 1e+06)
 
 # min.cov.per.pool = the minimum allowed read count per pool for SNP to be called
@@ -61,7 +58,7 @@ pooldata.fst.bjack$Fst
 pooldata.fst.sliding.window <- computeFST(pooldata, sliding.window.size=100)
 
 # Plot sliding window 
-pdf("fst.sliding.window.pdf", width = 10, height = 10)
+pdf("output/figures/fst.sliding.window.pdf", width = 10, height = 10)
 plot(pooldata.fst.sliding.window$sliding.windows.fvalues$CumMidPos/1e6, 
 pooldata.fst.sliding.window$sliding.windows.fvalues$MultiLocusFst,
 xlab="Cumulated Position (in Mb)", ylab="Muli-locus Fst",pch=16)
@@ -76,7 +73,7 @@ dev.off()
 pooldata.pairwisefst <- compute.pairwiseFST(pooldata, verbose=FALSE)
 
 # Graph heatmap
-pdf("heatmap.pdf", width = 10, height = 10)
+pdf("output/figures/heatmap.pdf", width = 10, height = 10)
 heatmap(pooldata.pairwisefst)
 dev.off()
 
@@ -87,25 +84,24 @@ pooldata.pairwisefst.bjack <- compute.pairwiseFST(pooldata, nsnp.per.bjack.block
 head(pooldata.pairwisefst.bjack@values)
 
 # Graph estimated pairwise-population FST with their 95% confidence intervals 
+pdf("output/figures/pairwise_Fst.pdf", width = 10, height = 10)
 plot(pooldata.pairwisefst.bjack)
-
+dev.off()
 
 # ================================================================================== #
 
 # Principle Components Analysis with randomallele.pca
 
 #PCA on the read count data (the object)
-pooldata.pca = randomallele.pca(pooldata, col=1:19, pch=16, main="Read Count data")
-
+pooldata.pca = randomallele.pca(pooldata, col=1:19, pch=21, main="Read Count data")
 
 # Color palette 
 nb.cols <- 19
 mycolors <- rev(colorRampPalette(brewer.pal(11, "RdBu"))(nb.cols))
 colors.reorder <- mycolors[c(4, 11, 5, 1, 10, 17, 8, 18, 16, 12, 13, 6, 15, 14, 3, 2, 7, 19, 9)]
 
-
 # Plotting PC1 and PC2
-pdf("pca.pdf", width = 10, height = 10)
+pdf("output/figures/PCA_all_SNPs.pdf", width = 10, height = 10)
 pca <- plot(pooldata.pca$pop.loadings[,1],pooldata.pca$pop.loadings[,2],
 xlab=paste0("PC",1," (",round(pooldata.pca$perc.var[1],2),"%)"),
 ylab=paste0("PC",2," (",round(pooldata.pca$perc.var[2],2),"%)"),
@@ -113,10 +109,3 @@ col=colors.reorder, pch=16, cex = 3, main="Read Count data")
 text(pooldata.pca$pop.loadings[,1], pooldata.pca$pop.loadings[,2], pooldata@poolnames)
 abline(h=0,lty=2,col="grey") ; abline(v=0,lty=2,col="grey")
 dev.off()
-
-# ================================================================================== #
-
-# Convert to BayPass input file 
-pooldata2genobaypass(pooldata, writing.dir = "pop_structure", subsamplesize = -1)
-# Three output files = genobaypass (allele counts), poolsize (haploid size per pool), & snpdet (snp info matrix). 
-# Subsample size can be used to sample to a smaller number of SNPs. If the subsample size is <0, then all SNPs are included in the BayPass files.
