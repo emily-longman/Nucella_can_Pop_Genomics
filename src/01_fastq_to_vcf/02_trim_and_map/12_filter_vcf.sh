@@ -66,3 +66,13 @@ vcftools --gzvcf $VCF --minQ 20 --maf 0.01 --recode --recode-INFO-all \
 
 # --minQ: Includes only sites with Quality value above this threshold.
 # --recode --recode-INFO-all: These options can be used with the above recode options to define an INFO key name to keep in the output file. This option can be used multiple times to keep more of the INFO fields. The second option is used to keep all INFO values in the original file
+
+#--------------------------------------------------------------------------------
+
+# Check the quality of output vcf:
+# Generate a summary of the number of SNPs for each filter category
+vcftools --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_recode.vcf \
+--FILTER-summary --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_recode.vcf
+# Generate a file containing the depth per site summed across all individuals
+vcftools --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_recode.vcf \
+--depth --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_recode.vcf
