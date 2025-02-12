@@ -33,7 +33,8 @@ pops <- read.table("data/processed/pop_structure/guide_files/Nucella_pops.list",
 # Create a pooldata object for Pool-Seq read count data (poolsize = haploid sizes of each pool, # of pools)
 # Note: 20 individuals per pool. N. canaliculata is a diploid species. So haploid size = 40 for most pools
 
-pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf.gz" ,poolsizes=rep(40,19), poolnames=pops$V1, 
+pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.vcf", 
+poolsizes=rep(40,19), poolnames=pops$V1, 
 min.cov.per.pool = 10, min.rc = 1, max.cov.per.pool = 200, min.maf = 0.01, nlines.per.readblock = 1e+06)
 
 # min.cov.per.pool = the minimum allowed read count per pool for SNP to be called
