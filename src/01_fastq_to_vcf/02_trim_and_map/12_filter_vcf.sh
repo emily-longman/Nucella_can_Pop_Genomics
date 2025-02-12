@@ -62,7 +62,7 @@ fi
 
 # Filter vcf
 vcftools --gzvcf $VCF --minQ 30 --maf 0.01 --max-missing 0.5 --recode --recode-INFO-all \
---out $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.vcf
+--out $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter
 
 # --minQ: Includes only sites with Quality value above this threshold.
 # --maf: Include only sites with a minor allele frequency great than or equal to this value.
@@ -73,8 +73,8 @@ vcftools --gzvcf $VCF --minQ 30 --maf 0.01 --max-missing 0.5 --recode --recode-I
 
 # Check the quality of output vcf:
 # Generate a summary of the number of SNPs for each filter category
-vcftools --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean//N.canaliculata_pops_filter.vcf \
---FILTER-summary --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean//N.canaliculata_pops_filter.vcf
+vcftools --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.vcf \
+--FILTER-summary --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.vcf
 # Generate a file containing the depth per site summed across all individuals
-vcftools --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean//N.canaliculata_pops_filter.vcf \
---depth --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean//N.canaliculata_pops_filter.vcf
+vcftools --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.vcf \
+--depth --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.vcf
