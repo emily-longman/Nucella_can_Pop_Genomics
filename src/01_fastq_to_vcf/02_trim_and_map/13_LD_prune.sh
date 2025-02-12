@@ -59,6 +59,9 @@ fi
 
 #--------------------------------------------------------------------------------
 
+# Change directory 
+cd $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD
+
 # Create plink files from VCF 
 $plink --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.vcf \
 --allow-extra-chr --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.recode.plink
@@ -82,7 +85,7 @@ $plink --file $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filt
 # and variants are greedily pruned from the window until no such pairs remain
 
 # Lastly, extract the pruned SNPs from the vcf file and create a new vcf that contains only SNPs not in LD
-$plink --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.recode.vcf \
+$plink --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.vcf \
 --set-missing-var-ids @:# --recode vcf --allow-extra-chr \
 --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.recode.plink.LDfiltered_0.8 \
 --extract $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.recode.plink_indep_pairwise_100_10_0.8.prune.in
