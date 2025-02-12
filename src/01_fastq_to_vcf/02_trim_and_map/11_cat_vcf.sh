@@ -46,5 +46,5 @@ WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed
 # Combine together the vcf files from all of the partitions
 
 bcftools concat \
-$WORKING_FOLDER/fastq_to_vcf/vcf_freebayes/partitions/genome.scaffold.names.${SLURM_ARRAY_TASK_ID}.vcf.gz \
+$WORKING_FOLDER/fastq_to_vcf/vcf_freebayes/partitions/genome.scaffold.names.*.vcf.gz \
 -Oz -o $WORKING_FOLDER/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf.gz
