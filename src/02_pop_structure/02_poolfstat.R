@@ -99,7 +99,7 @@ dev.off()
 # Principle Components Analysis with randomallele.pca
 
 #PCA on the read count data (the object)
-pooldata.pca = randomallele.pca(pooldata, col=1:19, pch=21, main="Read Count data")
+pooldata.pca = randomallele.pca(pooldata, main="Read Count data")
 
 # Color palette 
 nb.cols <- 19
@@ -107,7 +107,7 @@ mycolors <- rev(colorRampPalette(brewer.pal(11, "RdBu"))(nb.cols))
 colors.reorder <- mycolors[c(4, 11, 5, 1, 10, 17, 8, 18, 16, 12, 13, 6, 15, 14, 3, 2, 7, 19, 9)]
 
 # Plotting PC1 and PC2
-pdf("output/figures/PCA_all_SNPs.pdf", width = 10, height = 10)
+pdf("output/figures/PCA_all_SNPs_PC1_PC2.pdf", width = 10, height = 10)
 pca <- plot(pooldata.pca$pop.loadings[,1],pooldata.pca$pop.loadings[,2],
 xlab=paste0("PC",1," (",round(pooldata.pca$perc.var[1],2),"%)"),
 ylab=paste0("PC",2," (",round(pooldata.pca$perc.var[2],2),"%)"),
@@ -115,3 +115,15 @@ col=colors.reorder, pch=16, cex = 3, main="Read Count data")
 text(pooldata.pca$pop.loadings[,1], pooldata.pca$pop.loadings[,2], pooldata@poolnames)
 abline(h=0,lty=2,col="grey") ; abline(v=0,lty=2,col="grey")
 dev.off()
+
+# Plotting PC1 and PC3
+pdf("output/figures/PCA_all_SNPs_PC1_PC3.pdf", width = 10, height = 10)
+pca <- plot(pooldata.pca$pop.loadings[,1],pooldata.pca$pop.loadings[,3],
+xlab=paste0("PC",1," (",round(pooldata.pca$perc.var[1],2),"%)"),
+ylab=paste0("PC",3," (",round(pooldata.pca$perc.var[3],2),"%)"),
+col=colors.reorder, pch=16, cex = 3, main="Read Count data")
+text(pooldata.pca$pop.loadings[,1], pooldata.pca$pop.loadings[,3], pooldata@poolnames)
+abline(h=0,lty=2,col="grey") ; abline(v=0,lty=2,col="grey")
+dev.off()
+
+# ================================================================================== #

@@ -74,9 +74,9 @@ $plink --file $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filt
 --allow-extra-chr --r2 --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.recode.plink_r2 --threads 6
 
 # Make a list of SNPs with a r2 less than 0.8
-$plink --file $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.recode.plink \
---set-missing-var-ids @:# --allow-extra-chr --indep-pairwise 100 10 0.8 --r2 \
---out $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LDN.canaliculata_pops_filter.recode.plink_indep_pairwise_100_10_0.8 --threads 6
+#$plink --file $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.recode.plink \
+#--allow-no-sex --allow-extra-chr --indep-pairwise 100 10 0.8 --r2 \
+#--out $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LDN.canaliculata_pops_filter.recode.plink_indep_pairwise_100_10_0.8 --threads 6
 
 # indep-pairwise requires 3 parameters:
 # 1) a window size in variant count of kilobase
@@ -85,7 +85,7 @@ $plink --file $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filt
 # and variants are greedily pruned from the window until no such pairs remain
 
 # Lastly, extract the pruned SNPs from the vcf file and create a new vcf that contains only SNPs not in LD
-$plink --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.vcf \
---set-missing-var-ids @:# --recode vcf --allow-extra-chr \
---out $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.recode.plink.LDfiltered_0.8 \
---extract $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.recode.plink_indep_pairwise_100_10_0.8.prune.in
+#$plink --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.vcf \
+#--recode vcf --allow-extra-chr \
+#--out $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.recode.plink.LDfiltered_0.8 \
+#--extract $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.recode.plink_indep_pairwise_100_10_0.8.prune.in
