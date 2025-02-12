@@ -43,9 +43,6 @@ plink=/gpfs1/home/e/l/elongman/software/plink_linux_x86_64_20241022/plink
 # WORKING_FOLDER is the core folder where this pipeline is being run.
 WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed
 
-# VCF is the path to the vcf file created in step 11 (note, must unzip file)
-VCF=$WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_snps-only.vcf
-
 #--------------------------------------------------------------------------------
 
 # Generate Folders and files
@@ -63,20 +60,20 @@ fi
 #--------------------------------------------------------------------------------
 
 # Create plink files from VCF 
-plink --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_snps-only.vcf \
---allow-extra-chr --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_snps-only.plink
+plink --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.vcf \
+--allow-extra-chr --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.plink
 
-plink --bfile $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_snps-only.plink \
---allow-extra-chr --recode --tab --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_snps-only.plink
+plink --bfile $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.plink \
+--allow-extra-chr --recode --tab --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.plink
 
 # Calculate r2 between all SNPs in dataset
-plink --file $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_snps-only.plink \
---allow-extra-chr --r2 --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_snps-only.plink_r2 --threads 6
+plink --file $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.plink \
+--allow-extra-chr --r2 --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.plink_r2 --threads 6
 
 # Make a list of SNPs with a r2 less than 0.8
-plink --file $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_snps-only.plink \
+plink --file $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.plink \
 --set-missing-var-ids @:# --allow-extra-chr --indep-pairwise 100 10 0.8 --r2 \
---out $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_snps-only.plink_indep_pairwise_100_10_0.8 --threads 6
+--out $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.plink_indep_pairwise_100_10_0.8 --threads 6
 
 # indep-pairwise requires 3 parameters:
 # 1) a window size in variant count of kilobase
@@ -85,7 +82,7 @@ plink --file $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_snps-
 # and variants are greedily pruned from the window until no such pairs remain
 
 # Lastly, extract the pruned SNPs from the vcf file and create a new vcf that contains only SNPs not in LD
-plink --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_snps-only.vcf \
+plink --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.vcf \
 --set-missing-var-ids @:# --recode vcf --allow-extra-chr \
---out $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_snps-only.plink.LDfiltered_0.8 \
---extract $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_snps-only.plink_indep_pairwise_100_10_0.8.prune.in
+--out $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.plink.LDfiltered_0.8 \
+--extract $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.plink_indep_pairwise_100_10_0.8.prune.in

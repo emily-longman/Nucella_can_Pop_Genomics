@@ -61,18 +61,20 @@ fi
 #--------------------------------------------------------------------------------
 
 # Filter vcf
-vcftools --gzvcf $VCF --minQ 20 --maf 0.01 --recode --recode-INFO-all \
---out $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_recode.vcf
+vcftools --gzvcf $VCF --minQ 30 --maf 0.01 --max-missing 0.5 --recode --recode-INFO-all \
+--out $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.vcf
 
 # --minQ: Includes only sites with Quality value above this threshold.
-# --recode --recode-INFO-all: These options can be used with the above recode options to define an INFO key name to keep in the output file. This option can be used multiple times to keep more of the INFO fields. The second option is used to keep all INFO values in the original file
+# --maf: Include only sites with a minor allele frequency great than or equal to this value.
+# --max-missing: Exclude sites on the basis of the proportion of missing data (defined btween 0 and 1)
+# --recode --recode-INFO-all: Write a new VCF file that keeps all the INFO flags from the old vcf file.
 
 #--------------------------------------------------------------------------------
 
 # Check the quality of output vcf:
 # Generate a summary of the number of SNPs for each filter category
-vcftools --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_recode.vcf \
---FILTER-summary --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_recode.vcf
+vcftools --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean//N.canaliculata_pops_filter.vcf \
+--FILTER-summary --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean//N.canaliculata_pops_filter.vcf
 # Generate a file containing the depth per site summed across all individuals
-vcftools --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_recode.vcf \
---depth --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_recode.vcf
+vcftools --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean//N.canaliculata_pops_filter.vcf \
+--depth --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean//N.canaliculata_pops_filter.vcf
