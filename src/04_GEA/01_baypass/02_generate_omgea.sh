@@ -48,7 +48,7 @@ WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed
 #--------------------------------------------------------------------------------
 
 # Change directory 
-cd $WORKING_FOLDER/GEA/baypass/omega_file
+cd $WORKING_FOLDER/GEA/baypass
 
 # Run baypass - this will generate the omega file which will be used in the subsequent scripts
 $baypass -npop 19 \
