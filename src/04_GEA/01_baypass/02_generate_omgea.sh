@@ -34,7 +34,8 @@
 # This script will perform the first step in running baypass. 
 
 # Load modules 
-module load gcc/10.5.0
+module load gcc/13.3.0-xp3epyt
+#module load netcdf-fortran/4.6.1 # Use to compile baypass
 baypass=/gpfs1/home/e/l/elongman/software/baypass_public/sources/g_baypass
 
 #--------------------------------------------------------------------------------
@@ -53,13 +54,13 @@ cd $WORKING_FOLDER/GEA/baypass/omega_file
 $baypass -npop 19 \
 -gfile $WORKING_FOLDER/GEA/baypass/genobaypass \
 -poolsizefile $WORKING_FOLDER/GEA/baypass/poolsize \
--d0yij 8 \
+-d0yij 4 \
 -outprefix NC_baypass \
 -npilot 100 -nthreads 5
 
 #-npop: number of pools
 #-gfile: gfile input
 #-poolsizefile: poolsize file
-#-d0yij = is something to do with the initial read counts and their distribution seeded into the model, and is specifically for Pool-seq data. I followed the tip in the manual that says to set it to 1/5th of the minimum pool size
+#-d0yij = Initial delta for the yij (for pool-seq mode). The value is eventually updated for each locus and pop during the pilot runs.  Recommended to set to 1/5th the minimum pool size
 #-outprefix = the header of the output files
 #-npilot = number of pilot runs
