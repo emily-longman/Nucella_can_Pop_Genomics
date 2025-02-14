@@ -50,6 +50,7 @@ min.cov.per.pool = 25, min.rc = 2, max.cov.per.pool = 100, min.maf = 0.05, nline
 pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf", 
 poolsizes=rep(40,19), poolnames=pops$V1, 
 min.cov.per.pool = 10, min.rc = 2, max.cov.per.pool = 1000, min.maf = 0.01, nlines.per.readblock = 1e+06)
+# Data consists of 11,217,240 SNPs for 19 Pools
 
 # Try more stringent filters
 pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf", 
