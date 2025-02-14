@@ -14,13 +14,13 @@
 #SBATCH --nodes=1 
 
 # Reserve walltime -- hh:mm:ss --30 hrs max
-#SBATCH --time=30:00:00 
+#SBATCH --time=2:00:00 
 
 # Request memory for the entire job -- you can request --mem OR --mem-per-cpu
-#SBATCH --mem=60G 
+#SBATCH --mem=40G 
 
 # Request CPU
-#SBATCH --cpus-per-task=6
+#SBATCH --cpus-per-task=3
 
 # Name output of this job using %x=job-name and %j=job-id
 #SBATCH --output=./slurmOutput/%x.%j.out # Standard output
@@ -72,12 +72,12 @@ $plink --bfile $WORKING_FOLDER/fastq_to_vcf/vcf_LD/N.canaliculata_pops.plink \
 
 # Calculate r2 between all SNPs in dataset
 $plink --file $WORKING_FOLDER/fastq_to_vcf/vcf_LD/N.canaliculata_pops.plink \
---allow-extra-chr --r2 --out $WORKING_FOLDER/fastq_to_vcf/vcf_LD/N.canaliculata_pops.plink_r2 --threads 6
+--allow-extra-chr --r2 --out $WORKING_FOLDER/fastq_to_vcf/vcf_LD/N.canaliculata_pops.plink_r2 --threads 3
 
 # Make a list of SNPs with a r2 less than 0.8
 $plink --file $WORKING_FOLDER/fastq_to_vcf/vcf_LD/N.canaliculata_pops.plink \
 --allow-no-sex --allow-extra-chr --indep-pairwise 100 10 0.8 --r2 \
---out $WORKING_FOLDER/fastq_to_vcf/vcf_LD/N.canaliculata_pops.plink_indep_pairwise_100_10_0.8 --threads 6
+--out $WORKING_FOLDER/fastq_to_vcf/vcf_LD/N.canaliculata_pops.plink_indep_pairwise_100_10_0.8 --threads 3
 
 # indep-pairwise requires 3 parameters:
 # 1) a window size in variant count of kilobase
