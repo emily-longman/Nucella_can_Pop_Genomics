@@ -37,33 +37,26 @@ pops <- read.table("data/processed/pop_structure/guide_files/Nucella_pops.list",
 pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf.gz", 
 poolsizes=rep(40,19), poolnames=pops$V1, 
 min.cov.per.pool = 15, min.rc = 2, max.cov.per.pool = 200, min.maf = 0.01, nlines.per.readblock = 1e+06)
-# Data consists of 9,107,881 SNPs for 19 Pools
 
-# Try more stringent filters
-pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf", 
-poolsizes=rep(40,19), poolnames=pops$V1, 
-min.cov.per.pool = 25, min.rc = 2, max.cov.per.pool = 100, min.maf = 0.05, nlines.per.readblock = 1e+06)
-# Data consists of 2,794,672 SNPs for 19 Pools
 
 #### 
 # Try more relaxed filters
-pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf", 
+pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf.gz", 
 poolsizes=rep(40,19), poolnames=pops$V1, 
 min.cov.per.pool = 10, min.rc = 2, max.cov.per.pool = 1000, min.maf = 0.01, nlines.per.readblock = 1e+06)
-# Data consists of 11,217,240 SNPs for 19 Pools
+# Data consists of 16,367,634 SNPs for 19 Pools
 
 # Try more stringent filters
-pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf", 
+pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf.gz", 
 poolsizes=rep(40,19), poolnames=pops$V1, 
 min.cov.per.pool = 30, min.rc = 2, max.cov.per.pool = 100, min.maf = 0.1, nlines.per.readblock = 1e+06)
 # Data consists of 1,450,746 SNPs for 19 Pools
 
 ###
-# LD pruned
+# LD pruned - can't seem to load (ERROR: No field containing allele depth (AD field) was detected in the vcf file)
 pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_LD/N.canaliculata_pops.plink.LDfiltered_0.8.vcf", 
 poolsizes=rep(40,19), poolnames=pops$V1, 
 min.cov.per.pool = 30, min.rc = 2, max.cov.per.pool = 100, min.maf = 0.1, nlines.per.readblock = 1e+06)
-
 
 # min.cov.per.pool = the minimum allowed read count per pool for SNP to be called
 # min.rc =  the minimum # reads that an allele needs to have (across all pools) to be called 
@@ -78,10 +71,14 @@ min.cov.per.pool = 30, min.rc = 2, max.cov.per.pool = 100, min.maf = 0.1, nlines
 # Use computeFST function
 pooldata.fst <- computeFST(pooldata,verbose=FALSE)
 pooldata.fst$Fst 
+# Relaxed: 0.5220703
+# Stringent: 
 
 # Block-Jackknife estimation of Fst standard error and confidence intervals
 pooldata.fst.bjack <- computeFST(pooldata, nsnp.per.bjack.block = 1000, verbose=FALSE)
 pooldata.fst.bjack$Fst
+#   Estimate  bjack mean  bjack s.e.     CI95inf     CI95sup 
+# Relaxed: 0.522070328 0.522996818 0.001081825 0.520876441 0.525117194
 
 # Compute multi-locus Fst over sliding window of SNPs
 pooldata.fst.sliding.window <- computeFST(pooldata, sliding.window.size=100)
