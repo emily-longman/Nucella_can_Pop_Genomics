@@ -50,7 +50,7 @@ min.cov.per.pool = 10, min.rc = 2, max.cov.per.pool = 1000, min.maf = 0.01, nlin
 pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf.gz", 
 poolsizes=rep(40,19), poolnames=pops$V1, 
 min.cov.per.pool = 30, min.rc = 2, max.cov.per.pool = 100, min.maf = 0.1, nlines.per.readblock = 1e+06)
-# Data consists of 1,450,746 SNPs for 19 Pools
+# Data consists of 2,146,060 SNPs for 19 Pools
 
 ###
 # LD pruned - can't seem to load (ERROR: No field containing allele depth (AD field) was detected in the vcf file)
@@ -72,13 +72,14 @@ min.cov.per.pool = 30, min.rc = 2, max.cov.per.pool = 100, min.maf = 0.1, nlines
 pooldata.fst <- computeFST(pooldata,verbose=FALSE)
 pooldata.fst$Fst 
 # Relaxed: 0.5220703
-# Stringent: 
+# Stringent: 0.6531224
 
 # Block-Jackknife estimation of Fst standard error and confidence intervals
 pooldata.fst.bjack <- computeFST(pooldata, nsnp.per.bjack.block = 1000, verbose=FALSE)
 pooldata.fst.bjack$Fst
 #   Estimate  bjack mean  bjack s.e.     CI95inf     CI95sup 
 # Relaxed: 0.522070328 0.522996818 0.001081825 0.520876441 0.525117194
+# Stringent: 0.653122377 0.655395472 0.005934665 0.643763529 0.667027416 
 
 # Compute multi-locus Fst over sliding window of SNPs
 pooldata.fst.sliding.window <- computeFST(pooldata, sliding.window.size=100)
@@ -88,7 +89,7 @@ pdf("output/figures/pop_structure/fst.sliding.window.pdf", width = 10, height = 
 plot(pooldata.fst.sliding.window$sliding.windows.fvalues$CumMidPos/1e6, 
 pooldata.fst.sliding.window$sliding.windows.fvalues$MultiLocusFst,
 xlab="Cumulated Position (in Mb)", ylab="Multi-locus Fst", pch=16)
-#abline(h=pooldata.fst.sliding.window$Fst,lty=2) # Dashed line indicates the estimated overall genome-wide Fst
+abline(h=pooldata.fst.sliding.window$Fst,lty=2, col="red") # Dashed line indicates the estimated overall genome-wide Fst
 dev.off()
 
 # ================================================================================== #
@@ -133,16 +134,6 @@ xlab=paste0("PC",1," (",round(pooldata.pca$perc.var[1],2),"%)"),
 ylab=paste0("PC",2," (",round(pooldata.pca$perc.var[2],2),"%)"),
 col="black", bg=colors.reorder, pch=21, cex = 3, main="Read Count data")
 text(pooldata.pca$pop.loadings[,1], pooldata.pca$pop.loadings[,2], pooldata@poolnames)
-abline(h=0,lty=2,col="grey") ; abline(v=0,lty=2,col="grey")
-dev.off()
-
-# Plotting PC1 and PC3
-pdf("output/figures/pop_structure/PCA_all_SNPs_PC1_PC3.pdf", width = 10, height = 10)
-pca <- plot(pooldata.pca$pop.loadings[,1],pooldata.pca$pop.loadings[,3],
-xlab=paste0("PC",1," (",round(pooldata.pca$perc.var[1],2),"%)"),
-ylab=paste0("PC",3," (",round(pooldata.pca$perc.var[3],2),"%)"),
-col="black", bg=colors.reorder,pch=21, cex = 3, main="Read Count data")
-text(pooldata.pca$pop.loadings[,1], pooldata.pca$pop.loadings[,3], pooldata@poolnames)
 abline(h=0,lty=2,col="grey") ; abline(v=0,lty=2,col="grey")
 dev.off()
 

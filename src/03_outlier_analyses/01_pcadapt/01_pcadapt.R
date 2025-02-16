@@ -27,6 +27,8 @@ library(qvalue)
 
 # ================================================================================== #
 
+# Problems either loading the data if in poolfstat pooldata object or can load the full vcf but then can't run pcadapt
+
 # Read in VCF data 
 path_to_file <- "data/processed/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf"
 pooldata <- read.pcadapt(path_to_file, type = "pool")

@@ -41,9 +41,6 @@ module load vcftools/0.1.16
 # WORKING_FOLDER is the core folder where this pipeline is being run.
 WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed
 
-# VCF is the path to the vcf file created in step 11 (note, must unzip file)
-VCF=$WORKING_FOLDER/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf.gz
-
 #--------------------------------------------------------------------------------
 
 # Generate Folders and files
@@ -61,17 +58,27 @@ fi
 #--------------------------------------------------------------------------------
 
 # Filter vcf
-vcftools --gzvcf $VCF --minQ 30 --maf 0.01 --max-missing 0.5 --recode --recode-INFO-all \
+
+# Filter based on missing data (keep only variants in 75% of pops)
+vcftools --gzvcf $WORKING_FOLDER/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf.gz \
+--minQ 30 --maf 0.01 --max-missing 0.75 --recode --recode-INFO-all \
 --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter
 
 # --minQ: Includes only sites with Quality value above this threshold.
 # --maf: Include only sites with a minor allele frequency great than or equal to this value.
-# --max-missing: Exclude sites on the basis of the proportion of missing data (defined btween 0 and 1)
+# --max-missing: Exclude sites on the basis of the proportion of missing data (defined btween 0 and 1). 0 allows sites that are completely missing and 1 indicates no missing data.
 # --recode --recode-INFO-all: Write a new VCF file that keeps all the INFO flags from the old vcf file.
+
+# Filter for pops that have a certain # of SNPs missing
+#vcftools --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.vcf \
+#--max-missing 0.5 --recode --recode-INFO-all \
+#--out $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter
+
 
 #--------------------------------------------------------------------------------
 
-# Check the quality of output vcf:
+# Check the quality of output vcf
+
 # Generate a summary of the number of SNPs for each filter category
 vcftools --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.vcf \
 --FILTER-summary --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.vcf
