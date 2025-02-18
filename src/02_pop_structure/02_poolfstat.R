@@ -26,7 +26,7 @@ library(RColorBrewer)
 # ================================================================================== #
 
 # Read in population names
-pops <- read.table("data/processed/pop_structure/guide_files/Nucella_pops.list", header=F)
+pops <- read.table("data/processed/fastq_to_vcf/guide_files/N.canaliculata_pops.vcf_pop_names.txt", header=F)
 
 # ================================================================================== #
 
@@ -37,7 +37,7 @@ pops <- read.table("data/processed/pop_structure/guide_files/Nucella_pops.list",
 pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf.gz", 
 poolsizes=rep(40,19), poolnames=pops$V1, 
 min.cov.per.pool = 15, min.rc = 2, max.cov.per.pool = 200, min.maf = 0.01, nlines.per.readblock = 1e+06)
-
+# Data consists of 16,398,082 SNPs for 19 Pools
 
 #### 
 # Try more relaxed filters
@@ -76,9 +76,9 @@ min.cov.per.pool = 30, min.rc = 2, max.cov.per.pool = 100, min.maf = 0.1, nlines
 # variant calling with bcftools 
 
 # Read in data and filter
-pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_bcftools/N.canaliculata_bcftools_pops.vcf.gz", 
-poolsizes=rep(40,19), poolnames=pops$V1, 
-min.cov.per.pool = 25, min.rc = 2, max.cov.per.pool = 200, min.maf = 0.01, nlines.per.readblock = 1e+06)
+#pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_bcftools/N.canaliculata_bcftools_pops.vcf.gz", 
+#poolsizes=rep(40,19), poolnames=pops$V1, 
+#min.cov.per.pool = 25, min.rc = 2, max.cov.per.pool = 200, min.maf = 0.01, nlines.per.readblock = 1e+06)
 # Data consists of 5,950,444 SNPs for 19 Pools
 
 # ================================================================================== #
@@ -88,6 +88,7 @@ min.cov.per.pool = 25, min.rc = 2, max.cov.per.pool = 200, min.maf = 0.01, nline
 # Use computeFST function
 pooldata.fst <- computeFST(pooldata,verbose=FALSE)
 pooldata.fst$Fst 
+# 0.5330188
 # Relaxed: 0.5202263
 # Stringent: 0.6536584
 # bcftools: 0.5337656
@@ -96,6 +97,7 @@ pooldata.fst$Fst
 pooldata.fst.bjack <- computeFST(pooldata, nsnp.per.bjack.block = 1000, verbose=FALSE)
 pooldata.fst.bjack$Fst
 #   Estimate  bjack mean  bjack s.e.     CI95inf     CI95sup 
+# 0.533018756 0.533764540 0.001051527 0.531703547 0.535825534 
 # Relaxed: 0.5202263006 0.5206428107 0.0009732689 0.5187352036 0.5225504178
 # Stringent: 0.65365838 0.65880523 0.00487404 0.64925211 0.66835834 
 # bcftools: 0.533765580 0.538158861 0.001886336 0.534461643 0.541856080 
@@ -144,7 +146,9 @@ pooldata.pca = randomallele.pca(pooldata, main="Read Count data")
 # Color palette 
 nb.cols <- 19
 mycolors <- rev(colorRampPalette(brewer.pal(11, "RdBu"))(nb.cols))
-colors.reorder <- mycolors[c(4, 11, 5, 1, 10, 17, 8, 18, 16, 12, 13, 6, 15, 14, 3, 2, 7, 19, 9)]
+colors.reorder <- mycolors[c(19,2,3,4,11,5,1,10,17,14,6,8,7,13,9,18,16,12,15)]
+
+#colors.reorder.alphabetical <- mycolors[c(4, 11, 5, 1, 10, 17, 8, 18, 16, 12, 13, 6, 15, 14, 3, 2, 7, 19, 9)]
 
 # Plotting PC1 and PC2
 pdf("output/figures/pop_structure/PCA_all_SNPs_PC1_PC2.pdf", width = 10, height = 10)
