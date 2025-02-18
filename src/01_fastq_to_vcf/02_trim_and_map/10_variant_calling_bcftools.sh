@@ -17,13 +17,13 @@
 #SBATCH --time=30:00:00 
 
 # Request memory for the entire job -- you can request --mem OR --mem-per-cpu
-#SBATCH --mem=60G 
+#SBATCH --mem=8G 
 
 # Request CPU
-#SBATCH --cpus-per-task=4
+#SBATCH --cpus-per-task=2
 
 # Submit job array
-#SBATCH --array=1-631%25
+#SBATCH --array=1-631%40
 
 # Name output of this job using %x=job-name and %j=job-id
 #SBATCH --output=./slurmOutput/%x.%A_%a.out # Standard output
