@@ -44,13 +44,13 @@ min.cov.per.pool = 15, min.rc = 2, max.cov.per.pool = 200, min.maf = 0.01, nline
 pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf.gz", 
 poolsizes=rep(40,19), poolnames=pops$V1, 
 min.cov.per.pool = 10, min.rc = 2, max.cov.per.pool = 1000, min.maf = 0.01, nlines.per.readblock = 1e+06)
-# Data consists of 16,367,634 SNPs for 19 Pools
+# Data consists of 16,367,634 SNPs for 19 Pools (not full SNP list)
 
 # Try more stringent filters
 pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf.gz", 
 poolsizes=rep(40,19), poolnames=pops$V1, 
 min.cov.per.pool = 30, min.rc = 2, max.cov.per.pool = 100, min.maf = 0.1, nlines.per.readblock = 1e+06)
-# Data consists of 2,663,652 SNPs for 19 Pools
+# Data consists of 2671913 SNPs for 19 Pools
 
 #######
 # Filtered 
@@ -78,15 +78,15 @@ min.cov.per.pool = 30, min.rc = 2, max.cov.per.pool = 100, min.maf = 0.1, nlines
 # Use computeFST function
 pooldata.fst <- computeFST(pooldata,verbose=FALSE)
 pooldata.fst$Fst 
-# Relaxed: 0.5220703
-# Stringent: 0.6537896
+# Relaxed: 0.5220703 (not full SNP list)
+# Stringent: 0.6536584
 
 # Block-Jackknife estimation of Fst standard error and confidence intervals
 pooldata.fst.bjack <- computeFST(pooldata, nsnp.per.bjack.block = 1000, verbose=FALSE)
 pooldata.fst.bjack$Fst
 #   Estimate  bjack mean  bjack s.e.     CI95inf     CI95sup 
 # Relaxed: 0.522070328 0.522996818 0.001081825 0.520876441 0.525117194
-# Stringent: 0.653122377 0.655395472 0.005934665 0.643763529 0.667027416 
+# Stringent: 0.65365838 0.65880523 0.00487404 0.64925211 0.66835834 
 
 # Compute multi-locus Fst over sliding window of SNPs
 pooldata.fst.sliding.window <- computeFST(pooldata, sliding.window.size=100)
