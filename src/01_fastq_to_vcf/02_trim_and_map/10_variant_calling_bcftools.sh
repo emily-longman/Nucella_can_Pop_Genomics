@@ -127,10 +127,11 @@ BAMLIST=$WORKING_FOLDER/fastq_to_vcf/guide_files/Nucella_pops_bam_names_bcftools
 #--------------------------------------------------------------------------------
 
 # Use bcftools to call variants
+# For the scaffolds in a given partition, generate a vcf file for each scaffold then cat them together. 
+
+# The 'mpileup' part generates genotype likelihoods at each genomic position with coverage. The 'call' part makes the actual calls for the variant sites. 
 
 cd $WORKING_FOLDER/fastq_to_vcf
-
-# For the scaffolds in a given partition, generate a vcf file for each scaffold then cat them together. 
 
 # Cat file of scaffold names and start while loop
 cat $WORKING_FOLDER/fastq_to_vcf/genome.scaffold.names.bcftools.${SLURM_ARRAY_TASK_ID}.txt | \
@@ -144,7 +145,7 @@ done
 ### bcftools mpileup parameters:
 # -d --max-depth: At a position, read maximally INT reads per input file
 # -C --adjust-MQ: Coefficient for downgrading mapping quality for reads containing excessive mismatches.
-# -O --output-type b|u|z|v: output uncompressed bcf (u)
+# -O --output-type b|u|z|v: output uncompressed bcf (u) - need this format for "bcftools call"
 # -f --fasta-ref: The faidx-indexed reference file in FASTA format.
 # -b --bam-list: list of input alignment files, one file per line.
 # -r --regions: Only generate mpileup output in given regions. Requires the alignment files to be indexed.
