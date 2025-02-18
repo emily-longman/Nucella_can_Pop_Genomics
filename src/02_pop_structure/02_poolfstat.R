@@ -44,13 +44,13 @@ min.cov.per.pool = 15, min.rc = 2, max.cov.per.pool = 200, min.maf = 0.01, nline
 pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf.gz", 
 poolsizes=rep(40,19), poolnames=pops$V1, 
 min.cov.per.pool = 10, min.rc = 2, max.cov.per.pool = 1000, min.maf = 0.01, nlines.per.readblock = 1e+06)
-# Data consists of 16,367,634 SNPs for 19 Pools (not full SNP list)
+# Data consists of 20,116,853 SNPs for 19 Pools
 
 # Try more stringent filters
 pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf.gz", 
 poolsizes=rep(40,19), poolnames=pops$V1, 
 min.cov.per.pool = 30, min.rc = 2, max.cov.per.pool = 100, min.maf = 0.1, nlines.per.readblock = 1e+06)
-# Data consists of 2671913 SNPs for 19 Pools
+# Data consists of 2,671,913 SNPs for 19 Pools
 
 #######
 # Filtered 
@@ -73,25 +73,37 @@ min.cov.per.pool = 30, min.rc = 2, max.cov.per.pool = 100, min.maf = 0.1, nlines
 
 # ================================================================================== #
 
+# variant calling with bcftools 
+
+# Read in data and filter
+pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_bcftools/N.canaliculata_bcftools_pops.vcf.gz", 
+poolsizes=rep(40,19), poolnames=pops$V1, 
+min.cov.per.pool = 25, min.rc = 2, max.cov.per.pool = 200, min.maf = 0.01, nlines.per.readblock = 1e+06)
+# Data consists of 5,950,444 SNPs for 19 Pools
+
+# ================================================================================== #
+
 # Estimate genome wide Fst 
 
 # Use computeFST function
 pooldata.fst <- computeFST(pooldata,verbose=FALSE)
 pooldata.fst$Fst 
-# Relaxed: 0.5220703 (not full SNP list)
+# Relaxed: 0.5202263
 # Stringent: 0.6536584
+# bcftools: 0.5337656
 
 # Block-Jackknife estimation of Fst standard error and confidence intervals
 pooldata.fst.bjack <- computeFST(pooldata, nsnp.per.bjack.block = 1000, verbose=FALSE)
 pooldata.fst.bjack$Fst
 #   Estimate  bjack mean  bjack s.e.     CI95inf     CI95sup 
-# Relaxed: 0.522070328 0.522996818 0.001081825 0.520876441 0.525117194
+# Relaxed: 0.5202263006 0.5206428107 0.0009732689 0.5187352036 0.5225504178
 # Stringent: 0.65365838 0.65880523 0.00487404 0.64925211 0.66835834 
+# bcftools: 0.533765580 0.538158861 0.001886336 0.534461643 0.541856080 
 
 # Compute multi-locus Fst over sliding window of SNPs
 pooldata.fst.sliding.window <- computeFST(pooldata, sliding.window.size=100)
 
-# Plot sliding window -- not working??
+# Plot sliding window
 pdf("output/figures/pop_structure/fst.sliding.window.pdf", width = 10, height = 10)
 plot(pooldata.fst.sliding.window$sliding.windows.fvalues$CumMidPos/1e6, 
 pooldata.fst.sliding.window$sliding.windows.fvalues$MultiLocusFst,
