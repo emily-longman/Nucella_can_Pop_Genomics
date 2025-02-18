@@ -50,7 +50,14 @@ min.cov.per.pool = 10, min.rc = 2, max.cov.per.pool = 1000, min.maf = 0.01, nlin
 pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf.gz", 
 poolsizes=rep(40,19), poolnames=pops$V1, 
 min.cov.per.pool = 30, min.rc = 2, max.cov.per.pool = 100, min.maf = 0.1, nlines.per.readblock = 1e+06)
-# Data consists of 2,146,060 SNPs for 19 Pools
+# Data consists of 2,663,652 SNPs for 19 Pools
+
+#######
+# Filtered 
+pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.vcf", 
+poolsizes=rep(40,19), poolnames=pops$V1, 
+min.cov.per.pool = 30, min.rc = 2, max.cov.per.pool = 100, min.maf = 0.1, nlines.per.readblock = 1e+06)
+# Data consists of 2,131,664 SNPs for 19 Pools (not complete vcf)
 
 ###
 # LD pruned - can't seem to load (ERROR: No field containing allele depth (AD field) was detected in the vcf file)
@@ -72,7 +79,7 @@ min.cov.per.pool = 30, min.rc = 2, max.cov.per.pool = 100, min.maf = 0.1, nlines
 pooldata.fst <- computeFST(pooldata,verbose=FALSE)
 pooldata.fst$Fst 
 # Relaxed: 0.5220703
-# Stringent: 0.6531224
+# Stringent: 0.6537896
 
 # Block-Jackknife estimation of Fst standard error and confidence intervals
 pooldata.fst.bjack <- computeFST(pooldata, nsnp.per.bjack.block = 1000, verbose=FALSE)
@@ -89,7 +96,7 @@ pdf("output/figures/pop_structure/fst.sliding.window.pdf", width = 10, height = 
 plot(pooldata.fst.sliding.window$sliding.windows.fvalues$CumMidPos/1e6, 
 pooldata.fst.sliding.window$sliding.windows.fvalues$MultiLocusFst,
 xlab="Cumulated Position (in Mb)", ylab="Multi-locus Fst", pch=16)
-abline(h=pooldata.fst.sliding.window$Fst,lty=2, col="red") # Dashed line indicates the estimated overall genome-wide Fst
+abline(h=pooldata.fst.sliding.window$Fst,lty=2, col="red") # Dashed red line indicates the estimated overall genome-wide Fst
 dev.off()
 
 # ================================================================================== #
