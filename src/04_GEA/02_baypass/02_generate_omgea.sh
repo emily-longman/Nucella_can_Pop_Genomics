@@ -5,7 +5,7 @@
 # Request cluster resources ----------------------------------------------------
 
 # Name this job
-#SBATCH --job-name=baypass_omega
+#SBATCH --job-name=baypass_omega_filt
 
 # Specify partition
 #SBATCH --partition=week
@@ -52,8 +52,8 @@ cd $WORKING_FOLDER/GEA/baypass
 
 # Run baypass - this will generate the omega file which will be used in the subsequent scripts
 $baypass -npop 19 \
--gfile $WORKING_FOLDER/GEA/baypass/genobaypass \
--poolsizefile $WORKING_FOLDER/GEA/baypass/poolsize \
+-gfile $WORKING_FOLDER/GEA/baypass_filt/genobaypass \
+-poolsizefile $WORKING_FOLDER/GEA/baypass_filt/poolsize \
 -d0yij 4 \
 -outprefix NC_baypass \
 -npilot 100 -nthreads 8
