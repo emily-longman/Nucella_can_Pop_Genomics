@@ -18,12 +18,11 @@ setwd(root_path)
 # ================================================================================== #
 
 # Load packages
-install.packages(c('poolfstat', 'ggplot2', 'RColorBrewer', 'WriteXLS', 'vcfR'))
+install.packages(c('poolfstat', 'ggplot2', 'RColorBrewer', 'WriteXLS'))
 library(poolfstat)
 library(ggplot2)
 library(RColorBrewer)
 library(WriteXLS)
-library(vcfR)
 
 # ================================================================================== #
 
@@ -65,7 +64,7 @@ min.cov.per.pool = 20, min.rc = 2, max.cov.per.pool = 200, min.maf = 0.01, nline
 
 # Estimate genome wide Fst 
 
-# Use computeFST function
+# Use computeFST function (default to using the Anova method)
 pooldata.fst <- computeFST(pooldata,verbose=FALSE)
 pooldata.fst$Fst 
 # 0.5381296
@@ -177,5 +176,28 @@ dev.off()
 
 # ================================================================================== #
 
-# Export pooldata object as cleaned vcf
-write.vcf(vcf2pooldata(pooldata), file = "data/processed/pop_structure/N.canaliculata_poolfstat_filt.vcf") 
+# Compute parameters Fs, F3, F4, D, heterozygosities
+
+# Estimation of f-statistics on Pool-Seq data (with computation of Dstat)
+pooldata.fstats <- compute.fstats(pooldata, nsnp.per.bjack.block = 1000, computeDstat = TRUE)
+
+# Look at stats:
+head(pooldata.fstats@f2.values, 3) # 3 first f2
+head(pooldata.fstats@fst.values, 3) # 3 first Fst
+head(pooldata.fstats@divergence, 3) # 3 first pairwise genetic divergence
+head(pooldata.fstats@f3star.values, 3) # 3 first f3*
+head(pooldata.fstats@f4values, 3) # 3 first f4 
+head(pooldata.fstats@Dstat.values, 3) # 3 first D 
+
+# Plot heterozygosities
+pdf("output/figures/pop_structure/Heterozygosities_filt.pdf", width = 6, height = 6)
+plot(pooldata.fstats, stat.name="heterozygosities", main="Heterozygosities")
+dev.off()
+
+# ================================================================================== #
+
+# Save heterozygosities data 
+pooldata.fstats.het.matrix <- pooldata.fstats@heterozygosities
+pooldata.fstats.het.matrix <- as.data.frame(pooldata.fstats.het.matrix)
+WriteXLS(pooldata.fstats.het.matrix, "data/processed/pop_structure/Fst/pooldata.fstats.het_filt.xls")
+
