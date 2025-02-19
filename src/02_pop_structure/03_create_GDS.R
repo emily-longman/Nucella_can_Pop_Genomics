@@ -1,4 +1,4 @@
-# Use poolfstat to convert VCF to Baypass input file
+# Create GDS object
 
 # Clear memory
 rm(list=ls()) 
@@ -18,13 +18,14 @@ setwd(root_path)
 # ================================================================================== #
 
 # Load packages
-install.packages(c('poolfstat'))
+install.packages(c('poolfstat', 'SeqArray'))
 library(poolfstat)
+library(SeqArray)
 
 # ================================================================================== #
 
 # Read in population names
-pops <- read.table("data/processed/pop_structure/guide_files/Nucella_pops.list", header=F)
+pops <- read.table("data/processed/fastq_to_vcf/guide_files/N.canaliculata_pops.vcf_pop_names.txt", header=F)
 
 # ================================================================================== #
 
@@ -45,7 +46,11 @@ min.cov.per.pool = 20, min.rc = 2, max.cov.per.pool = 200, min.maf = 0.01, nline
 
 # ================================================================================== #
 
-# Convert to BayPass input file 
-pooldata2genobaypass(pooldata, writing.dir = "data/processed/GEA/baypass_filt", subsamplesize = -1)
-# Three output files = genobaypass (allele counts), poolsize (haploid size per pool), & snpdet (snp info matrix). 
-# Subsample size can be used to sample to a smaller number of SNPs. If the subsample size is <0, then all SNPs are included in the BayPass files.
+# Filtered vcf (i.e., the vcf output from 12_filter_vcf.sh)
+pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.vcf", 
+poolsizes=rep(40,19), poolnames=pops$V1, 
+min.cov.per.pool = 20, min.rc = 2, max.cov.per.pool = 200, min.maf = 0.01, nlines.per.readblock = 1e+06)
+# Data consists of 10,109,226 SNPs for 19 Pools
+
+# ================================================================================== #
+

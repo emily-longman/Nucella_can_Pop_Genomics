@@ -18,10 +18,12 @@ setwd(root_path)
 # ================================================================================== #
 
 # Load packages
-install.packages(c('poolfstat', 'ggplot2', 'RColorBrewer'))
+install.packages(c('poolfstat', 'ggplot2', 'RColorBrewer', 'WriteXLS', 'vcfR'))
 library(poolfstat)
 library(ggplot2)
 library(RColorBrewer)
+library(WriteXLS)
+library(vcfR)
 
 # ================================================================================== #
 
@@ -37,7 +39,7 @@ pops <- read.table("data/processed/fastq_to_vcf/guide_files/N.canaliculata_pops.
 pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf.gz", 
 poolsizes=rep(40,19), poolnames=pops$V1, 
 min.cov.per.pool = 20, min.rc = 2, max.cov.per.pool = 200, min.maf = 0.01, nlines.per.readblock = 1e+06)
-# Data consists of 16,398,082 SNPs for 19 Pools
+# Data consists of 13,350,988 SNPs for 19 Pools
 
 # min.cov.per.pool = the minimum allowed read count per pool for SNP to be called
 # min.rc =  the minimum # reads that an allele needs to have (across all pools) to be called 
@@ -45,16 +47,9 @@ min.cov.per.pool = 20, min.rc = 2, max.cov.per.pool = 200, min.maf = 0.01, nline
 # min.maf = the minimum allele frequency (over all pools) for a SNP to be called (note this is obtained from dividing the read counts for the minor allele over the total read coverage) 
 # nlines.per.readblock = number of lines in sync file to be read simultaneously 
 
-#### 
+# ================================================================================== #
 
-# Try more stringent filters
-#pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf.gz", 
-#poolsizes=rep(40,19), poolnames=pops$V1, 
-#min.cov.per.pool = 30, min.rc = 2, max.cov.per.pool = 100, min.maf = 0.1, nlines.per.readblock = 1e+06)
-# Data consists of 2,671,913 SNPs for 19 Pools
-
-#######
-# Filtered 
+# Filtered vcf (i.e., the vcf output from 12_filter_vcf.sh)
 pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.vcf", 
 poolsizes=rep(40,19), poolnames=pops$V1, 
 min.cov.per.pool = 20, min.rc = 2, max.cov.per.pool = 200, min.maf = 0.01, nlines.per.readblock = 1e+06)
@@ -62,19 +57,9 @@ min.cov.per.pool = 20, min.rc = 2, max.cov.per.pool = 200, min.maf = 0.01, nline
 
 ###
 # LD pruned - can't seem to load (ERROR: No field containing allele depth (AD field) was detected in the vcf file)
-pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_LD/N.canaliculata_pops.plink.LDfiltered_0.8.vcf", 
-poolsizes=rep(40,19), poolnames=pops$V1, 
-min.cov.per.pool = 30, min.rc = 2, max.cov.per.pool = 100, min.maf = 0.1, nlines.per.readblock = 1e+06)
-
-# ================================================================================== #
-
-# variant calling with bcftools 
-
-# Read in data and filter
-#pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_bcftools/N.canaliculata_bcftools_pops.vcf.gz", 
+#pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_LD/N.canaliculata_pops.plink.LDfiltered_0.8.vcf", 
 #poolsizes=rep(40,19), poolnames=pops$V1, 
-#min.cov.per.pool = 25, min.rc = 2, max.cov.per.pool = 200, min.maf = 0.01, nlines.per.readblock = 1e+06)
-# Data consists of 5,950,444 SNPs for 19 Pools
+#min.cov.per.pool = 30, min.rc = 2, max.cov.per.pool = 100, min.maf = 0.1, nlines.per.readblock = 1e+06)
 
 # ================================================================================== #
 
@@ -83,19 +68,15 @@ min.cov.per.pool = 30, min.rc = 2, max.cov.per.pool = 100, min.maf = 0.1, nlines
 # Use computeFST function
 pooldata.fst <- computeFST(pooldata,verbose=FALSE)
 pooldata.fst$Fst 
-# 0.5330188
-# Relaxed: 0.5202263
-# Stringent: 0.6536584
-# bcftools: 0.5337656
+# 0.5381296
+# Filtered: 0.5675211
 
 # Block-Jackknife estimation of Fst standard error and confidence intervals
 pooldata.fst.bjack <- computeFST(pooldata, nsnp.per.bjack.block = 1000, verbose=FALSE)
 pooldata.fst.bjack$Fst
 #   Estimate  bjack mean  bjack s.e.     CI95inf     CI95sup 
-# 0.533018756 0.533764540 0.001051527 0.531703547 0.535825534 
-# Relaxed: 0.5202263006 0.5206428107 0.0009732689 0.5187352036 0.5225504178
-# Stringent: 0.65365838 0.65880523 0.00487404 0.64925211 0.66835834 
-# bcftools: 0.533765580 0.538158861 0.001886336 0.534461643 0.541856080 
+# 0.538129591 0.539714784 0.001196931 0.537368800 0.542060768  
+# Filtered: 0.567521127 0.570094073 0.001412158 0.567326242 0.572861903 
 
 # Compute multi-locus Fst over sliding window of SNPs
 pooldata.fst.sliding.window <- computeFST(pooldata, sliding.window.size=100)
@@ -131,6 +112,11 @@ pdf("output/figures/pop_structure/pairwise_Fst.pdf", width = 10, height = 10)
 plot(pooldata.pairwisefst.bjack, cex=0.5)
 dev.off()
 
+# Save pairwise matrix 
+pooldata.pairwisefst.matrix <- pooldata.pairwisefst@PairwiseFSTmatrix
+pooldata.pairwisefst.matrix <- as.data.frame(pooldata.pairwisefst.matrix)
+WriteXLS(pooldata.pairwisefst.matrix, "data/processed/pop_structure/Fst/pooldata.pairwisefst.xls")
+
 # ================================================================================== #
 
 # Principle Components Analysis with randomallele.pca
@@ -143,54 +129,53 @@ nb.cols <- 19
 mycolors <- rev(colorRampPalette(brewer.pal(11, "RdBu"))(nb.cols))
 colors.reorder <- mycolors[c(19,2,3,4,11,5,1,10,17,14,6,8,7,13,9,18,16,12,15)]
 
-#colors.reorder.alphabetical <- mycolors[c(4, 11, 5, 1, 10, 17, 8, 18, 16, 12, 13, 6, 15, 14, 3, 2, 7, 19, 9)]
-
 # Plotting PC1 and PC2
-pdf("output/figures/pop_structure/PCA_all_SNPs_PC1_PC2.pdf", width = 10, height = 10)
+pdf("output/figures/pop_structure/PCA_all_SNPs_PC1_PC2.pdf", width = 8, height = 8)
 pca <- plot(pooldata.pca$pop.loadings[,1],pooldata.pca$pop.loadings[,2],
 xlab=paste0("PC",1," (",round(pooldata.pca$perc.var[1],2),"%)"),
 ylab=paste0("PC",2," (",round(pooldata.pca$perc.var[2],2),"%)"),
-col="black", bg=colors.reorder, pch=21, cex = 3, main="Read Count data")
+col="black", bg=colors.reorder, pch=21, cex = 2, main="Read Count data")
 abline(h=0,lty=2,col="grey") ; abline(v=0,lty=2,col="grey")
 dev.off()
 
 # Plotting PC3 and PC4
-pdf("output/figures/pop_structure/PCA_all_SNPs_PC3_PC4.pdf", width = 10, height = 10)
+pdf("output/figures/pop_structure/PCA_all_SNPs_PC3_PC4.pdf", width = 8, height = 8)
 pca <- plot(pooldata.pca$pop.loadings[,3],pooldata.pca$pop.loadings[,4],
 xlab=paste0("PC",3," (",round(pooldata.pca$perc.var[3],2),"%)"),
 ylab=paste0("PC",4," (",round(pooldata.pca$perc.var[4],2),"%)"),
-col="black", bg=colors.reorder,pch=21, cex = 3, main="Read Count data")
+col="black", bg=colors.reorder,pch=21, cex = 2, main="Read Count data")
+abline(h=0,lty=2,col="grey") ; abline(v=0,lty=2,col="grey")
+dev.off()
+
+pdf("output/figures/pop_structure/PCA_all_SNPs_PC5_PC6.pdf", width = 8, height = 8)
+pca <- plot(pooldata.pca$pop.loadings[,5],pooldata.pca$pop.loadings[,6],
+xlab=paste0("PC",5," (",round(pooldata.pca$perc.var[5],2),"%)"),
+ylab=paste0("PC",6," (",round(pooldata.pca$perc.var[6],2),"%)"),
+col="black", bg=colors.reorder,pch=21, cex = 2, main="Read Count data")
 abline(h=0,lty=2,col="grey") ; abline(v=0,lty=2,col="grey")
 dev.off()
 
 # Plot names on PCAs
 
 # Plotting PC1 and PC2
-pdf("output/figures/pop_structure/PCA_all_SNPs_PC1_PC2.pdf", width = 10, height = 10)
+pdf("output/figures/pop_structure/PCA_all_SNPs_PC1_PC2_names.pdf", width = 8, height = 8)
 pca <- plot(pooldata.pca$pop.loadings[,1],pooldata.pca$pop.loadings[,2],
 xlab=paste0("PC",1," (",round(pooldata.pca$perc.var[1],2),"%)"),
-ylab=paste0("PC",2," (",round(pooldata.pca$perc.var[2],2),"%)"),
-col="black", bg=colors.reorder, pch=21, cex = 3, main="Read Count data")
-text(pooldata.pca$pop.loadings[,1], pooldata.pca$pop.loadings[,2], pooldata@poolnames)
+ylab=paste0("PC",2," (",round(pooldata.pca$perc.var[2],2),"%)"))
+text(pooldata.pca$pop.loadings[,1], pooldata.pca$pop.loadings[,2], pooldata@poolnames, cex=0.5)
 abline(h=0,lty=2,col="grey") ; abline(v=0,lty=2,col="grey")
 dev.off()
 
 # Plotting PC3 and PC4
-pdf("output/figures/pop_structure/PCA_all_SNPs_PC3_PC4.pdf", width = 10, height = 10)
+pdf("output/figures/pop_structure/PCA_all_SNPs_PC3_PC4_names.pdf", width = 8, height = 8)
 pca <- plot(pooldata.pca$pop.loadings[,3],pooldata.pca$pop.loadings[,4],
 xlab=paste0("PC",3," (",round(pooldata.pca$perc.var[3],2),"%)"),
-ylab=paste0("PC",4," (",round(pooldata.pca$perc.var[4],2),"%)"),
-col="black", bg=colors.reorder,pch=21, cex = 3, main="Read Count data")
-text(pooldata.pca$pop.loadings[,3], pooldata.pca$pop.loadings[,4], pooldata@poolnames)
+ylab=paste0("PC",4," (",round(pooldata.pca$perc.var[4],2),"%)"))
+text(pooldata.pca$pop.loadings[,3], pooldata.pca$pop.loadings[,4], pooldata@poolnames, cex=0.5)
 abline(h=0,lty=2,col="grey") ; abline(v=0,lty=2,col="grey")
 dev.off()
 
-## ggplot
-pdf("output/figures/pop_structure/PCA_all_SNPs_PC1_PC2_ggplot.pdf", width = 10, height = 10)
-ggplot(data=pooldata.pca, aes(x=pooldata.pca$pop.loadings[,1], y=pooldata.pca$pop.loadings[,2])) + 
-geom_point(size=2, shape=21, color=colors.reorder) + 
-xlab(paste0("PC",1," (",round(pooldata.pca$perc.var[1],2),"%)")) + 
-ylab(paste0("PC",2," (",round(pooldata.pca$perc.var[2],2),"%)")) +
-theme_classic()
-dev.off()
+# ================================================================================== #
 
+# Export pooldata object as cleaned vcf
+write.vcf(vcf2pooldata(pooldata), file = "data/processed/pop_structure/N.canaliculata_poolfstat_filt.vcf") 
