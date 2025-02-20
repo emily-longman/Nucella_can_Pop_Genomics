@@ -40,6 +40,9 @@ poolsizes=rep(40,19), poolnames=pops$V1,
 min.cov.per.pool = 20, min.rc = 2, max.cov.per.pool = 200, min.maf = 0.01, nlines.per.readblock = 1e+06)
 # Data consists of 13,350,988 SNPs for 19 Pools
 
+# Inc min.rc = 5, min.cov.per.pool =15
+
+
 # min.cov.per.pool = the minimum allowed read count per pool for SNP to be called
 # min.rc =  the minimum # reads that an allele needs to have (across all pools) to be called 
 # max.cov.per.pool = the maximum read count per pool for SNP to be called 
@@ -190,7 +193,7 @@ head(pooldata.fstats@f4values, 3) # 3 first f4
 head(pooldata.fstats@Dstat.values, 3) # 3 first D 
 
 # Plot heterozygosities
-pdf("output/figures/pop_structure/Heterozygosities_filt.pdf", width = 6, height = 6)
+pdf("output/figures/pop_structure/Heterozygosities.pdf", width = 6, height = 6)
 plot(pooldata.fstats, stat.name="heterozygosities", main="Heterozygosities")
 dev.off()
 

@@ -18,9 +18,22 @@ setwd(root_path)
 # ================================================================================== #
 
 # Load packages
-install.packages(c('ecodist', 'ggplot2', 'readxl'))
-library(ecodist)
+install.packages(c('gdistance', 'ggplot2', 'tidyr', 'dplyr', 'raster', 'sf', 'rnaturalearth', 'nngeo', 'fasterize', 'reshape2', 'patchwork'))
+library(gdistance)
 library(ggplot2)
-library(readxl)
+library(tidyr)
+library(dplyr)
+library(raster)
+library(sf)
+library(rnaturalearth)
+library(nngeo)
+library(fasterize)
+library(reshape2)
+library(patchwork)
 
 # ================================================================================== #
+
+# Projections
+latlong <- "+proj=longlat +datum=NAD83 +no_defs +ellps=GRS80 +towgs84=0,0,0"
+
+
