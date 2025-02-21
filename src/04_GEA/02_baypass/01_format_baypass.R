@@ -32,10 +32,9 @@ pops <- read.table("data/processed/pop_structure/guide_files/Nucella_pops.list",
 # Note: 20 individuals per pool. N. canaliculata is a diploid species. So haploid size = 40 for most pools
 
 # Read in data and filter
-pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf.gz", 
+pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.vcf", 
 poolsizes=rep(40,19), poolnames=pops$V1, 
-min.cov.per.pool = 20, min.rc = 2, max.cov.per.pool = 200, min.maf = 0.01, nlines.per.readblock = 1e+06)
-# Data consists of 13,350,988 SNPs for 19 Pools
+min.cov.per.pool = 15, min.rc = 5, max.cov.per.pool = 120, min.maf = 0.01, nlines.per.readblock = 1e+06)
 
 # min.cov.per.pool = the minimum allowed read count per pool for SNP to be called
 # min.rc =  the minimum # reads that an allele needs to have (across all pools) to be called 
