@@ -5,7 +5,7 @@
 # Request cluster resources ----------------------------------------------------
 
 # Name this job
-#SBATCH --job-name=filter_vcf
+#SBATCH --job-name=filter_vcf_max_missing_0.9
 
 # Specify partition
 #SBATCH --partition=general
