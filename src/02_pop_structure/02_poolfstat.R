@@ -34,11 +34,22 @@ pops <- read.table("data/processed/fastq_to_vcf/guide_files/N.canaliculata_pops.
 # Create a pooldata object for Pool-Seq read count data (poolsize = haploid sizes of each pool, # of pools)
 # Note: 20 individuals per pool. N. canaliculata is a diploid species. So haploid size = 40 for most pools
 
-# Read in data and filter
-pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf.gz", 
+# Read in data and filter (note: the input vcf is the vcf output from 12_filter_vcf.sh - # variants: 26,206,958)
+pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.vcf", 
 poolsizes=rep(40,19), poolnames=pops$V1, 
-min.cov.per.pool = 15, min.rc = 5, max.cov.per.pool = 150, min.maf = 0.01, nlines.per.readblock = 1e+06)
-# Data consists of xxx SNPs for 19 Pools
+min.cov.per.pool = 15, min.rc = 5, max.cov.per.pool = 120, min.maf = 0.01, nlines.per.readblock = 1e+06)
+# Data consists of 11,656,080 SNPs for 19 Pools
+
+# Raw vcf
+#pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf.gz", 
+#poolsizes=rep(40,19), poolnames=pops$V1, 
+#min.cov.per.pool = 15, min.rc = 5, max.cov.per.pool = 120, min.maf = 0.01, nlines.per.readblock = 1e+06)
+
+# Filtered at 0.9 max missing (# variants: 24,939,340)
+pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_clean_max_missing_0.9/N.canaliculata_pops_filter.recode.vcf", 
+poolsizes=rep(40,19), poolnames=pops$V1, 
+min.cov.per.pool = 15, min.rc = 5, max.cov.per.pool = 120, min.maf = 0.01, nlines.per.readblock = 1e+06)
+# Data consists of 11,656,080 SNPs for 19 Pools 
 
 # min.cov.per.pool = the minimum allowed read count per pool for SNP to be called
 # min.rc =  the minimum # reads that an allele needs to have (across all pools) to be called 
@@ -48,13 +59,7 @@ min.cov.per.pool = 15, min.rc = 5, max.cov.per.pool = 150, min.maf = 0.01, nline
 
 # ================================================================================== #
 
-# Filtered vcf (i.e., the vcf output from 12_filter_vcf.sh)
-pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.vcf", 
-poolsizes=rep(40,19), poolnames=pops$V1, 
-min.cov.per.pool = 15, min.rc = 5, max.cov.per.pool = 150, min.maf = 0.01, nlines.per.readblock = 1e+06)
-# Data consists of xxxx SNPs for 19 Pools
-
-###
+# LD pruned
 # LD pruned - can't seem to load (ERROR: No field containing allele depth (AD field) was detected in the vcf file)
 #pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_LD/N.canaliculata_pops.plink.LDfiltered_0.8.vcf", 
 #poolsizes=rep(40,19), poolnames=pops$V1, 
@@ -67,21 +72,19 @@ min.cov.per.pool = 15, min.rc = 5, max.cov.per.pool = 150, min.maf = 0.01, nline
 # Use computeFST function (default to using the Anova method)
 pooldata.fst <- computeFST(pooldata,verbose=FALSE)
 pooldata.fst$Fst 
-# 0.5381296
-# Filtered: 0.5675211
+# 0.5740832
 
 # Block-Jackknife estimation of Fst standard error and confidence intervals
 pooldata.fst.bjack <- computeFST(pooldata, nsnp.per.bjack.block = 1000, verbose=FALSE)
 pooldata.fst.bjack$Fst
 #   Estimate  bjack mean  bjack s.e.     CI95inf     CI95sup 
-# 0.538129591 0.539714784 0.001196931 0.537368800 0.542060768  
-# Filtered: 0.567521127 0.570094073 0.001412158 0.567326242 0.572861903 
+# 0.574083221 0.576753862 0.001176185 0.574448540 0.579059184  
 
 # Compute multi-locus Fst over sliding window of SNPs
 pooldata.fst.sliding.window <- computeFST(pooldata, sliding.window.size=100)
 
 # Plot sliding window
-pdf("output/figures/pop_structure/fst.sliding.window.pdf", width = 10, height = 10)
+pdf("output/figures/pop_structure/fst.sliding.window.pdf", width = 8, height = 8)
 plot(pooldata.fst.sliding.window$sliding.windows.fvalues$CumMidPos/1e6, 
 pooldata.fst.sliding.window$sliding.windows.fvalues$MultiLocusFst,
 xlab="Cumulated Position (in Mb)", ylab="Multi-locus Fst", pch=16)
@@ -96,7 +99,7 @@ dev.off()
 pooldata.pairwisefst <- compute.pairwiseFST(pooldata, verbose=FALSE)
 
 # Graph heatmap
-pdf("output/figures/pop_structure/heatmap.pdf", width = 10, height = 10)
+pdf("output/figures/pop_structure/heatmap.pdf", width = 8, height = 8)
 heatmap(pooldata.pairwisefst)
 dev.off()
 
@@ -107,7 +110,7 @@ pooldata.pairwisefst.bjack <- compute.pairwiseFST(pooldata, nsnp.per.bjack.block
 head(pooldata.pairwisefst.bjack@values)
 
 # Graph estimated pairwise-population FST with their 95% confidence intervals 
-pdf("output/figures/pop_structure/pairwise_Fst.pdf", width = 10, height = 10)
+pdf("output/figures/pop_structure/pairwise_Fst.pdf", width = 8, height = 8)
 plot(pooldata.pairwisefst.bjack, cex=0.5)
 dev.off()
 
