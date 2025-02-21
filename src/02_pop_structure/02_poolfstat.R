@@ -37,8 +37,8 @@ pops <- read.table("data/processed/fastq_to_vcf/guide_files/N.canaliculata_pops.
 # Read in data and filter
 pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf.gz", 
 poolsizes=rep(40,19), poolnames=pops$V1, 
-min.cov.per.pool = 20, min.rc = 2, max.cov.per.pool = 200, min.maf = 0.01, nlines.per.readblock = 1e+06)
-# Data consists of 13,350,988 SNPs for 19 Pools
+min.cov.per.pool = 15, min.rc = 5, max.cov.per.pool = 150, min.maf = 0.01, nlines.per.readblock = 1e+06)
+# Data consists of xxx SNPs for 19 Pools
 
 # Inc min.rc = 5, min.cov.per.pool =15
 
@@ -54,7 +54,7 @@ min.cov.per.pool = 20, min.rc = 2, max.cov.per.pool = 200, min.maf = 0.01, nline
 # Filtered vcf (i.e., the vcf output from 12_filter_vcf.sh)
 pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.vcf", 
 poolsizes=rep(40,19), poolnames=pops$V1, 
-min.cov.per.pool = 20, min.rc = 2, max.cov.per.pool = 200, min.maf = 0.01, nlines.per.readblock = 1e+06)
+min.cov.per.pool = 20, min.rc = 2, max.cov.per.pool = 150, min.maf = 0.01, nlines.per.readblock = 1e+06)
 # Data consists of 10,109,226 SNPs for 19 Pools
 
 ###
