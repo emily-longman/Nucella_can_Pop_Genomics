@@ -93,3 +93,8 @@ g <- ggplot(data = west_coast) +
 g + annotate(geom = 'text', size = 5,
          x = -127, y = 34.2, label = 'Pacific Ocean', fontface = 'italic')
 dev.off()
+
+# ================================================================================== #
+
+# Export csv for qgis layer
+write.csv(west_coast, "/Users/emilylongman/Documents/GitHub/Nucella_can_Pop_Genomics/data/raw/enviro/west_coast.csv")
