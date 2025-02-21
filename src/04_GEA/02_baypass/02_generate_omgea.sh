@@ -20,7 +20,7 @@
 #SBATCH --mem=40G 
 
 # Request CPU
-#SBATCH --cpus-per-task=8
+#SBATCH --cpus-per-task=20
 
 # Name output of this job using %x=job-name and %j=job-id
 #SBATCH --output=./slurmOutput/%x.%j.out # Standard output
@@ -56,7 +56,7 @@ $baypass -npop 19 \
 -poolsizefile $WORKING_FOLDER/GEA/baypass/poolsize \
 -d0yij 4 \
 -outprefix NC_baypass \
--npilot 100 -nthreads 8
+-npilot 100 -nthreads 20
 
 #-npop: number of pools
 #-gfile: gfile input
