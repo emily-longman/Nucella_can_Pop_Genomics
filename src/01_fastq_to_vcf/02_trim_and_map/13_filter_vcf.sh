@@ -50,9 +50,9 @@ cd $WORKING_FOLDER/fastq_to_vcf
 
 # This part of the script will check and generate, if necessary, all of the output folders used in the script
 
-if [ -d "vcf_clean" ]
-then echo "Working vcf_clean folder exist"; echo "Let's move on."; date
-else echo "Working vcf_clean folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/fastq_to_vcf/vcf_clean; date
+if [ -d "vcf_clean_max_missing_0.9" ]
+then echo "Working vcf_clean_max_missing_0.9 folder exist"; echo "Let's move on."; date
+else echo "Working vcf_clean_max_missing_0.9 folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/fastq_to_vcf/vcf_clean_max_missing_0.9; date
 fi
 
 #--------------------------------------------------------------------------------
@@ -60,28 +60,26 @@ fi
 # Filter vcf
 
 # Filter based on missing data (keep only variants in 75% of pops)
+#vcftools --gzvcf $WORKING_FOLDER/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf.gz \
+#--minQ 30 --maf 0.01 --max-missing 0.75 --recode --recode-INFO-all \
+#--out $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter
+
 vcftools --gzvcf $WORKING_FOLDER/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf.gz \
---minQ 30 --maf 0.01 --max-missing 0.75 --recode --recode-INFO-all \
---out $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter
+--minQ 30 --maf 0.01 --max-missing 0.9 --recode --recode-INFO-all \
+--out $WORKING_FOLDER/fastq_to_vcf/vcf_clean_max_missing_0.9/N.canaliculata_pops_filter
 
 # --minQ: Includes only sites with Quality value above this threshold.
 # --maf: Include only sites with a minor allele frequency great than or equal to this value.
 # --max-missing: Exclude sites on the basis of the proportion of missing data (defined btween 0 and 1). 0 allows sites that are completely missing and 1 indicates no missing data.
 # --recode --recode-INFO-all: Write a new VCF file that keeps all the INFO flags from the old vcf file.
 
-# Filter for pops that have a certain # of SNPs missing
-#vcftools --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.vcf \
-#--max-missing 0.5 --recode --recode-INFO-all \
-#--out $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter
-
-
 #--------------------------------------------------------------------------------
 
 # Check the quality of output vcf
 
 # Generate a summary of the number of SNPs for each filter category
-vcftools --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.vcf \
---FILTER-summary --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.vcf
+vcftools --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean_max_missing_0.9/N.canaliculata_pops_filter.recode.vcf \
+--FILTER-summary --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean_max_missing_0.9/N.canaliculata_pops_filter.recode.vcf
 # Generate a file containing the depth per site summed across all individuals
-vcftools --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.vcf \
---depth --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.vcf
+vcftools --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean_max_missing_0.9/N.canaliculata_pops_filter.recode.vcf \
+--depth --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean_max_missing_0.9/N.canaliculata_pops_filter.recode.vcf
