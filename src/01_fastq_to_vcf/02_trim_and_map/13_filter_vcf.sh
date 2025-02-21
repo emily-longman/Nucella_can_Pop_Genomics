@@ -64,9 +64,9 @@ fi
 # Filter vcf
 
 # Filter based on missing data (keep only variants in 75% of pops)
-#vcftools --gzvcf $WORKING_FOLDER/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf.gz \
-#--minQ 30 --maf 0.01 --max-missing 0.75 --recode --recode-INFO-all \
-#--out $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter
+vcftools --gzvcf $WORKING_FOLDER/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf.gz \
+--minQ 30 --maf 0.01 --max-missing 0.75 --recode --recode-INFO-all \
+--out $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter
 
 #vcftools --gzvcf $WORKING_FOLDER/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf.gz \
 #--minQ 30 --maf 0.01 --max-missing 0.9 --recode --recode-INFO-all \
