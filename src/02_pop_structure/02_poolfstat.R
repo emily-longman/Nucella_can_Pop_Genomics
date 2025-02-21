@@ -149,6 +149,7 @@ col="black", bg=colors.reorder,pch=21, cex = 2, main="Read Count data")
 abline(h=0,lty=2,col="grey") ; abline(v=0,lty=2,col="grey")
 dev.off()
 
+# Plotting PC5 and PC6
 pdf("output/figures/pop_structure/PCA_all_SNPs_PC5_PC6.pdf", width = 8, height = 8)
 pca <- plot(pooldata.pca$pop.loadings[,5],pooldata.pca$pop.loadings[,6],
 xlab=paste0("PC",5," (",round(pooldata.pca$perc.var[5],2),"%)"),
