@@ -52,32 +52,32 @@ cd $WORKING_FOLDER/fastq_to_vcf
 
 # This part of the script will check and generate, if necessary, all of the output folders used in the script
 
-if [ -d "vcf_LD" ]
-then echo "Working vcf_LD folder exist"; echo "Let's move on."; date
-else echo "Working vcf_LD folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/fastq_to_vcf/vcf_LD; date
+if [ -d "vcf_clean_LD" ]
+then echo "Working vcf_clean_LD folder exist"; echo "Let's move on."; date
+else echo "Working vcf_clean_LD folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD; date
 fi
 
 #--------------------------------------------------------------------------------
 
 # Change directory 
-cd $WORKING_FOLDER/fastq_to_vcf/vcf_LD
+cd $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD
 
 # Create plink files (plink.bed, plink.bim and plink.fam) from VCF 
-$plink --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf \
---allow-extra-chr --out $WORKING_FOLDER/fastq_to_vcf/vcf_LD/N.canaliculata_pops.plink
+$plink --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.vcf \
+--allow-extra-chr --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.recode.plink
 
 # Reference the plink files 
-$plink --bfile $WORKING_FOLDER/fastq_to_vcf/vcf_LD/N.canaliculata_pops.plink \
---allow-extra-chr --no-sex --no-pheno --recode tab --out $WORKING_FOLDER/fastq_to_vcf/vcf_LD/N.canaliculata_pops.plink
+$plink --bfile $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.recode.plink \
+--allow-extra-chr --no-sex --no-pheno --recode tab --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.recode.plink
 
 # Calculate r2 between all SNPs in dataset
-$plink --file $WORKING_FOLDER/fastq_to_vcf/vcf_LD/N.canaliculata_pops.plink \
---allow-extra-chr --r2 --out $WORKING_FOLDER/fastq_to_vcf/vcf_LD/N.canaliculata_pops.plink_r2 --threads 3
+$plink --file $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.recode.plink \
+--allow-extra-chr --r2 --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.recode.plink_r2 --threads 3
 
 # Make a list of SNPs with a r2 less than 0.8
-$plink --file $WORKING_FOLDER/fastq_to_vcf/vcf_LD/N.canaliculata_pops.plink \
+$plink --file $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.recode.plink \
 --allow-no-sex --allow-extra-chr --indep-pairwise 100 10 0.8 --r2 \
---out $WORKING_FOLDER/fastq_to_vcf/vcf_LD/N.canaliculata_pops.plink_indep_pairwise_100_10_0.8 --threads 3
+--out $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.recode.plink_indep_pairwise_100_10_0.8 --threads 3
 
 # indep-pairwise requires 3 parameters:
 # 1) a window size in variant count of kilobase
@@ -88,5 +88,5 @@ $plink --file $WORKING_FOLDER/fastq_to_vcf/vcf_LD/N.canaliculata_pops.plink \
 # Lastly, extract the pruned SNPs from the vcf file and create a new vcf that contains only SNPs not in LD
 $plink --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf \
 --recode vcf --allow-extra-chr \
---out $WORKING_FOLDER/fastq_to_vcf/vcf_LD/N.canaliculata_pops.plink.LDfiltered_0.8 \
---extract $WORKING_FOLDER/fastq_to_vcf/vcf_LD/N.canaliculata_pops.plink_indep_pairwise_100_10_0.8.prune.in
+--out $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.recode.plink.LDfiltered_0.8 \
+--extract $WORKING_FOLDER/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.recode.plink_indep_pairwise_100_10_0.8.prune.in
