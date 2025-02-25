@@ -65,8 +65,8 @@ fi
 
 # Filter based on missing data (keep only variants in 75% of pops)
 vcftools --gzvcf $WORKING_FOLDER/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf.gz \
---minQ 60 --maf 0.01 --max-missing 1.0 --remove-indels --recode --recode-INFO-all \
---out $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter_minQ60_maxmissing1.0
+--minQ 50 --maf 0.01 --max-missing 0.9 --remove-indels --recode --recode-INFO-all \
+--out $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter_minQ50_maxmissing0.9
 
 # --minQ: Includes only sites with Quality value above this threshold.
 # --maf: Include only sites with a minor allele frequency great than or equal to this value.
@@ -78,8 +78,8 @@ vcftools --gzvcf $WORKING_FOLDER/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.
 # Check the quality of output vcf
 
 # Generate a summary of the number of SNPs for each filter category
-vcftools --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter_minQ60_maxmissing1.0.recode.vcf \
---FILTER-summary --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter_minQ60_maxmissing1.0.recode.vcf
+vcftools --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter_minQ50_maxmissing0.9.recode.vcf \
+--FILTER-summary --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter_minQ50_maxmissing0.9.recode.vcf
 # Generate a file containing the depth per site summed across all individuals
-vcftools --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter_minQ60_maxmissing1.0.recode.vcf \
---depth --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter_minQ60_maxmissing1.0.recode.vcf
+vcftools --vcf $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter_minQ50_maxmissing0.9.recode.vcf \
+--depth --out $WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter_minQ50_maxmissing0.9.recode.vcf
