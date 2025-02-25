@@ -19,18 +19,24 @@ setwd(root_path)
 # ================================================================================== #
 
 # Load packages
-install.packages("pcadapt")
+install.packages(c("pcadapt", "RColorBrewer"))
 library(pcadapt)
-source("https://bioconductor.org/biocLite.R")
-biocLite("qvalue")
-library(qvalue)
+library(ggplot2)
+library(RColorBrewer)
+#source("https://bioconductor.org/biocLite.R")
+#biocLite("qvalue")
+#library(qvalue)
 
 # ================================================================================== #
 
 # Problems either loading the data if in poolfstat pooldata object or can load the full vcf but then can't run pcadapt
 
 # Read in VCF data 
-path_to_file <- "data/processed/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf"
+path_to_file <- "data/processed/fastq_to_vcf/vcf_LD/N.canaliculata_pops.plink.bed"
+pooldata <- read.pcadapt(path_to_file, type = "bed")
+
+# Read in VCF data 
+path_to_file <- "data/processed/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.vcf"
 pooldata <- read.pcadapt(path_to_file, type = "pool")
 
 # Read in metadata
@@ -39,7 +45,7 @@ meta <- read.csv(meta_path, header=T)
 
 # ================================================================================== #
 
-#With Pool-Seq data, the package computes again a Mahalanobis distance based on PCA loadings.
+# With Pool-Seq data, the package computes again a Mahalanobis distance based on PCA loadings.
 
 # Note: To choose K, principal component analysis should first be performed with a large enough number of principal components. 
 # Use scree plot and PCA to identify optimal K. 
@@ -52,17 +58,27 @@ x <- pcadapt(input = pooldata, K = 18)
 # Graph screeplot (The ideal pattern in a scree plot is a steep curve followed by a bend and a straight line. 
 # The eigenvalues that correspond to random variation lie on a straight line whereas the ones that correspond to population structure 
 # lie on a steep curve). Keep PCs that correspond to eigenvalues to the left of the straight line (Cattell’s rule)
-pdf("output/figures/pcadapt_screeplot.pdf", width = 10, height = 10)
+pdf("output/figures/outlier_analyses/pcadapt_screeplot.pdf", width = 10, height = 10)
 plot(x, option = "screeplot")
 dev.off()
 
+# Color palette 
+nb.cols <- 19
+mycolors <- rev(colorRampPalette(brewer.pal(11, "RdBu"))(nb.cols))
+colors.reorder <- mycolors[c(19,2,3,4,11,5,1,10,17,14,6,8,7,13,9,18,16,12,15)]
+
 # Graph PCA - PC1 and PC2
-pdf("output/figures/pcadapt_pca_PC1_PC2.pdf", width = 10, height = 10)
-plot(x, option = "scores", pop = meta$Site)
+pdf("output/figures/outlier_analyses/pcadapt_pca_PC1_PC2.pdf", width = 10, height = 10)
+plot(x, option = "scores", Pop = meta$Site, col=colors.reorder)
 dev.off()
 
+pdf("output/figures/outlier_analyses/pcadapt_pca_PC1_PC2.pdf", width = 10, height = 10)
+plot(x, option = "scores", col="red")
+dev.off()
+plot(x,option="scores",pop=meta$LOCATION, col=mycolors)
+
 # Graph PCA - PC3 and PC4
-pdf("output/figures/pcadapt_pca_PC3_PC4.pdf", width = 10, height = 10)
+pdf("output/figures/outlier_analyses/pcadapt_pca_PC3_PC4.pdf", width = 10, height = 10)
 plot(x, option = "scores", i = 3, j = 4, pop = poplist.names)
 dev.off()
 
@@ -82,22 +98,22 @@ print(aux[,2])
 # Identify outliers 
 
 # Manhattan plot
-pdf("output/figures/pcadapt_screeplot.pdf", width = 10, height = 10)
+pdf("output/figures/outlier_analyses/pcadapt_screeplot.pdf", width = 10, height = 10)
 plot(x, option = "manhattan")
 dev.off()
 
 # QQ plot
-pdf("output/figures/pcadapt_qqplot.pdf", width = 10, height = 10)
+pdf("output/figures/outlier_analyses/pcadapt_qqplot.pdf", width = 10, height = 10)
 plot(x, option = "qqplot")
 dev.off()
 
 # Histogram of test statistic and p-val 
-pdf("output/figures/pcadapt_hist.pdf", width = 10, height = 10)
+pdf("output/figures/outlier_analyses/pcadapt_hist.pdf", width = 10, height = 10)
 hist(x$pvalues, xlab = "p-values", main = NULL, breaks = 50, col = "orange")
 dev.off()
 
 # Histogram of the test statistic 𝐷𝑗
-pdf("output/figures/pcadapt_stat.dist.pdf", width = 10, height = 10)
+pdf("output/figures/outlier_analyses/pcadapt_stat.dist.pdf", width = 10, height = 10)
 plot(x, option = "stat.distribution")
 dev.off()
 

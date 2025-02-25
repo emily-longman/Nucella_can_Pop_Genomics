@@ -5,7 +5,7 @@
 # Request cluster resources ----------------------------------------------------
 
 # Name this job
-#SBATCH --job-name=baypass_omega
+#SBATCH --job-name=baypass_omega_2
 
 # Specify partition
 #SBATCH --partition=week
@@ -14,13 +14,13 @@
 #SBATCH --nodes=1 
 
 # Reserve walltime -- hh:mm:ss --30 hrs max
-#SBATCH --time=6-00:00:00 
+#SBATCH --time=7-00:00:00 
 
 # Request memory for the entire job -- you can request --mem OR --mem-per-cpu
 #SBATCH --mem=40G 
 
 # Request CPU
-#SBATCH --cpus-per-task=20
+#SBATCH --cpus-per-task=25
 
 # Name output of this job using %x=job-name and %j=job-id
 #SBATCH --output=./slurmOutput/%x.%j.out # Standard output
@@ -55,8 +55,8 @@ $baypass -npop 19 \
 -gfile $WORKING_FOLDER/GEA/baypass/genobaypass \
 -poolsizefile $WORKING_FOLDER/GEA/baypass/poolsize \
 -d0yij 4 \
--outprefix NC_baypass \
--npilot 100 -nthreads 20
+-outprefix NC_baypass_2 \
+-npilot 100 -nthreads 25
 
 #-npop: number of pools
 #-gfile: gfile input
