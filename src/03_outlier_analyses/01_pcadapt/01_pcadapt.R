@@ -116,7 +116,6 @@ fq_PSN <- ref_PSN/pooldata@readcoverage[,19]
 
 # pooldata@snp.info is a data frame (nsnp row and 4 columns) detailing for each SNP, the chromosome (or scaffold), the position, Reference allele name and Alternate allele name
 
-#pooldata@snp.info[,1] <- substring(pooldata@snp.info[,1], first=1,last=12)
 # Name each SNP based on its chromosome/scaffold and position
 SNP <- paste(pooldata@snp.info[,1], pooldata@snp.info[,2], sep="_")
 
@@ -177,11 +176,6 @@ pdf("output/figures/outlier_analyses/pcadapt_screeplot_K18.pdf", width = 8, heig
 pcadapt:::plot.pcadapt(x, option = "screeplot")
 dev.off()
 
-# Color palette 
-nb.cols <- 19
-mycolors <- rev(colorRampPalette(brewer.pal(11, "RdBu"))(nb.cols))
-colors.reorder <- mycolors[c(19,2,3,4,11,5,1,10,17,14,6,8,7,13,9,18,16,12,15)]
-
 # Graph PCA - PC1 and PC2
 pdf("output/figures/outlier_analyses/pcadapt_pca_PC1_PC2_K18.pdf", width = 8, height = 8)
 pcadapt:::plot.pcadapt(x, option = "scores")
@@ -189,13 +183,15 @@ dev.off()
 
 # Graph PCA - PC3 and PC4
 pdf("output/figures/outlier_analyses/pcadapt_pca_PC3_PC4_K18.pdf", width = 8, height = 8)
-plot(x, option = "scores", i = 3, j = 4)
+pcadapt:::plot.pcadapt(x, option = "scores", i = 3, j = 4)
 dev.off()
 
 # ================================================================================== #
 
 # Run pcadapt on data with optimal K
 x <- pcadapt(input = pool.data, K = 5)
+pc.percent<-round(100*(x$singular.values^2), digits = 2)
+# 69.01  9.67  6.89  3.42  2.95
 
 # Summary of pcadapt
 summary(x)
@@ -205,18 +201,25 @@ summary(x)
 # Identify outliers 
 
 # Scree plot
-pdf("output/figures/outlier_analyses/pcadapt_screeplot_K6.pdf", width = 8, height = 8)
+pdf("output/figures/outlier_analyses/pcadapt_screeplot_K5.pdf", width = 8, height = 8)
 pcadapt:::plot.pcadapt(x, option = "screeplot")
 dev.off()
 
+# Color palette 
+nb.cols <- 19
+mycolors <- rev(colorRampPalette(brewer.pal(11, "RdBu"))(nb.cols))
+colors.reorder <- mycolors[c(19,2,3,4,11,5,1,10,17,14,6,8,7,13,9,18,16,12,15)]
+colors.alphabetical <- mycolors[c(4,11,5,1,10,17,8,18,16,12,13,6,15,14,3,2,7,19,9)]
+
 # Graph PCA - PC1 and PC2
-pdf("output/figures/outlier_analyses/pcadapt_pca_PC1_PC2_K5.pdf", width = 8, height = 8)
-pcadapt:::plot.pcadapt(x, option = "scores")
+pdf("output/figures/outlier_analyses/pcadapt_pca_PC1_PC2_K5.pdf", width = 9, height = 8)
+pcadapt:::plot.pcadapt(x, option = "scores", pop=rownames(poolfstat_matrix), col=colors.alphabetical) 
 dev.off()
+# Note: need to specify pop. If field is left empty, the points will be displayed in black.
 
 # Graph PCA - PC3 and PC4
 pdf("output/figures/outlier_analyses/pcadapt_pca_PC3_PC4_K5.pdf", width = 8, height = 8)
-pcadapt:::plot.pcadapt(x, option = "scores", i = 3, j = 4)
+pcadapt:::plot.pcadapt(x, option = "scores", i = 3, j = 4, pop=rownames(poolfstat_matrix), col=colors.alphabetical)
 dev.off()
 
 # Manhattan plot
@@ -236,14 +239,8 @@ dev.off()
 
 # Histogram of the test statistic 𝐷𝑗
 pdf("output/figures/outlier_analyses/pcadapt_stat.dist_K5.pdf", width = 8, height = 8)
-pcadapt:::plot.pcadapt(x, option = "stat.distribution")
+plot(x, option = "stat.distribution")
 dev.off()
-
-# ================================================================================== #
-
-# Identify which PCs SNPs are associate with
-get.pc(x, ) -> aux
-head(print(aux[,2]))
 
 # ================================================================================== #
 
@@ -252,22 +249,74 @@ head(print(aux[,2]))
 # q-value method 
 # SNPs with q-values less than 𝛼 (10%) will be considered as outliers with an expected false discovery rate bounded by 𝛼
 qval <- qvalue(x$pvalues)$qvalues
-alpha <- 0.1
+alpha <- 0.001
 outliers <- which(qval < alpha)
-length(outliers) #1,932,068
+length(outliers) #794,830
+snp_outliers_pc <- get.pc(x, outliers) # Get outlier snps associated with PCs
+outliers <- data.frame(outliers)
+outliers$line_num <- 1:nrow(outliers) # Add line numbers
 
 # Benjamini-Hochberg Procedue
 padj_BH <- p.adjust(x$pvalues, method="BH")
-alpha <- 0.1
+alpha <- 0.001
 outliers_BH <- which(padj_BH < alpha)
-length(outliers_BH) #1,932,068
+length(outliers_BH) #794,830
+snp_outliers_BH_pc <- get.pc(x, outliers_BH) # Get outlier snps associated with PCs
+outliers_BH <- data.frame(outliers_BH)
+outliers_BH$line_num <- 1:nrow(outliers_BH) # Add line numbers
 
 # Bonferroni Correction
 padj_bonferroni <- p.adjust(x$pvalues, method="bonferroni")
-alpha <- 0.1
+alpha <- 0.001
 outliers_bonferroni <- which(padj_bonferroni < alpha)
-length(outliers_bonferroni) #151,628
+length(outliers_bonferroni) #25,103
+snp_outliers_bonferroni_pc <- get.pc(x, outliers_bonferroni) # Get outlier snps associated with PCs
+outliers_bonferroni <- data.frame(outliers_bonferroni) 
+outliers_bonferroni$line_num <- 1:nrow(outliers_bonferroni) # Add line numbers
 
+# ================================================================================== #
 
-# Get outlier snps associated with PCs
-snp_pc <- get.pc(x, outliers)
+# Save outlier SNP lists
+write.table(outliers, file = "data/processed/outlier_analyses/pcadapt_outliers_results.snp", quote = F, row.names = F, col.names = F)
+write.table(outliers_BH, file = "data/processed/outlier_analyses/pcadapt_outliers_BH_results.snp", quote = F, row.names = F, col.names = F)
+write.table(outliers_bonferroni, file = "data/processed/outlier_analyses/pcadapt_outliers_bonferroni_results.snp", quote = F, row.names = F, col.names = F)
+
+# ================================================================================== #
+
+# Try thinning to remove LD
+# size = window radius 
+# thr = the squared correlation threshold
+x_LD <- pcadapt(input = pool.data, K = 5, LD.clumping = list(size = 500, thr = 0.1))
+
+# Summary
+summary(x_LD)
+
+# ================================================================================== #
+
+# Scree plot
+pdf("output/figures/outlier_analyses/pcadapt_screeplot_LD_K5.pdf", width = 8, height = 8)
+pcadapt:::plot.pcadapt(x_LD, option = "screeplot")
+dev.off()
+
+# Graph PCA - PC1 and PC2
+pdf("output/figures/outlier_analyses/pcadapt_pca_PC1_PC2_LD_K5.pdf", width = 9, height = 8)
+pcadapt:::plot.pcadapt(x_LD, option = "scores", pop=rownames(poolfstat_matrix), col=colors.alphabetical) 
+dev.off()
+
+# Graph PCA - PC3 and PC4
+pdf("output/figures/outlier_analyses/pcadapt_pca_PC3_PC4_LD_K5.pdf", width = 8, height = 8)
+pcadapt:::plot.pcadapt(x_LD, option = "scores", i = 3, j = 4, pop=rownames(poolfstat_matrix), col=colors.alphabetical)
+dev.off()
+
+# Display the loadings (contributions of each SNP to the PC) to evalutate if the loadings are clustered in a single or several genomic regions
+# You want the laodings to be evenly distributed 
+pdf("output/figures/outlier_analyses/pcadapt_loadings1:4.pdf", width = 8, height = 8)
+par(mfrow = c(2, 2))
+for (i in 1:4)
+  plot(x_LD$loadings[, i], pch = 19, cex = .3, ylab = paste0("Loadings PC", i))
+dev.off()
+
+# Manhattan plot
+pdf("output/figures/outlier_analyses/pcadapt_manhattan_LD_K5.pdf", width = 8, height = 8)
+pcadapt:::plot.pcadapt(x_LD, option = "manhattan")
+dev.off()
