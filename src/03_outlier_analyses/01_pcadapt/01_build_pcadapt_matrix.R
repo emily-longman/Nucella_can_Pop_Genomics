@@ -1,4 +1,6 @@
-# Build pcadapt matrix
+# Build pcadapt matrix 
+# i.e., build a matrix of relative frequencies with n rows and L columns, 
+# where n is the number of populations and L is the number of genetic markers
 
 # Clear memory
 rm(list=ls()) 
@@ -18,9 +20,14 @@ setwd(root_path)
 # ================================================================================== #
 
 # Load packages
-install.packages(c('poolfstat', 'WriteXLS'))
+install.packages(c('poolfstat', 'pcadapt', 'RColorBrewer'))
 library(poolfstat)
-library(WriteXLS)
+library(pcadapt)
+library(RColorBrewer)
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("qvalue")
+library(qvalue)
 
 # ================================================================================== #
 
@@ -40,6 +47,10 @@ min.cov.per.pool = 15, min.rc = 5, max.cov.per.pool = 120, min.maf = 0.01, nline
 
 # ================================================================================== #
 
+# S4 class to represent a pool-seq data set 
+# Need to convert this to a matrix (follow: https://github.com/chaberko-lbbe/clec-poolseq)
+
+# Specify reference allele for each population
 ref_STR <- pooldata@refallele.readcount[,1]
 ref_SLR <- pooldata@refallele.readcount[,2]
 ref_SH <- pooldata@refallele.readcount[,3]
@@ -60,6 +71,7 @@ ref_PB <- pooldata@refallele.readcount[,17]
 ref_PGP <- pooldata@refallele.readcount[,18]
 ref_PSN <- pooldata@refallele.readcount[,19]
 
+# Calculate alternate allele for each population
 alt_STR <- pooldata@readcoverage[,1] - pooldata@refallele.readcount[,1]
 alt_SLR <- pooldata@readcoverage[,2] - pooldata@refallele.readcount[,2]
 alt_SH <- pooldata@readcoverage[,3] - pooldata@refallele.readcount[,3]
@@ -80,6 +92,7 @@ alt_PB <- pooldata@readcoverage[,17] - pooldata@refallele.readcount[,17]
 alt_PGP <- pooldata@readcoverage[,18] - pooldata@refallele.readcount[,18]
 alt_PSN <- pooldata@readcoverage[,19] - pooldata@refallele.readcount[,19]
 
+# Calculate frequency for each population
 fq_STR <- ref_STR/pooldata@readcoverage[,1]
 fq_SLR <- ref_SLR/pooldata@readcoverage[,2]
 fq_SH <- ref_SH/pooldata@readcoverage[,3]
@@ -101,15 +114,18 @@ fq_PGP <- ref_PGP/pooldata@readcoverage[,18]
 fq_PSN <- ref_PSN/pooldata@readcoverage[,19]
 
 
-pooldata@snp.info[,1] <- substring(pooldata@snp.info[,1],1,12)
-SNP <-paste(pooldata@snp.info[,1],pooldata@snp.info[,2] ,sep="_")
+# pooldata@snp.info is a data frame (nsnp row and 4 columns) detailing for each SNP, the chromosome (or scaffold), the position, Reference allele name and Alternate allele name
 
+#pooldata@snp.info[,1] <- substring(pooldata@snp.info[,1], first=1,last=12)
+# Name each SNP based on its chromosome/scaffold and position
+SNP <- paste(pooldata@snp.info[,1], pooldata@snp.info[,2], sep="_")
 
+# Create matrix and rename columns and rows
 poolfstat_matrix = matrix(nrow=19, ncol=length(SNP))
 colnames(poolfstat_matrix) <- SNP
 rownames(poolfstat_matrix)=c("STR","SLR","SH","ARA", "BMR", "CBL", "FC", "FR", "HZD", "SBR", "PSG", "KH", "STC", "PL", "VD", "OCT", "PB", "PGP", "PSN")
 
-
+# Fill matrix with relative frequencies for each population
 poolfstat_matrix[1,]=fq_STR
 poolfstat_matrix[2,]=fq_SLR
 poolfstat_matrix[3,]=fq_SH
@@ -130,12 +146,128 @@ poolfstat_matrix[17,]=fq_PB
 poolfstat_matrix[18,]=fq_PGP
 poolfstat_matrix[19,]=fq_PSN
 
+# ================================================================================== #
+# ================================================================================== #
+
+# Run pcadapt
+
+# Load matrix into pcadapat
+pool.data <- read.pcadapt(poolfstat_matrix, type = "pool")
+
+# Read in metadata
+meta_path <- "data/processed/outlier_analyses/guide_files/Populations_metadata.csv"
+meta <- read.csv(meta_path, header=T)
+
+# ================================================================================== #
+
+# With Pool-Seq data, the package computes again a Mahalanobis distance based on PCA loadings.
+
+# Note: To choose K, principal component analysis should first be performed with a large enough number of principal components. 
+# Use scree plot and PCA to identify optimal K. 
+
+# Run pcadapt on data with large number of K
+# You can also set the parameter min.maf that corresponds to a threshold of minor allele frequency. 
+# By default, the parameter min.maf is set to 5%
+x <- pcadapt(input = pool.data, K = 18)
+
+# Graph screeplot (The ideal pattern in a scree plot is a steep curve followed by a bend and a straight line. 
+# The eigenvalues that correspond to random variation lie on a straight line whereas the ones that correspond to population structure 
+# lie on a steep curve). Keep PCs that correspond to eigenvalues to the left of the straight line (Cattell’s rule)
+pdf("output/figures/outlier_analyses/pcadapt_screeplot_K18.pdf", width = 8, height = 8)
+pcadapt:::plot.pcadapt(x, option = "screeplot")
+dev.off()
+
+# Color palette 
+nb.cols <- 19
+mycolors <- rev(colorRampPalette(brewer.pal(11, "RdBu"))(nb.cols))
+colors.reorder <- mycolors[c(19,2,3,4,11,5,1,10,17,14,6,8,7,13,9,18,16,12,15)]
+
+# Graph PCA - PC1 and PC2
+pdf("output/figures/outlier_analyses/pcadapt_pca_PC1_PC2_K18.pdf", width = 8, height = 8)
+pcadapt:::plot.pcadapt(x, option = "scores")
+dev.off()
+
+# Graph PCA - PC3 and PC4
+pdf("output/figures/outlier_analyses/pcadapt_pca_PC3_PC4_K18.pdf", width = 8, height = 8)
+plot(x, option = "scores", i = 3, j = 4)
+dev.off()
+
+# ================================================================================== #
+
+# Run pcadapt on data with optimal K
+x <- pcadapt(input = pool.data, K = 5)
+
+# Summary of pcadapt
+summary(x)
+
+# ================================================================================== #
+
+# Identify outliers 
+
+# Scree plot
+pdf("output/figures/outlier_analyses/pcadapt_screeplot_K6.pdf", width = 8, height = 8)
+pcadapt:::plot.pcadapt(x, option = "screeplot")
+dev.off()
+
+# Graph PCA - PC1 and PC2
+pdf("output/figures/outlier_analyses/pcadapt_pca_PC1_PC2_K5.pdf", width = 8, height = 8)
+pcadapt:::plot.pcadapt(x, option = "scores")
+dev.off()
+
+# Graph PCA - PC3 and PC4
+pdf("output/figures/outlier_analyses/pcadapt_pca_PC3_PC4_K5.pdf", width = 8, height = 8)
+pcadapt:::plot.pcadapt(x, option = "scores", i = 3, j = 4)
+dev.off()
+
+# Manhattan plot
+pdf("output/figures/outlier_analyses/pcadapt_manhattan_K5.pdf", width = 8, height = 8)
+pcadapt:::plot.pcadapt(x, option = "manhattan")
+dev.off()
+
+# QQ plot
+pdf("output/figures/outlier_analyses/pcadapt_qqplot_K5.pdf", width = 8, height = 8)
+pcadapt:::plot.pcadapt(x, option = "qqplot")
+dev.off()
+
+# Histogram of test statistic and p-val 
+pdf("output/figures/outlier_analyses/pcadapt_hist_K5.pdf", width = 8, height = 8)
+hist(x$pvalues, xlab = "p-values", main = NULL, breaks = 50, col = "orange")
+dev.off()
+
+# Histogram of the test statistic 𝐷𝑗
+pdf("output/figures/outlier_analyses/pcadapt_stat.dist_K5.pdf", width = 8, height = 8)
+pcadapt:::plot.pcadapt(x, option = "stat.distribution")
+dev.off()
+
+# ================================================================================== #
+
+# Identify which PCs SNPs are associate with
+get.pc(x, ) -> aux
+head(print(aux[,2]))
+
+# ================================================================================== #
+
+# Choose cut-off for outlier detection
+
+# q-value method 
+# SNPs with q-values less than 𝛼 (10%) will be considered as outliers with an expected false discovery rate bounded by 𝛼
+qval <- qvalue(x$pvalues)$qvalues
+alpha <- 0.1
+outliers <- which(qval < alpha)
+length(outliers) #1,932,068
+
+# Benjamini-Hochberg Procedue
+padj_BH <- p.adjust(x$pvalues, method="BH")
+alpha <- 0.1
+outliers_BH <- which(padj_BH < alpha)
+length(outliers_BH) #1,932,068
+
+# Bonferroni Correction
+padj_bonferroni <- p.adjust(x$pvalues, method="bonferroni")
+alpha <- 0.1
+outliers_bonferroni <- which(padj_bonferroni < alpha)
+length(outliers_bonferroni) #151,628
 
 
-
-# Save relative allele frequencies data 
-poolfstat_matrix <- as.data.frame(poolfstat_matrix)
-pooldata <- read.pcadapt(poolfstat_matrix, type = "pool")
-
-
-poolfstat_matrix[1:19,]
+# Get outlier snps associated with PCs
+snp_pc <- get.pc(x, outliers)

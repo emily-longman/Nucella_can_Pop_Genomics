@@ -21,11 +21,7 @@ setwd(root_path)
 # Load packages
 install.packages(c("pcadapt", "RColorBrewer"))
 library(pcadapt)
-library(ggplot2)
 library(RColorBrewer)
-#source("https://bioconductor.org/biocLite.R")
-#biocLite("qvalue")
-#library(qvalue)
 
 # ================================================================================== #
 

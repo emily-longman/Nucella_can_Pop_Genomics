@@ -31,6 +31,9 @@
 
 #--------------------------------------------------------------------------------
 
+# NOTE: LD filtering is impossible with pool-seq data! Pool-seq looses all LD information during sequencing.
+# Also, plink is not compatible with pool data.
+
 # This script will filter SNPs that are in LD. 
 
 # Load software

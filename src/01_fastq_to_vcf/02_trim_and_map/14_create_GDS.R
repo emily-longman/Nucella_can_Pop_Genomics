@@ -28,8 +28,8 @@ library(SeqArray)
 
 # Create a gds object from the vcf
 
-# Load the vcf file
-vcf.fn="data/processed/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf"
+# Load the vcf file (need a gz file)
+vcf.fn="data/processed/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.vcf.gz"
 
 # Parse the header
 seqVCF_Header(vcf.fn)
@@ -40,8 +40,6 @@ gds.fn=gsub(".vcf", ".gds", vcf.fn)
 vcf.fn=paste(vcf.fn, ".gz", sep="")
 
 # ================================================================================== #
-
-seqVCF2GDS(vcf.fn, gds.fn, storage.option="ZIP_RA")
 
 # Convert VCF to GDS
 seqVCF2GDS(vcf.fn, storage.option="ZIP_RA", "data/processed/fastq_to_vcf/gds/N.canaliculata_pops.gds")

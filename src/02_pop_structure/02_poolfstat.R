@@ -46,10 +46,16 @@ min.cov.per.pool = 15, min.rc = 5, max.cov.per.pool = 120, min.maf = 0.01, nline
 #min.cov.per.pool = 15, min.rc = 5, max.cov.per.pool = 120, min.maf = 0.01, nlines.per.readblock = 1e+06)
 
 # Filtered at 0.9 max missing (# variants: 24,939,340)
-pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_clean_max_missing_0.9/N.canaliculata_pops_filter.recode.vcf", 
-poolsizes=rep(40,19), poolnames=pops$V1, 
-min.cov.per.pool = 15, min.rc = 5, max.cov.per.pool = 120, min.maf = 0.01, nlines.per.readblock = 1e+06)
+#pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_clean_max_missing_0.9/N.canaliculata_pops_filter.recode.vcf", 
+#poolsizes=rep(40,19), poolnames=pops$V1, 
+#min.cov.per.pool = 15, min.rc = 5, max.cov.per.pool = 120, min.maf = 0.01, nlines.per.readblock = 1e+06)
 # Data consists of 11,656,080 SNPs for 19 Pools 
+
+# LD list 
+# ERROR: No field containing allele depth (AD field) was detected in the vcf file 
+#pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.recode.plink.LDfiltered_0.8.vcf", 
+#poolsizes=rep(40,19), poolnames=pops$V1, 
+#min.cov.per.pool = 15, min.rc = 5, max.cov.per.pool = 120, min.maf = 0.01, nlines.per.readblock = 1e+06)
 
 # min.cov.per.pool = the minimum allowed read count per pool for SNP to be called
 # min.rc =  the minimum # reads that an allele needs to have (across all pools) to be called 
