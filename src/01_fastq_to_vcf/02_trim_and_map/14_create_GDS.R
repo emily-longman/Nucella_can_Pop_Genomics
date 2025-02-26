@@ -29,7 +29,7 @@ library(SeqArray)
 # Create a gds object from the vcf
 
 # Load the vcf file (needs to be a .gz file)
-vcf.fn="data/processed/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.vcf"
+vcf.fn="data/processed/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter_minQ60_maxmissing1.0.recode.vcf"
 
 # Parse the header
 #seqVCF_Header(vcf.fn)
