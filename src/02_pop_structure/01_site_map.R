@@ -75,10 +75,10 @@ g <- ggplot(data = west_coast) +
   geom_point(data = sites, aes(x = longitude, y = latitude), size = 5, 
              shape = 21, fill = mycolors) + coord_fixed(1.3) +
   geom_text(data=sites, aes(long.site.labels, lat.site.labels, label=site))+ 
-  xlim(c(-134, -114)) +
+  xlim(c(-128, -114)) +
   xlab("Longitude") + ylab("Latitude") + theme_classic() 
 g + annotate(geom = 'text', size = 5,
-         x = -127, y = 34.2, label = 'Pacific Ocean', fontface = 'italic')
+         x = -126, y = 34.2, label = 'Pacific Ocean', fontface = 'italic')
 dev.off()
 
 # Create site map (full site names)
@@ -88,10 +88,10 @@ g <- ggplot(data = west_coast) +
   geom_point(data = sites, aes(x = longitude, y = latitude), size = 4, 
              shape = 21, fill = mycolors) + coord_fixed(1.3) +
   geom_text(data=sites, aes(long.site.labels.full, lat.site.labels, label=site.full))+ 
-  xlim(c(-134, -114)) +
+  xlim(c(-128, -114)) +
   xlab("Longitude") + ylab("Latitude") + theme_classic()
 g + annotate(geom = 'text', size = 5,
-         x = -127, y = 34.2, label = 'Pacific Ocean', fontface = 'italic')
+         x = -126, y = 34.2, label = 'Pacific Ocean', fontface = 'italic')
 dev.off()
 
 # ================================================================================== #

@@ -128,7 +128,7 @@ pdf("output/figures/pop_structure/PCA_all_SNPs_PC1_PC2.pdf", width = 8, height =
 pca <- plot(pooldata.pca$pop.loadings[,1],pooldata.pca$pop.loadings[,2],
 xlab=paste0("PC",1," (",round(pooldata.pca$perc.var[1],2),"%)"),
 ylab=paste0("PC",2," (",round(pooldata.pca$perc.var[2],2),"%)"),
-col="black", bg=colors.reorder, pch=21, cex = 2, main="Read Count data")
+col="black", bg=colors.reorder, pch=21, cex = 3, main="Read Count data")
 abline(h=0,lty=2,col="grey") ; abline(v=0,lty=2,col="grey")
 dev.off()
 
@@ -137,7 +137,7 @@ pdf("output/figures/pop_structure/PCA_all_SNPs_PC3_PC4.pdf", width = 8, height =
 pca <- plot(pooldata.pca$pop.loadings[,3],pooldata.pca$pop.loadings[,4],
 xlab=paste0("PC",3," (",round(pooldata.pca$perc.var[3],2),"%)"),
 ylab=paste0("PC",4," (",round(pooldata.pca$perc.var[4],2),"%)"),
-col="black", bg=colors.reorder,pch=21, cex = 2, main="Read Count data")
+col="black", bg=colors.reorder,pch=21, cex = 3, main="Read Count data")
 abline(h=0,lty=2,col="grey") ; abline(v=0,lty=2,col="grey")
 dev.off()
 
@@ -146,7 +146,7 @@ pdf("output/figures/pop_structure/PCA_all_SNPs_PC5_PC6.pdf", width = 8, height =
 pca <- plot(pooldata.pca$pop.loadings[,5],pooldata.pca$pop.loadings[,6],
 xlab=paste0("PC",5," (",round(pooldata.pca$perc.var[5],2),"%)"),
 ylab=paste0("PC",6," (",round(pooldata.pca$perc.var[6],2),"%)"),
-col="black", bg=colors.reorder,pch=21, cex = 2, main="Read Count data")
+col="black", bg=colors.reorder,pch=21, cex = 3, main="Read Count data")
 abline(h=0,lty=2,col="grey") ; abline(v=0,lty=2,col="grey")
 dev.off()
 
@@ -169,6 +169,92 @@ ylab=paste0("PC",4," (",round(pooldata.pca$perc.var[4],2),"%)"))
 text(pooldata.pca$pop.loadings[,3], pooldata.pca$pop.loadings[,4], pooldata@poolnames, cex=0.5)
 abline(h=0,lty=2,col="grey") ; abline(v=0,lty=2,col="grey")
 dev.off()
+
+# ================================================================================== #
+
+library(maps) 
+library(mapdata)
+library(ggrepel)
+
+# Read in metadata 
+metadata <- read.csv("data/processed/pop_structure/guide_files/Populations_metadata.csv", header=T)
+
+# Get state data
+states <- map_data("state")
+# Subset data for only California and Oregon
+west_coast <- subset(states, region %in% c("california", "oregon"))
+
+# Combine PC loadings with metadata
+metadata$PC1 <- round(pooldata.pca$pop.loadings[,1],3)
+metadata$PC2 <- round(pooldata.pca$pop.loadings[,2],3)
+metadata$PC3 <- round(pooldata.pca$pop.loadings[,3],3)
+metadata$PC4 <- round(pooldata.pca$pop.loadings[,4],3)
+metadata$PC5 <- round(pooldata.pca$pop.loadings[,5],3)
+metadata$PC6 <- round(pooldata.pca$pop.loadings[,6],3)
+
+
+pdf("output/figures/pop_structure/Map_PC1.pdf", width = 8, height = 8)
+ggplot(data = west_coast) + 
+  geom_polygon(aes(x = long, y = lat, group = group), fill = "white", color = "black") + 
+  geom_point(data = metadata, aes(x = Long, y = Lat, fill = PC1), shape = 21, size = 5) + 
+  scale_fill_gradient(low = "firebrick", high = "gray27") + 
+             coord_fixed(1.3) +
+  xlim(c(-128, -114)) +
+  xlab("Longitude") + ylab("Latitude") + theme_classic() + ggtitle("PC 1 projections onto Map")
+dev.off()
+
+pdf("output/figures/pop_structure/Map_PC2.pdf", width = 8, height = 8)
+ggplot(data = west_coast) + 
+  geom_polygon(aes(x = long, y = lat, group = group), fill = "white", color = "black") + 
+  geom_point(data = metadata, aes(x = Long, y = Lat, fill = PC2), shape = 21, size = 5) + 
+  scale_fill_gradient(low = "cyan1", high = "gray27") + 
+             coord_fixed(1.3) +
+  xlim(c(-128, -114)) +
+  xlab("Longitude") + ylab("Latitude") + theme_classic() + ggtitle("PC 2 projections onto Map")
+dev.off()
+
+pdf("output/figures/pop_structure/Map_PC3.pdf", width = 8, height = 8)
+ggplot(data = west_coast) + 
+  geom_polygon(aes(x = long, y = lat, group = group), fill = "white", color = "black") + 
+  geom_point(data = metadata, aes(x = Long, y = Lat, fill = PC3), shape = 21, size = 5) + 
+  scale_fill_gradient(low = "orchid", high = "gray27") + 
+             coord_fixed(1.3) +
+  xlim(c(-128, -114)) +
+  xlab("Longitude") + ylab("Latitude") + theme_classic() + ggtitle("PC 3 projections onto Map")
+dev.off()
+
+pdf("output/figures/pop_structure/Map_PC4.pdf", width = 8, height = 8)
+ggplot(data = west_coast) + 
+  geom_polygon(aes(x = long, y = lat, group = group), fill = "white", color = "black") + 
+  geom_point(data = metadata, aes(x = Long, y = Lat, fill = PC4), shape = 21, size = 5) + 
+  scale_fill_gradient(low = "gold", high = "gray27") + 
+             coord_fixed(1.3) +
+  xlim(c(-128, -114)) +
+  xlab("Longitude") + ylab("Latitude") + theme_classic() + ggtitle("PC 4 projections onto Map")
+dev.off()
+
+pdf("output/figures/pop_structure/Map_PC5.pdf", width = 8, height = 8)
+ggplot(data = west_coast) + 
+  geom_polygon(aes(x = long, y = lat, group = group), fill = "white", color = "black") + 
+  geom_point(data = metadata, aes(x = Long, y = Lat, fill = PC5), shape = 21, size = 5) + 
+  scale_fill_gradient(low = "darkolivegreen2", high = "gray27") + 
+             coord_fixed(1.3) +
+  xlim(c(-128, -114)) +
+  xlab("Longitude") + ylab("Latitude") + theme_classic() + ggtitle("PC 5 projections onto Map")
+dev.off()
+
+pdf("output/figures/pop_structure/Map_PC6.pdf", width = 8, height = 8)
+ggplot(data = west_coast) + 
+  geom_polygon(aes(x = long, y = lat, group = group), fill = "white", color = "black") + 
+  geom_point(data = metadata, aes(x = Long, y = Lat, fill = PC6), shape = 21, size = 5) + 
+  scale_fill_gradient(low = "darkorange1", high = "gray27") + 
+             coord_fixed(1.3) +
+  xlim(c(-128, -114)) +
+  xlab("Longitude") + ylab("Latitude") + theme_classic() + ggtitle("PC 6 projections onto Map")
+dev.off()
+
+
+save.image("data/processed/pop_structure/N.can_poolfstat.RData")
 
 # ================================================================================== #
 
