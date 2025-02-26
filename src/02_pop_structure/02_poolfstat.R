@@ -40,22 +40,16 @@ poolsizes=rep(40,19), poolnames=pops$V1,
 min.cov.per.pool = 15, min.rc = 5, max.cov.per.pool = 120, min.maf = 0.01, nlines.per.readblock = 1e+06)
 # Data consists of 11,656,080 SNPs for 19 Pools
 
-# Raw vcf
-#pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf.gz", 
-#poolsizes=rep(40,19), poolnames=pops$V1, 
-#min.cov.per.pool = 15, min.rc = 5, max.cov.per.pool = 120, min.maf = 0.01, nlines.per.readblock = 1e+06)
+# Read in data and filter (note: the input vcf is the vcf output from 12_filter_vcf.sh - # variants: 14,897,468)
+pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter_minQ60_maxmissing1.0.recode.vcf", 
+poolsizes=rep(40,19), poolnames=pops$V1, 
+min.cov.per.pool = 15, min.rc = 5, max.cov.per.pool = 120, min.maf = 0.01, nlines.per.readblock = 1e+06)
+# Data consists of 9,698,716 SNPs for 19 Pools
 
-# Filtered at 0.9 max missing (# variants: 24,939,340)
-#pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_clean_max_missing_0.9/N.canaliculata_pops_filter.recode.vcf", 
+#pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter_minQ50_maxmissing0.9.recode.vcf", 
 #poolsizes=rep(40,19), poolnames=pops$V1, 
 #min.cov.per.pool = 15, min.rc = 5, max.cov.per.pool = 120, min.maf = 0.01, nlines.per.readblock = 1e+06)
-# Data consists of 11,656,080 SNPs for 19 Pools 
-
-# LD list 
-# ERROR: No field containing allele depth (AD field) was detected in the vcf file 
-#pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_clean_LD/N.canaliculata_pops_filter.recode.plink.LDfiltered_0.8.vcf", 
-#poolsizes=rep(40,19), poolnames=pops$V1, 
-#min.cov.per.pool = 15, min.rc = 5, max.cov.per.pool = 120, min.maf = 0.01, nlines.per.readblock = 1e+06)
+# Data consists of 9,804,957 SNPs for 19 Pools
 
 # min.cov.per.pool = the minimum allowed read count per pool for SNP to be called
 # min.rc =  the minimum # reads that an allele needs to have (across all pools) to be called 
@@ -147,7 +141,7 @@ abline(h=0,lty=2,col="grey") ; abline(v=0,lty=2,col="grey")
 dev.off()
 
 # Plotting PC3 and PC4
-pdf("output/figures/pop_structure/PCA_all_SNPs_PC3_PC4.pdf", width = 8, height = 8)
+pdf("output/figures/pop_structure/PCA_all_SNPs_PC3_PC4_minQ60_maxmissing1.0.pdf", width = 8, height = 8)
 pca <- plot(pooldata.pca$pop.loadings[,3],pooldata.pca$pop.loadings[,4],
 xlab=paste0("PC",3," (",round(pooldata.pca$perc.var[3],2),"%)"),
 ylab=paste0("PC",4," (",round(pooldata.pca$perc.var[4],2),"%)"),
