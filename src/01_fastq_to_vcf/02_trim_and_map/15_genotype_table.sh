@@ -56,10 +56,14 @@ fi
 
 #--------------------------------------------------------------------------------
 
-
-
-
-
-#output genotype table (variable loci)
+# Generate genotype table 
 bcftools query -f '%CHROM %POS[\t%GT]\n' \
-snpcall_all/snpcall.final.rmdup.chr.${chr}.flt3.vcf.gz > snpcall_all/varpos.final.rmdup.chr.${chr}.flt3.genotypes.txt
+$WORKING_FOLDER/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter_minQ60_maxmissing1.0.recode.vcf > $WORKING_FOLDER/fastq_to_vcf/genotype_table/N.canaliculata.genotypes.txt
+
+# bcftools query parameters:
+# -f --format: output format (i.e., which of the vcf fields to display and how to structure the output)
+## %CHROM: The CHROM column
+## %POS: The POS column
+# []: FORMAT tags can be extracted using the square bracket, which loops over all samples.
+# \tL tab character
+# \n: newline character
