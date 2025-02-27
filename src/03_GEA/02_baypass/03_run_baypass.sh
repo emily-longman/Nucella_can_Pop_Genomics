@@ -5,7 +5,7 @@
 # Request cluster resources ----------------------------------------------------
 
 # Name this job
-#SBATCH --job-name=baypass_run
+#SBATCH --job-name=baypass_xtx
 
 # Specify partition
 #SBATCH --partition=general
@@ -26,7 +26,7 @@
 #SBATCH --cpus-per-task=1
 
 # Submit job array
-#SBATCH --array=1
+#SBATCH --array=0001-0002
 
 # Name output of this job using %x=job-name and %j=job-id
 #SBATCH --output=./slurmOutput/%x.%A_%a.out # Standard output
@@ -37,11 +37,11 @@
 
 #--------------------------------------------------------------------------------
 
-# This script will perform the first step in running baypass. 
+# This script will run baypass in core model (i.e., xtx mode) not using an omega file. 
+# Instead, it will run baypass on subsets/chunks of the gfile. The 1000 chunks were generated in the previous R script (03_generate_chunks.R).
 
 # Load modules 
 module load gcc/13.3.0-xp3epyt
-module load openmpi/5.0.5
 baypass=/gpfs1/home/e/l/elongman/software/baypass_public/sources/g_baypass
 
 #--------------------------------------------------------------------------------
@@ -53,36 +53,31 @@ WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed
 
 #--------------------------------------------------------------------------------
 
+# Generate Folders and files
+
+# Move to working directory
+cd $WORKING_FOLDER/GEA/baypass
+
+# This part of the script will check and generate, if necessary, all of the output folders used in the script
+if [ -d "xtx" ]
+then echo "Working xtx folder exist"; echo "Let's move on."; date
+else echo "Working xtx folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/GEA/baypass/xtx; date
+fi
+
+#--------------------------------------------------------------------------------
+
+echo "Running baypass on chunk:" "genobaypass_chunk_${SLURM_ARRAY_TASK_ID}.txt"
+
+#--------------------------------------------------------------------------------
+
 # Change directory 
-cd $WORKING_FOLDER/GEA/baypass/baypass_chunks
+cd $WORKING_FOLDER/GEA/baypass/xtx
 
-
-
-
-# Split genotype file into 1000 chunks (you would need a script or command for this)
-# Assume `chunk_$SLURM_ARRAY_TASK_ID.txt` are the split chunks
-
-# Run BayPass for each chunk
-/users/d/s/dsadler1/programmes/baypass_public-master/sources/./g_baypass \
--gfile genotypefilechunk_$SLURM_ARRAY_TASK_ID.txt \
--outprefix noomega_${outputfile}_$SLURM_ARRAY_TASK_ID -nthreads 8
-
-
-
-
-
-# Run baypass - this will generate the omega file which will be used in the subsequent scripts
+# Run baypass for each chunk
 $baypass -npop 19 \
--gfile $WORKING_FOLDER/GEA/baypass/genobaypass \
+-gfile $WORKING_FOLDER/GEA/baypass/genobaypass/baypass_chunks/genobaypass_chunk_${SLURM_ARRAY_TASK_ID}.txt \
 -poolsizefile $WORKING_FOLDER/GEA/baypass/poolsize \
 -d0yij 4 \
--outprefix NC_baypass \
+-outprefix NC_baypass_no_omega_xtx_${SLURM_ARRAY_TASK_ID} \
 -nthreads 8
 
-
-
-# Split genotype file into 1000 chunks (you would need a script or command for this)
-# Assume `chunk_$SLURM_ARRAY_TASK_ID.txt` are the split chunks
-
-# Run BayPass for each chunk
-/users/d/s/dsadler1/programmes/baypass_public-master/sources/./g_baypass -gfile genotypefilechunk_$SLURM_ARRAY_TASK_ID.txt -efile ${inputfile} -outprefix noomega_${outputfile}_$SLURM_ARRAY_TASK_ID -nthreads 8

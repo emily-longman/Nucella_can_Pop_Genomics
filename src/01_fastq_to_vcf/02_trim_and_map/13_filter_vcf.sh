@@ -54,11 +54,6 @@ then echo "Working vcf_clean folder exist"; echo "Let's move on."; date
 else echo "Working vcf_clean folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/fastq_to_vcf/vcf_clean; date
 fi
 
-#if [ -d "vcf_clean_max_missing_0.9" ]
-#then echo "Working vcf_clean_max_missing_0.9 folder exist"; echo "Let's move on."; date
-#else echo "Working vcf_clean_max_missing_0.9 folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/fastq_to_vcf/vcf_clean_max_missing_0.9; date
-#fi
-
 #--------------------------------------------------------------------------------
 
 # Filter vcf
