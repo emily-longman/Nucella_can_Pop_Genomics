@@ -61,7 +61,7 @@ fi
 
 #--------------------------------------------------------------------------------
 
-# Calculate diversity
+# Calculate diversity metric for each population using the final bam files
 
 $grenedalf diversity \
 --sam-path $WORKING_FOLDER/fastq_to_vcf/RGSM_final_bams/*.bam \
