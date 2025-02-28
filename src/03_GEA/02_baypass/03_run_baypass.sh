@@ -75,7 +75,7 @@ cd $WORKING_FOLDER/GEA/baypass/xtx
 
 # Run baypass for each chunk
 $baypass -npop 19 \
--gfile $WORKING_FOLDER/GEA/baypass/genobaypass/baypass_chunks/genobaypass_chunk_${SLURM_ARRAY_TASK_ID}.txt \
+-gfile $WORKING_FOLDER/GEA/baypass/baypass_chunks/genobaypass_chunk_${SLURM_ARRAY_TASK_ID}.txt \
 -poolsizefile $WORKING_FOLDER/GEA/baypass/poolsize \
 -d0yij 4 \
 -outprefix NC_baypass_no_omega_xtx_${SLURM_ARRAY_TASK_ID} \
