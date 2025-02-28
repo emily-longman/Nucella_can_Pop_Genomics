@@ -13,9 +13,6 @@
 # Request nodes
 #SBATCH --nodes=1 
 
-# Request one task
-#SBATCH --ntasks=8
-
 # Reserve walltime -- hh:mm:ss --30 hrs max
 #SBATCH --time=30:00:00 
 
@@ -23,7 +20,7 @@
 #SBATCH --mem=60G 
 
 # Request CPU
-#SBATCH --cpus-per-task=1
+#SBATCH --cpus-per-task=8
 
 # Submit job array
 #SBATCH --array=0001-0002
