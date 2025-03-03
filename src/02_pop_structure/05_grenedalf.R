@@ -1,4 +1,4 @@
-# Calculate Fst statistics and gnerate PCA of all SNPs
+# Analyze grenedalf output pop gen statistics
 
 # Clear memory
 rm(list=ls()) 
