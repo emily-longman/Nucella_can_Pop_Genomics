@@ -66,7 +66,7 @@ cd $WORKING_FOLDER/GEA/baypass/xtx
 $baypass -npop 19 \
 -gfile $WORKING_FOLDER/GEA/baypass/genobaypass \
 -poolsizefile $WORKING_FOLDER/GEA/baypass/poolsize \
--omegafile $WORKING_FOLDER/GEA/baypass/omega/NC_baypass_mat_omega.out\
+-omegafile $WORKING_FOLDER/GEA/baypass/omega/NC_baypass_mat_omega.out \
 -d0yij 4 \
 -outprefix NC_baypass_core \
 -nthreads 15
