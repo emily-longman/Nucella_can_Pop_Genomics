@@ -20,7 +20,7 @@
 #SBATCH --mem=60G 
 
 # Request CPU
-#SBATCH --cpus-per-task=20
+#SBATCH --cpus-per-task=15
 
 # Name output of this job using %x=job-name and %j=job-id
 #SBATCH --output=./slurmOutput/%x.%j.out # Standard output
@@ -69,5 +69,5 @@ $baypass -npop 19 \
 -omega $WORKING_FOLDER/GEA/baypass/omega/NC_baypass_mat_omega.out\
 -d0yij 4 \
 -outprefix NC_baypass_core \
--nthreads 20
+-nthreads 15
 
