@@ -68,11 +68,30 @@ $grenedalf diversity \
 --pool-sizes $WORKING_FOLDER/pop_gen/guide_files/Grenedalf_pool_size.csv \
 --window-type genome \
 --window-average-policy valid-loci \
+--sam-min-map-qual 60 \
 --filter-sample-min-count 2 \
 --filter-sample-min-read-depth 20 \
+--filter-sample-max-read-depth 120 \
+--filter-total-only-biallelic-snps \
 --reference-genome-fasta $REFERENCE \
---out-dir $WORKING_FOLDER/pop_gen/grenedalf \
---no-extra-columns
+--out-dir $WORKING_FOLDER/pop_gen/grenedalf_filt 
+
+# Notes: 
+# The --filter-sample-min-count has to be set to exactly 2 when computing Tajima's D
+# The correction terms for Theta Pi and Theta Watterson make use of the --filter-sample-min-read-depth, by computing a sum over values 
+# in that range. Due to the exact way that this correction works, it is recommended to use a minimum read depth of at least twice the minimum per-base count
+
+
+#$grenedalf diversity \
+#--sam-path $WORKING_FOLDER/fastq_to_vcf/RGSM_final_bams/*.bam \
+#--pool-sizes $WORKING_FOLDER/pop_gen/guide_files/Grenedalf_pool_size.csv \
+#--window-type genome \
+#--window-average-policy valid-loci \
+#--filter-sample-min-count 2 \
+#--filter-sample-min-read-depth 20 \
+#--reference-genome-fasta $REFERENCE \
+#--out-dir $WORKING_FOLDER/pop_gen/grenedalf \
+#--no-extra-columns
 
 
 
