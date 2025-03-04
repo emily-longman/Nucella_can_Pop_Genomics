@@ -37,10 +37,15 @@ NC.omega <- as.matrix(read.table("data/processed/GEA/baypass/omega/NC_baypass_ma
 colnames(NC.omega) <- pops$V1
 rownames(NC.omega) <- pops$V1
 
+write.table(NC.omega, "output/tables/NC.omega.txt", sep='\t')
+
+# Re-order populations so in latitudinal order
+NC.omega_reorder <- as.matrix(read.table("output/tables/NC.omega_reorder.txt", header=T))
+
 # ================================================================================== #
 
 # Create a correlation matrix of the omega values -- assess genomic differentiation between pools
-cor.mat <- cov2cor(NC.omega)
+cor.mat <- cov2cor(NC.omega_reorder)
 
 pdf("output/figures/GEA/Baypass_omega_cor_matrix.pdf", width = 5, height = 5)
 corrplot(cor.mat, method = "color", mar=c(2,1,2,2)+0.1, main=expression("Correlation map based on"~hat(Omega)))
