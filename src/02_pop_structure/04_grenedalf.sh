@@ -5,16 +5,16 @@
 # Request cluster resources ----------------------------------------------------
 
 # Name this job
-#SBATCH --job-name=grenedalf
+#SBATCH --job-name=grenedalf_window
 
 # Specify partition
-#SBATCH --partition=general
+#SBATCH --partition=week
 
 # Request nodes
 #SBATCH --nodes=1 
 
 # Reserve walltime -- hh:mm:ss --30 hrs max
-#SBATCH --time=30:00:00 
+#SBATCH --time=3-00:00:00 
 
 # Request memory for the entire job -- you can request --mem OR --mem-per-cpu
 #SBATCH --mem=5G 
@@ -63,25 +63,25 @@ fi
 
 # Calculate diversity metric for each population using the final bam files
 
-$grenedalf diversity \
---sam-path $WORKING_FOLDER/fastq_to_vcf/RGSM_final_bams/*.bam \
---pool-sizes $WORKING_FOLDER/pop_gen/guide_files/Grenedalf_pool_size.csv \
---window-type genome \
---window-average-policy valid-loci \
---sam-min-map-qual 60 \
---filter-sample-min-count 2 \
---filter-sample-min-read-depth 20 \
---filter-sample-max-read-depth 120 \
---filter-total-only-biallelic-snps \
---reference-genome-fasta $REFERENCE \
---out-dir $WORKING_FOLDER/pop_gen/grenedalf_filt 
+#$grenedalf diversity \
+#--sam-path $WORKING_FOLDER/fastq_to_vcf/RGSM_final_bams/*.bam \
+#--pool-sizes $WORKING_FOLDER/pop_gen/guide_files/Grenedalf_pool_size.csv \
+#--window-type genome \
+#--window-average-policy valid-loci \
+#--sam-min-map-qual 60 \
+#--filter-sample-min-count 2 \
+#--filter-sample-min-read-depth 20 \
+#--filter-sample-max-read-depth 120 \
+#--filter-total-only-biallelic-snps \
+#--reference-genome-fasta $REFERENCE \
+#--out-dir $WORKING_FOLDER/pop_gen/grenedalf_filt 
 
 # Notes: 
 # The --filter-sample-min-count has to be set to exactly 2 when computing Tajima's D
 # The correction terms for Theta Pi and Theta Watterson make use of the --filter-sample-min-read-depth, by computing a sum over values 
 # in that range. Due to the exact way that this correction works, it is recommended to use a minimum read depth of at least twice the minimum per-base count
 
-
+# Original run:
 #$grenedalf diversity \
 #--sam-path $WORKING_FOLDER/fastq_to_vcf/RGSM_final_bams/*.bam \
 #--pool-sizes $WORKING_FOLDER/pop_gen/guide_files/Grenedalf_pool_size.csv \
@@ -94,5 +94,21 @@ $grenedalf diversity \
 #--no-extra-columns
 
 
+#--------------------------------------------------------------------------------
 
+# Calculate Tajima's D on a sliding window.
 
+$grenedalf diversity \
+--sam-path $WORKING_FOLDER/fastq_to_vcf/RGSM_final_bams/*.bam \
+--pool-sizes $WORKING_FOLDER/pop_gen/guide_files/Grenedalf_pool_size.csv \
+--window-type interval \
+--window-interval-width 25000 \
+--window-interval-stride 5000 \
+--window-average-policy valid-loci \
+--sam-min-map-qual 60 \
+--filter-sample-min-count 2 \
+--filter-sample-min-read-depth 20 \
+--filter-sample-max-read-depth 120 \
+--filter-total-only-biallelic-snps \
+--reference-genome-fasta $REFERENCE \
+--out-dir $WORKING_FOLDER/pop_gen/grenedalf_window 
