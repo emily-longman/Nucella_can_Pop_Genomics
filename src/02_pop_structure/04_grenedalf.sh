@@ -54,9 +54,9 @@ REFERENCE=$REFERENCE_FOLDER/N.canaliculata_assembly.fasta.softmasked.fa
 cd $WORKING_FOLDER/pop_gen
 
 # This part of the script will check and generate, if necessary, all of the output folders used in the script
-if [ -d "grenedalf" ]
-then echo "Working grenedalf folder exist"; echo "Let's move on."; date
-else echo "Working grenedalf folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/pop_gen/grenedalf; date
+if [ -d "grenedalf_window" ]
+then echo "Working grenedalf_window folder exist"; echo "Let's move on."; date
+else echo "Working grenedalf_window folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/pop_gen/grenedalf_window; date
 fi
 
 #--------------------------------------------------------------------------------
@@ -80,19 +80,6 @@ fi
 # The --filter-sample-min-count has to be set to exactly 2 when computing Tajima's D
 # The correction terms for Theta Pi and Theta Watterson make use of the --filter-sample-min-read-depth, by computing a sum over values 
 # in that range. Due to the exact way that this correction works, it is recommended to use a minimum read depth of at least twice the minimum per-base count
-
-# Original run:
-#$grenedalf diversity \
-#--sam-path $WORKING_FOLDER/fastq_to_vcf/RGSM_final_bams/*.bam \
-#--pool-sizes $WORKING_FOLDER/pop_gen/guide_files/Grenedalf_pool_size.csv \
-#--window-type genome \
-#--window-average-policy valid-loci \
-#--filter-sample-min-count 2 \
-#--filter-sample-min-read-depth 20 \
-#--reference-genome-fasta $REFERENCE \
-#--out-dir $WORKING_FOLDER/pop_gen/grenedalf \
-#--no-extra-columns
-
 
 #--------------------------------------------------------------------------------
 
