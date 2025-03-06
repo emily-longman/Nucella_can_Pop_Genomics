@@ -5,7 +5,7 @@
 # Request cluster resources ----------------------------------------------------
 
 # Name this job
-#SBATCH --job-name=npstat
+#SBATCH --job-name=npstat_array
 
 # Specify partition
 #SBATCH --partition=general
@@ -20,7 +20,7 @@
 #SBATCH --mem=10G 
 
 # Submit job array
-#SBATCH --array=1 #-379%30
+#SBATCH --array=1-379%30
 
 # Name output of this job using %x=job-name and %j=job-id
 #SBATCH --output=./slurmOutput/%x.%j.out # Standard output
