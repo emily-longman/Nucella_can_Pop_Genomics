@@ -5,7 +5,7 @@
 # Request cluster resources ----------------------------------------------------
 
 # Name this job
-#SBATCH --job-name=baypass_C2
+#SBATCH --job-name=baypass_C2_no_PGP
 
 # Specify partition
 #SBATCH --partition=week
@@ -68,8 +68,8 @@ $baypass -npop 19 \
 -gfile $WORKING_FOLDER/GEA/baypass/genobaypass \
 -poolsizefile $WORKING_FOLDER/GEA/baypass/poolsize \
 -omegafile $WORKING_FOLDER/GEA/baypass/omega/NC_baypass_mat_omega.out \
--contrastfile $WORKING_FOLDER/GEA/guide_files/NC.baypass.C2_guide.file.txt \
+-contrastfile $WORKING_FOLDER/GEA/guide_files/NC.baypass.C2_guide.file_no_PGP.txt \
 -d0yij 4 \
--outprefix NC_baypass_C2 \
+-outprefix NC_baypass_C2_no_PGP \
 -nthreads 20
 
