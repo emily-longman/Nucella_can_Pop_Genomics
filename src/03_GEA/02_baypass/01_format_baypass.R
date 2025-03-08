@@ -24,7 +24,7 @@ library(poolfstat)
 # ================================================================================== #
 
 # Read in population names
-pops <- read.table("data/processed/pop_structure/guide_files/Nucella_pops.list", header=F)
+pops <- read.table("data/processed/fastq_to_vcf/guide_files/N.canaliculata_pops.vcf_pop_names.txt", header=F)
 
 # ================================================================================== #
 
