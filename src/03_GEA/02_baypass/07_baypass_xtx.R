@@ -18,8 +18,10 @@ setwd(root_path)
 # ================================================================================== #
 
 # Load packages
-install.packages(c('WriteXLS'))
-library(WriteXLS)
+install.packages(c('data.table', 'dplyr', 'ggplot2'))
+library(data.table)
+library(dplyr)
+library(ggplot2)
 
 # ================================================================================== #
 
@@ -27,11 +29,15 @@ library(WriteXLS)
 NC.omega <- as.matrix(read.table("data/processed/GEA/baypass/omega/NC_baypass_mat_omega.out"))
 XtX <- read.table("data/processed/GEA/baypass/xtx/NC_baypass_core_summary_pi_xtx.out", header=T)
 pops <- read.table("data/processed/fastq_to_vcf/guide_files/N.canaliculata_pops.vcf_pop_names.txt", header=F)
+snp.meta <- read.table("data/processed/GEA/baypass/snpdet", header=F)
 
 # Re-name pool names 
 colnames(NC.omega) <- pops$V1
 rownames(NC.omega) <- pops$V1
 
+# Re-name snp metadata
+colnames(snp.meta) <- c("chr", "pos", "allele1", "allele2")
+ 
 # ================================================================================== #
 
 # Check the behavior of the p-values associated to the XtXst estimator
@@ -52,23 +58,66 @@ abline(h=3, lty=2) #0.001 p-value threshold
 dev.off()
 
 # ================================================================================== #
+
+# Merge baypass results and SNP metadata 
+SNP.XtX <- cbind(snp.meta, XtX)
+SNP.XtX.dt <- as.data.table(SNP.XtX)
+
 # ================================================================================== #
-# ================================================================================== #
 
-# Use pseudo-observed data (POD) to calibrate the XtX
+# Import local score functions (https://forge-dga.jouy.inra.fr/documents/809).
+source('data/processed/GEA/baypass/xtx/localscore/scorelocalfunctions.R')
 
-# Load packages
-source("/gpfs1/home/e/l/elongman/software/baypass_public/utils/baypass_utils.R")
-install.packages('mvtnorm')
-library(mvtnorm)
+# Create key based on the chromosome
+setkey(SNP.XtX.dt, chr)
+# Total number of chromosomes (18,369)
+Nchr=length(SNP.XtX.dt[,unique(chr)])
+
+# Compute the absolute position in the genome. This is useful for doing genome-wide plots.
+chrInfo=SNP.XtX.dt[,.(L=.N, cor=autocor(log10.1.pval.)), chr]
+setkey(chrInfo, chr)
+tmp=data.table(chr=SNP.XtX.dt[,unique(chr),], S=cumsum(c(0,chrInfo$L[-Nchr])))
+setkey(tmp,chr)
+SNP.XtX.dt[tmp,posT:=pos+S]
 
 
-# Get estimates (posterior mean) for both the a_pi and b_pi parameters or the Pi Beta distribution
-pi.beta.coef=read.table("data/processed/GEA/baypass/xtx/NC_baypass_core_summary_beta_params.out", h=T)$Mean
+# Choice of $\xi$ (1,2,3 or 4)
 
-# Update the original data to obtain total allele count
-NC.genobaypass=geno2YN("data/processed/GEA/baypass/genobaypass")
+# To choose the apropiate threshold ($\xi = 1$ or 2) we look at the distribution of −log10(p − value). Then the score function will be $−log10(p − value) − \xi$. 
 
-# Create the POD
-simu.NC<-simulate.baypass(omega.mat=NC.omega, nsnp=8277206, sample.size=NC.genobaypass$NN, beta.pi=pi.beta.coef, pi.maf=0, suffix="data/processed/GEA/baypass/NC.baypass.sim")
+pdf("output/figures/GEA/Baypass_xtx_lindley_qplot.pdf", width = 5, height = 5)
+qplot(log10.1.pval., data=SNP.XtX.dt, geom='histogram', binwidth=0.1, main='P-values histogram')
+dev.off()
+
+mean(-log10(SNP.XtX.dt$log10.1.pval.)) #0.6148583
+
+# Remember that we have to choose some value between mean(-log10(mydata$pval)) and max(-log10(mydata$pval)).
+mean(SNP.XtX.dt$log10.1.pval.)  #0.4177791
+max(SNP.XtX.dt$log10.1.pval.) #10.44488
+
+pdf("output/figures/GEA/Baypass_xtx_lindley_plot.pdf", width = 5, height = 5)
+p<-ggplot(data=SNP.XtX.dt, aes(posT,log10.1.pval.)) + geom_point()
+p + geom_abline(intercept=c(1,2) , slope=0) 
+dev.off()
+
+# Computation of the score and the Lindley Process
+
+xi=2
+SNP.XtX.dt[,score:= log10.1.pval.-xi]
+# The score mean must be negative
+mean(SNP.XtX.dt$score) # -1.582221
+SNP.XtX.dt[,lindley:=lindley(score),chr]
+
+# Compute significance threshold for each chromosome
+
+# Uniform distribution of p-values
+
+# If the distribution of the p-values is uniform and if $\xi=1$ or 2, 
+# it is possible to compute the thresholds of significancy for each chromosome directely, given the length and the autocorrelation of the chromosome .
+
+chrInfo[,th:=thresUnif(L, cor, 2),chr]
+SNP.XtX.dt=SNP.XtX.dt[chrInfo]
+sigZones=SNP.XtX.dt[chrInfo, sig_sl(lindley, pos, unique(th)),chr]
+
+
 
