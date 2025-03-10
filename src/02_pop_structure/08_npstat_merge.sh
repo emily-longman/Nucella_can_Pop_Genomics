@@ -28,13 +28,7 @@
 
 #--------------------------------------------------------------------------------
 
-# This script will calculate diversity statistics on each scaffold
-
-# Load modules 
-module load gcc/13.3.0-xp3epyt
-module load samtools/1.19.2-pfmpoam
-module load apptainer/1.3.4
-npstat=/gpfs1/home/e/l/elongman/software/npstat/npstat_latest.sif
+# This script will merge the npstat diversity statistics together.
 
 #--------------------------------------------------------------------------------
 
