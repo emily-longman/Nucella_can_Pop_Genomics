@@ -27,6 +27,7 @@ library(RColorBrewer)
 # Load data
 meta <- read.csv("data/processed/pop_gen/guide_files/Populations_metadata.csv", header=T)
 grenedalf <- read.csv("data/processed/pop_gen/grenedalf_filt/diversity.csv", header=F)
+grenedalf_window <-read.csv("data/processed/pop_gen/grenedalf_window/diversity.csv", header=T)
 
 # ================================================================================== #
 
@@ -44,6 +45,7 @@ theta_pi <- data.frame(theta_pi_names[,1], as.numeric(theta_pi[,2]))
 colnames(theta_pi) <- c("Site", "theta_pi")
 theta_pi <- merge(theta_pi, meta, by="Site")
 
+# Graph Theta pi
 pdf("output/figures/pop_structure/Theta_pi_filt.pdf", width = 5, height = 5)
 ggplot(data = theta_pi, aes(x = Lat, y = theta_pi)) + 
   geom_point(shape = 21, size = 3, fill = colors.alphabetical) + 
@@ -59,12 +61,12 @@ theta_watterson <- data.frame(theta_watterson_names[,1], as.numeric(theta_watter
 colnames(theta_watterson) <- c("Site", "theta_watterson")
 theta_watterson <- merge(theta_watterson, meta, by="Site")
 
+# Graph Theta Watterson
 pdf("output/figures/pop_structure/Theta_watterson_filt.pdf", width = 5, height = 5)
 ggplot(data = theta_watterson, aes(x = Lat, y = theta_watterson)) + 
   geom_point(shape = 21, size = 3, fill = colors.alphabetical) + 
   xlab("Latitude") + ylab("Theta Watterson") + theme_classic() 
 dev.off()
-
 
 # ================================================================================== #
 
@@ -75,6 +77,7 @@ tajimas_d <- data.frame(tajimas_d_names[,1], as.numeric(tajimas_d[,2]))
 colnames(tajimas_d) <- c("Site", "tajimas_d")
 tajimas_d <- merge(tajimas_d, meta, by="Site")
 
+# Graph Tajima D
 pdf("output/figures/pop_structure/Tajimas_d_filt.pdf", width = 5, height = 5)
 ggplot(data = tajimas_d, aes(x = Lat, y = tajimas_d)) + 
   geom_point(shape = 21, size = 3, fill = colors.alphabetical) + 
@@ -82,3 +85,42 @@ ggplot(data = tajimas_d, aes(x = Lat, y = tajimas_d)) +
 dev.off()
 
 # A negative Tajima's D signifies an excess of low frequency polymorphisms relative to expectation, indicating population size expansion
+
+# ================================================================================== #
+
+# Window-analyses
+
+# Plot sliding window of Tajima D for ARA
+pdf("output/figures/pop_structure/Tajimas_d_window_ARA.pdf", width = 5, height = 5)
+ggplot(data = grenedalf_window, aes(x = chrom, y = ARA.tajimas_d)) + 
+  geom_point(shape = 21, size = 1) + 
+  xlab("Position") + ylab("Tajima's d") + theme_classic() 
+dev.off()
+
+# Plot sliding window of Tajima D for SH
+pdf("output/figures/pop_structure/Tajimas_d_window_SH.pdf", width = 5, height = 5)
+ggplot(data = grenedalf_window, aes(x = chrom, y = SH.tajimas_d)) + 
+  geom_point(shape = 21, size = 1) + 
+  xlab("Position") + ylab("Tajima's d") + theme_classic() 
+dev.off()
+
+# Plot sliding window of Tajima D for PB
+pdf("output/figures/pop_structure/Tajimas_d_window_PB.pdf", width = 5, height = 5)
+ggplot(data = grenedalf_window, aes(x = chrom, y = PB.tajimas_d)) + 
+  geom_point(shape = 21, size = 1) + 
+  xlab("Position") + ylab("Tajima's d") + theme_classic() 
+dev.off()
+
+# Plot sliding window of Tajima D for SBR
+pdf("output/figures/pop_structure/Tajimas_d_window_SBR.pdf", width = 5, height = 5)
+ggplot(data = grenedalf_window, aes(x = chrom, y = SBR.tajimas_d)) + 
+  geom_point(shape = 21, size = 1) + 
+  xlab("Position") + ylab("Tajima's d") + theme_classic() 
+dev.off()
+
+# Plot sliding window of Tajima D for SBR
+pdf("output/figures/pop_structure/Tajimas_d_window_VD.pdf", width = 5, height = 5)
+ggplot(data = grenedalf_window, aes(x = chrom, y = VD.tajimas_d)) + 
+  geom_point(shape = 21, size = 1) + 
+  xlab("Position") + ylab("Tajima's d") + theme_classic() 
+dev.off()

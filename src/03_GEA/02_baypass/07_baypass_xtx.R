@@ -57,7 +57,7 @@ dev.off()
 # Graph outliers
 pdf("output/figures/GEA/Baypass_xtx_outliers.pdf", width = 5, height = 5)
 plot(XtX$log10.1.pval., ylab="XtX P-value (-log10 scale)" )
-abline(h=3, lty=2) #0.001 p-value threshold
+abline(h=3, lty=2, col="red") #0.001 p-value threshold
 dev.off()
 
 # ================================================================================== #
@@ -83,7 +83,7 @@ pi.beta.coef=read.table("data/processed/GEA/baypass/xtx/NC_baypass_core_summary_
 pod.pi.beta.coef=read.table("data/processed/GEA/baypass/POD/NC_baypass_POD_summary_beta_params.out", h=T)$Mean
 
 # Graph the estimate
-pdf("output/figures/GEA/Baypass_compare_pi_beta_coef.pdf", width = 5, height = 5)
+pdf("output/figures/GEA/Baypass_compare_pi_beta_coef_POD.pdf", width = 5, height = 5)
 plot(pod.pi.beta.coef, pi.beta.coef)
 abline(a=0, b=1)
 dev.off()
