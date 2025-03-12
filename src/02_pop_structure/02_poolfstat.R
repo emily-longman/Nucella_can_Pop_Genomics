@@ -73,10 +73,10 @@ pooldata.fst.bjack$Fst
 # 0.580126095 0.582574371 0.001481405 0.579670817 0.585477924 
 
 # Compute multi-locus Fst over sliding window of SNPs
-pooldata.fst.sliding.window <- computeFST(pooldata, sliding.window.size=100)
+pooldata.fst.sliding.window <- computeFST(pooldata, sliding.window.size=1000)
 
 # Plot sliding window
-pdf("output/figures/pop_structure/fst.sliding.window.pdf", width = 8, height = 8)
+pdf("output/figures/pop_structure/poolfstat/fst.sliding.window.pdf", width = 8, height = 8)
 plot(pooldata.fst.sliding.window$sliding.windows.fvalues$CumMidPos/1e6, 
 pooldata.fst.sliding.window$sliding.windows.fvalues$MultiLocusFst,
 xlab="Cumulated Position (in Mb)", ylab="Multi-locus Fst", pch=16)
@@ -91,7 +91,7 @@ dev.off()
 pooldata.pairwisefst <- compute.pairwiseFST(pooldata, verbose=FALSE)
 
 # Graph heatmap
-pdf("output/figures/pop_structure/heatmap.pdf", width = 8, height = 8)
+pdf("output/figures/pop_structure/poolfstat/heatmap.pdf", width = 8, height = 8)
 heatmap(pooldata.pairwisefst)
 dev.off()
 
@@ -102,7 +102,7 @@ pooldata.pairwisefst.bjack <- compute.pairwiseFST(pooldata, nsnp.per.bjack.block
 head(pooldata.pairwisefst.bjack@values)
 
 # Graph estimated pairwise-population FST with their 95% confidence intervals 
-pdf("output/figures/pop_structure/pairwise_Fst.pdf", width = 8, height = 8)
+pdf("output/figures/pop_structure/poolfstat/pairwise_Fst.pdf", width = 8, height = 8)
 plot(pooldata.pairwisefst.bjack, cex=0.5)
 dev.off()
 
@@ -124,7 +124,7 @@ mycolors <- rev(colorRampPalette(brewer.pal(11, "RdBu"))(nb.cols))
 colors.reorder <- mycolors[c(19,2,3,4,11,5,1,10,17,14,6,8,7,13,9,18,16,12,15)]
 
 # Plotting PC1 and PC2
-pdf("output/figures/pop_structure/PCA_all_SNPs_PC1_PC2.pdf", width = 8, height = 8)
+pdf("output/figures/pop_structure/poolfstat/PCA_all_SNPs_PC1_PC2.pdf", width = 8, height = 8)
 pca <- plot(pooldata.pca$pop.loadings[,1],pooldata.pca$pop.loadings[,2],
 xlab=paste0("PC",1," (",round(pooldata.pca$perc.var[1],2),"%)"),
 ylab=paste0("PC",2," (",round(pooldata.pca$perc.var[2],2),"%)"),
@@ -133,7 +133,7 @@ abline(h=0,lty=2,col="grey") ; abline(v=0,lty=2,col="grey")
 dev.off()
 
 # Plotting PC3 and PC4
-pdf("output/figures/pop_structure/PCA_all_SNPs_PC3_PC4.pdf", width = 8, height = 8)
+pdf("output/figures/pop_structure/poolfstat/PCA_all_SNPs_PC3_PC4.pdf", width = 8, height = 8)
 pca <- plot(pooldata.pca$pop.loadings[,3],pooldata.pca$pop.loadings[,4],
 xlab=paste0("PC",3," (",round(pooldata.pca$perc.var[3],2),"%)"),
 ylab=paste0("PC",4," (",round(pooldata.pca$perc.var[4],2),"%)"),
@@ -142,7 +142,7 @@ abline(h=0,lty=2,col="grey") ; abline(v=0,lty=2,col="grey")
 dev.off()
 
 # Plotting PC5 and PC6
-pdf("output/figures/pop_structure/PCA_all_SNPs_PC5_PC6.pdf", width = 8, height = 8)
+pdf("output/figures/pop_structure/poolfstat/PCA_all_SNPs_PC5_PC6.pdf", width = 8, height = 8)
 pca <- plot(pooldata.pca$pop.loadings[,5],pooldata.pca$pop.loadings[,6],
 xlab=paste0("PC",5," (",round(pooldata.pca$perc.var[5],2),"%)"),
 ylab=paste0("PC",6," (",round(pooldata.pca$perc.var[6],2),"%)"),
@@ -153,7 +153,7 @@ dev.off()
 # Plot names on PCAs
 
 # Plotting PC1 and PC2
-pdf("output/figures/pop_structure/PCA_all_SNPs_PC1_PC2_names.pdf", width = 8, height = 8)
+pdf("output/figures/pop_structure/poolfstat/PCA_all_SNPs_PC1_PC2_names.pdf", width = 8, height = 8)
 pca <- plot(pooldata.pca$pop.loadings[,1],pooldata.pca$pop.loadings[,2],
 xlab=paste0("PC",1," (",round(pooldata.pca$perc.var[1],2),"%)"),
 ylab=paste0("PC",2," (",round(pooldata.pca$perc.var[2],2),"%)"))
@@ -162,7 +162,7 @@ abline(h=0,lty=2,col="grey") ; abline(v=0,lty=2,col="grey")
 dev.off()
 
 # Plotting PC3 and PC4
-pdf("output/figures/pop_structure/PCA_all_SNPs_PC3_PC4_names.pdf", width = 8, height = 8)
+pdf("output/figures/pop_structure/poolfstat/PCA_all_SNPs_PC3_PC4_names.pdf", width = 8, height = 8)
 pca <- plot(pooldata.pca$pop.loadings[,3],pooldata.pca$pop.loadings[,4],
 xlab=paste0("PC",3," (",round(pooldata.pca$perc.var[3],2),"%)"),
 ylab=paste0("PC",4," (",round(pooldata.pca$perc.var[4],2),"%)"))
@@ -193,7 +193,7 @@ metadata$PC5 <- round(pooldata.pca$pop.loadings[,5],3)
 metadata$PC6 <- round(pooldata.pca$pop.loadings[,6],3)
 
 
-pdf("output/figures/pop_structure/Map_PC1.pdf", width = 8, height = 8)
+pdf("output/figures/pop_structure/poolfstat/Map_PC1.pdf", width = 8, height = 8)
 ggplot(data = west_coast) + 
   geom_polygon(aes(x = long, y = lat, group = group), fill = "white", color = "black") + 
   geom_point(data = metadata, aes(x = Long, y = Lat, fill = PC1), shape = 21, size = 5) + 
@@ -203,7 +203,7 @@ ggplot(data = west_coast) +
   xlab("Longitude") + ylab("Latitude") + theme_classic() + ggtitle("PC 1 projections onto Map")
 dev.off()
 
-pdf("output/figures/pop_structure/Map_PC2.pdf", width = 8, height = 8)
+pdf("output/figures/pop_structure/poolfstat/Map_PC2.pdf", width = 8, height = 8)
 ggplot(data = west_coast) + 
   geom_polygon(aes(x = long, y = lat, group = group), fill = "white", color = "black") + 
   geom_point(data = metadata, aes(x = Long, y = Lat, fill = PC2), shape = 21, size = 5) + 
@@ -213,7 +213,7 @@ ggplot(data = west_coast) +
   xlab("Longitude") + ylab("Latitude") + theme_classic() + ggtitle("PC 2 projections onto Map")
 dev.off()
 
-pdf("output/figures/pop_structure/Map_PC3.pdf", width = 8, height = 8)
+pdf("output/figures/pop_structure/poolfstat/Map_PC3.pdf", width = 8, height = 8)
 ggplot(data = west_coast) + 
   geom_polygon(aes(x = long, y = lat, group = group), fill = "white", color = "black") + 
   geom_point(data = metadata, aes(x = Long, y = Lat, fill = PC3), shape = 21, size = 5) + 
@@ -223,7 +223,7 @@ ggplot(data = west_coast) +
   xlab("Longitude") + ylab("Latitude") + theme_classic() + ggtitle("PC 3 projections onto Map")
 dev.off()
 
-pdf("output/figures/pop_structure/Map_PC4.pdf", width = 8, height = 8)
+pdf("output/figures/pop_structure/poolfstat/Map_PC4.pdf", width = 8, height = 8)
 ggplot(data = west_coast) + 
   geom_polygon(aes(x = long, y = lat, group = group), fill = "white", color = "black") + 
   geom_point(data = metadata, aes(x = Long, y = Lat, fill = PC4), shape = 21, size = 5) + 
@@ -233,7 +233,7 @@ ggplot(data = west_coast) +
   xlab("Longitude") + ylab("Latitude") + theme_classic() + ggtitle("PC 4 projections onto Map")
 dev.off()
 
-pdf("output/figures/pop_structure/Map_PC5.pdf", width = 8, height = 8)
+pdf("output/figures/pop_structure/poolfstat/Map_PC5.pdf", width = 8, height = 8)
 ggplot(data = west_coast) + 
   geom_polygon(aes(x = long, y = lat, group = group), fill = "white", color = "black") + 
   geom_point(data = metadata, aes(x = Long, y = Lat, fill = PC5), shape = 21, size = 5) + 
@@ -243,7 +243,7 @@ ggplot(data = west_coast) +
   xlab("Longitude") + ylab("Latitude") + theme_classic() + ggtitle("PC 5 projections onto Map")
 dev.off()
 
-pdf("output/figures/pop_structure/Map_PC6.pdf", width = 8, height = 8)
+pdf("output/figures/pop_structure/poolfstat/Map_PC6.pdf", width = 8, height = 8)
 ggplot(data = west_coast) + 
   geom_polygon(aes(x = long, y = lat, group = group), fill = "white", color = "black") + 
   geom_point(data = metadata, aes(x = Long, y = Lat, fill = PC6), shape = 21, size = 5) + 
@@ -272,11 +272,17 @@ head(pooldata.fstats@f4values, 3) # 3 first f4
 head(pooldata.fstats@Dstat.values, 3) # 3 first D 
 
 # Plot heterozygosities
-pdf("output/figures/pop_structure/Heterozygosities.pdf", width = 6, height = 6)
+pdf("output/figures/pop_structure/poolfstat/Heterozygosities.pdf", width = 6, height = 6)
 plot(pooldata.fstats, stat.name="heterozygosities", main="Heterozygosities")
 dev.off()
 
 # ================================================================================== #
+
+# Save heterozygosities data 
+pooldata.fstats.f3.matrix <- pooldata.fstats@f3star.values
+pooldata.fstats.f3.matrix <- as.data.frame(pooldata.fstats.f3.matrix)
+WriteXLS(pooldata.fstats.f3.matrix, "data/processed/pop_structure/Fst/pooldata.fstats.f3_filt.xls")
+
 
 # Save heterozygosities data 
 pooldata.fstats.het.matrix <- pooldata.fstats@heterozygosities
