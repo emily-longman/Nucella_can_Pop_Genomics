@@ -25,6 +25,8 @@ library(dplyr)
 library(ggplot2)
 library(mvtnorm)
 library(geigen)
+library(tidyverse)
+library(foreach)
 
 # ================================================================================== #
 
@@ -59,6 +61,57 @@ pdf("output/figures/GEA/Baypass_xtx_outliers.pdf", width = 5, height = 5)
 plot(XtX$log10.1.pval., ylab="XtX P-value (-log10 scale)" )
 abline(h=3, lty=2, col="red") #0.001 p-value threshold
 dev.off()
+
+
+
+# ================================================================================== #
+
+
+# Merge baypass results and SNP metadata 
+SNP.XtX <- cbind(snp.meta, XtX)
+SNP.XtX.dt <- as.data.table(SNP.XtX)
+
+# Rank normalization
+
+L = dim(SNP.XtX.dt)[1] 
+    
+SNP.XtX.dt %>%
+arrange(-log10.1.pval.) %>% 
+as.data.frame() %>%
+mutate(rank = seq(from=1,  to = L, by = 1)) %>% 
+mutate(rank_norm = rank/L) %>% 
+group_by(chr) %>%
+arrange(as.numeric(pos))->
+inner.rnf
+
+
+# Window and step size
+win.bp = 100000
+step.bp = 50000
+
+# Generate windows
+wins <- foreach(chr.i=unique(SNP.XtX.dt$chr),
+                .combine="rbind", 
+                .errorhandling="remove")%do%{
+                  
+                  message(chr.i)
+                  tmp <-  inner.rnf %>%
+                    filter(chr == chr.i)
+
+                    if(max(tmp$pos) <= step.bp){
+                      data.table(chr=chr.i,
+                             start=min(tmp$pos),
+                             end=max(tmp$pos))  
+                    } else if(max(tmp$pos) > step.bp){
+                  
+                  data.table(chr=chr.i,
+                             start=seq(from=min(tmp$pos), to=max(tmp$pos)-win.bp, by=step.bp),
+                             end=seq(from=min(tmp$pos), to=max(tmp$pos)-win.bp, by=step.bp) + win.bp)
+                } }
+
+wins[,i:=1:dim(wins)[1]]
+
+# Then do an alpha of 0.01 or 0.05
 
 # ================================================================================== #
 # ================================================================================== #
@@ -151,7 +204,7 @@ max(SNP.XtX.dt$log10.1.pval.) #10.44488
 
 # Computation of the score and the Lindley Process
 
-xi=2
+xi=1
 SNP.XtX.dt[,score:= log10.1.pval.-xi]
 # The score mean must be negative
 mean(SNP.XtX.dt$score) # -1.582221
