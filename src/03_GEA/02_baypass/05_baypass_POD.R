@@ -43,4 +43,3 @@ NC.genobaypass=geno2YN("data/processed/GEA/baypass/genobaypass")
 
 # Create the POD
 sim.NC<-simulate.baypass(omega.mat=NC.omega, nsnp=8277206, sample.size=NC.genobaypass$NN, beta.pi=pi.beta.coef, pi.maf=0, suffix="NC.baypass.sim")
-

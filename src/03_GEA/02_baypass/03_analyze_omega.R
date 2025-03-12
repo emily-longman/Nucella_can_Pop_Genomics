@@ -54,24 +54,10 @@ dev.off()
 # ================================================================================== #
 
 # Assess population differentiation with hierarchical clustering
-bta14.tree=as.phylo(hclust(as.dist(1-cor.mat**2)))
+NC.tree=as.phylo(hclust(as.dist(1-cor.mat**2)))
 
 pdf("output/figures/GEA/Baypass_hier_clustering.pdf", width = 5, height = 5)
-plot(bta14.tree,type="p",
+plot(NC.tree,type="p",
      main=expression("Hier. clust. tree based on"~hat(Omega)~"("*d[ij]*"=1-"*rho[ij]*")"))
 dev.off()
 
-# ================================================================================== #
-
-# Read the xtx BayPass output
-NC.snp.res <- read.table("data/processed/GEA/baypass/omega/NC_baypass_summary_pi_xtx.out")
-
-# Get the Pi Beta distribution for POD generation
-NC.pi.beta.coef <- read.table("data/processed/GEA/baypass/omega/NC_baypass_summary_beta_params.out",h=T)$Mean
-
-# Upload original data to get read counts
-NC.data <- geno2YN("SG.genobaypass")
-
-# Simulate POD dataset to use for outlier SNP detection
-simu.SG <-simulate.baypass(omega.mat=SG.omega,nsnp=10000,sample.size=SG.data$NN,
-                           beta.pi=SG.pi.beta.coef,pi.maf=0,suffix="SG.BP.sim")
