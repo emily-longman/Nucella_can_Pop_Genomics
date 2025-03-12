@@ -91,35 +91,68 @@ dev.off()
 # Window-analyses
 
 # Plot sliding window of Tajima D for ARA
-pdf("output/figures/pop_structure/Tajimas_d_window_ARA.pdf", width = 5, height = 5)
+pdf("output/figures/pop_structure/Pi_window_grenedalf_ARA.pdf", width = 5, height = 5)
+ggplot(data = grenedalf_window, aes(x = chrom, y = ARA.theta_pi)) + 
+  geom_point(shape = 21, size = 1) + 
+  xlab("Position") + ylab("Theta Pi") + theme_classic() 
+dev.off()
+
+# Plot sliding window of Tajima D for SBR
+pdf("output/figures/pop_structure/Pi_window_grenedalf_SBR.pdf", width = 5, height = 5)
+ggplot(data = grenedalf_window, aes(x = chrom, y = SBR.theta_pi)) + 
+  geom_point(shape = 21, size = 1) + 
+  xlab("Position") + ylab("Theta Pi") + theme_classic() 
+dev.off()
+
+# ================================================================================== #
+
+# Plot sliding window of Tajima D for ARA
+pdf("output/figures/pop_structure/Watterson_window_grenedalf_ARA.pdf", width = 5, height = 5)
+ggplot(data = grenedalf_window, aes(x = chrom, y = ARA.theta_watterson)) + 
+  geom_point(shape = 21, size = 1) + 
+  xlab("CPositionhr") + ylab("Theta Watterson") + theme_classic() 
+dev.off()
+
+# Plot sliding window of Tajima D for SBR
+pdf("output/figures/pop_structure/Watterson_window_grenedalf_SBR.pdf", width = 5, height = 5)
+ggplot(data = grenedalf_window, aes(x = chrom, y = SBR.theta_watterson)) + 
+  geom_point(shape = 21, size = 1) + 
+  xlab("Position") + ylab("Theta Watterson") + theme_classic() 
+dev.off()
+
+
+# ================================================================================== #
+
+# Plot sliding window of Tajima D for ARA
+pdf("output/figures/pop_structure/Tajimas_d_window_grenedalf_ARA.pdf", width = 5, height = 5)
 ggplot(data = grenedalf_window, aes(x = chrom, y = ARA.tajimas_d)) + 
   geom_point(shape = 21, size = 1) + 
   xlab("Position") + ylab("Tajima's d") + theme_classic() 
 dev.off()
 
 # Plot sliding window of Tajima D for SH
-pdf("output/figures/pop_structure/Tajimas_d_window_SH.pdf", width = 5, height = 5)
+pdf("output/figures/pop_structure/Tajimas_d_window_grenedalf_SH.pdf", width = 5, height = 5)
 ggplot(data = grenedalf_window, aes(x = chrom, y = SH.tajimas_d)) + 
   geom_point(shape = 21, size = 1) + 
   xlab("Position") + ylab("Tajima's d") + theme_classic() 
 dev.off()
 
 # Plot sliding window of Tajima D for PB
-pdf("output/figures/pop_structure/Tajimas_d_window_PB.pdf", width = 5, height = 5)
+pdf("output/figures/pop_structure/Tajimas_d_window_grenedalf_PB.pdf", width = 5, height = 5)
 ggplot(data = grenedalf_window, aes(x = chrom, y = PB.tajimas_d)) + 
   geom_point(shape = 21, size = 1) + 
   xlab("Position") + ylab("Tajima's d") + theme_classic() 
 dev.off()
 
 # Plot sliding window of Tajima D for SBR
-pdf("output/figures/pop_structure/Tajimas_d_window_SBR.pdf", width = 5, height = 5)
+pdf("output/figures/pop_structure/Tajimas_d_window_grenedalf_SBR.pdf", width = 5, height = 5)
 ggplot(data = grenedalf_window, aes(x = chrom, y = SBR.tajimas_d)) + 
   geom_point(shape = 21, size = 1) + 
   xlab("Position") + ylab("Tajima's d") + theme_classic() 
 dev.off()
 
 # Plot sliding window of Tajima D for SBR
-pdf("output/figures/pop_structure/Tajimas_d_window_VD.pdf", width = 5, height = 5)
+pdf("output/figures/pop_structure/Tajimas_d_window_grenedalf_VD.pdf", width = 5, height = 5)
 ggplot(data = grenedalf_window, aes(x = chrom, y = VD.tajimas_d)) + 
   geom_point(shape = 21, size = 1) + 
   xlab("Position") + ylab("Tajima's d") + theme_classic() 
