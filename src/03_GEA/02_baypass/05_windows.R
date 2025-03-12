@@ -67,4 +67,4 @@ wins[,i:=1:dim(wins)[1]]
 
 # Then do an alpha of 0.01 or 0.05
 
-save.image("data/processed/pop_structure/N.can_poolfstat.RData")
+save.image("data/processed/GEA/baypass/Baypass_windows.RData")
