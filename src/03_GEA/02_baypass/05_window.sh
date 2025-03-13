@@ -46,8 +46,8 @@ SCRIPT_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/src
 #--------------------------------------------------------------------------------
 
 # Define input files
-XtX_file=$WORKING_FOLDER/data/processed/GEA/baypass/xtx/NC_baypass_core_summary_pi_xtx.out
-SNP_meta_file=$WORKING_FOLDER/data/processed/GEA/baypass/snpdet
+XtX_file=$WORKING_FOLDER/GEA/baypass/xtx/NC_baypass_core_summary_pi_xtx.out
+SNP_meta_file=$WORKING_FOLDER/GEA/baypass/snpdet
 
 # Run R script
 Rscript $SCRIPT_FOLDER/03_GEA/02_baypass/05_window.R "$XtX_file" "$SNP_meta_file"
