@@ -27,10 +27,15 @@ library(foreach)
 
 # ================================================================================== #
 
-# Read in Baypass results
+# Get files from bash script
 argv <- commandArgs(T)
-XtX<-argv[1]
-snp.meta<-argv[2]
+XtX_path<-argv[1]
+snp.meta_path<-argv[2]
+
+# Read in Baypass results
+XtX <- read.table(XtX_path, header=T)
+snp.meta <- read.table(snp.meta_path, header=F)
+
 
 # Re-name snp metadata
 colnames(snp.meta) <- c("chr", "pos", "allele1", "allele2")
