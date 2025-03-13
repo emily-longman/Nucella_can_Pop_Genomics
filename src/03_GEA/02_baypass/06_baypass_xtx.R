@@ -19,7 +19,7 @@ setwd(root_path)
 
 # Load packages
 source("/gpfs1/home/e/l/elongman/software/baypass_public/utils/baypass_utils.R")
-install.packages(c('data.table', 'dplyr', 'ggplot2', 'mvtnorm', 'geigen'))
+install.packages(c('data.table', 'dplyr', 'ggplot2', 'mvtnorm', 'geigen', 'tidyverse', 'foreach'))
 library(data.table)
 library(dplyr)
 library(ggplot2)
@@ -27,6 +27,7 @@ library(mvtnorm)
 library(geigen)
 library(tidyverse)
 library(foreach)
+library(WriteXLS)
 
 # ================================================================================== #
 
@@ -111,7 +112,83 @@ wins <- foreach(chr.i=unique(SNP.XtX.dt$chr),
 
 wins[,i:=1:dim(wins)[1]]
 
-# Then do an alpha of 0.01 or 0.05
+# Save windows
+save(wins, file="data/processed/GEA/baypass/baypass_windows.RData")
+save.image("data/processed/GEA/baypass/N.canaliculata_baypass_windows.RData")
+WriteXLS(wins, "data/processed/GEA/baypass/baypass_windows.xls")
+
+# ================================================================================== #
+
+# Start the summarization process
+
+win.out <- foreach(win.i=1:dim(wins)[1], 
+                   .errorhandling = "remove",
+                   .combine = "rbind"
+)%do%{
+  
+  message(paste(win.i, dim(wins)[1], sep=" / "))
+  
+  
+  win.tmp <- inner.rnf %>%
+    filter(chr == wins[win.i]$chr) %>%
+    filter(pos >= wins[win.i]$start & pos <= wins[win.i]$end)
+  
+  pr.i <- c(0.01)
+  
+  win.tmp %>% 
+    filter(!is.na(rank_norm)) %>%
+    summarise(chr = wins[win.i]$chr,
+              pos_mean = mean(pos),
+              pos_mean = mean(pos),
+              pos_min = min(pos),
+              pos_max = max(pos),
+              win=win.i,
+              pr=pr.i,
+              rnp.pr=c(mean(rank_norm<=pr.i)),
+              rnp.binom.p=c(binom.test(sum(rank_norm<=pr.i), 
+                                       length(rank_norm), pr.i)$p.value),
+              max.p=max(log10.1.pval.),
+              nSNPs = n(),
+              sum.rnp=sum(rank_norm<=pr.i),
+    )  -> win.out
+}
+
+# ================================================================================== #
+
+# Graph 
+
+# Create unique Chromosome number 
+Chr.unique <- unique(win.out$Chromosome)
+win.out$Chr.unique <- as.numeric(factor(win.out$Chromosome, levels = Chr.unique))
+
+ggplot(win.out, aes(y=-log10(rnp.binom.p), x=Chr.unique)) + 
+  geom_point(col="black", alpha=0.8, size=1.3) + 
+  geom_hline(yintercept = -log10(0.01), color="red") +
+  theme_bw()
+
+# Graph based on position
+ggplot(win.out, aes(y=-log10(rnp.binom.p), x=pos_mean/1e6)) + 
+  geom_point(col="black", alpha=0.8, size=1.3) + 
+  geom_hline(yintercept = -log10(0.01), color="red") +
+  theme_bw()
 
 
+
+
+
+# Identify contigs with highly significant rnp p
+win.out.sig <- win.out[which(-log10(win.out$rnp.binom.p)>-log10(0.01)),]
+
+
+# ================================================================================== #
+
+# Create outlier SNP list 
+SNPs.Interest <- foreach(i=1:dim(win.out.sig)[1], .combine = "rbind")%do%{
+  tmp.snps <- data.binary.SNP.filt %>%
+  filter(Chromosome == win.out.sig[i,]$Chromosome) %>%
+  filter(Position >= win.out.sig[i,]$pos_min & Position <= win.out.sig[i,]$pos_max)
+}
+
+# Write file of outlier SNPs
+write.csv(SNPs.Interest, "Nucella_GWAS_outlier_SNPs.csv")
 

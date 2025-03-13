@@ -99,29 +99,38 @@ mycolors <- rev(colorRampPalette(brewer.pal(11, "RdBu"))(nb.cols))
 
 # Graph Pi
 pdf("output/figures/pop_structure/diversity_stats/npstat/Pi_npstat_boxplot_logPi.pdf", width = 8, height = 5)
-ggplot(data = npstat, aes(x = pop, y = -log(Pi), fill=pop)) + 
+ggplot(data = npstat, aes(x = pop, y = log(Pi), fill=pop)) + 
   geom_boxplot() + 
   scale_color_manual(values=mycolors) +
-  xlab("Population") + ylab("-log(Pi)") + theme_classic() +
+  xlab("Population") + ylab("log(Pi)") + theme_classic(base_size=20) +
   guides(fill="none")
 dev.off()
 
 # Graph Pi - density
 pdf("output/figures/pop_structure/diversity_stats/npstat/Pi_npstat_density_Pi.pdf", width = 8, height = 5)
-ggplot(data = npstat, aes(-log(Pi), color=pop)) + 
+ggplot(data = npstat, aes(log(Pi), color=pop)) + 
   geom_density() + 
   scale_color_manual(values=mycolors) +
-  xlab("-log(Pi)") + ylab("Density") + theme_classic() +
-  geom_vline(xintercept=0, linetype="dashed") + theme(legend.position="none")
+  xlab("log(Pi)") + ylab("Density") + theme_classic(base_size=20) +
+  theme(legend.position="none")
 dev.off()
 
 # Graph Watterson Theta
 pdf("output/figures/pop_structure/diversity_stats/npstat/Pi_npstat_boxplot_Watterson.pdf", width = 8, height = 5)
-ggplot(data = npstat, aes(x = pop, y = -log(Watterson), fill=pop)) + 
+ggplot(data = npstat, aes(x = pop, y = log(Watterson), fill=pop)) + 
   geom_boxplot() + 
   scale_color_manual(values=mycolors) +
-  xlab("Population") + ylab("-log(Watterson)") + theme_classic() +
+  xlab("Population") + ylab("log(Watterson)") + theme_classic(base_size=20) +
   guides(fill="none")
+dev.off()
+
+# Graph Watterson Theta - density
+pdf("output/figures/pop_structure/diversity_stats/npstat/Pi_npstat_density_Watterson.pdf", width = 8, height = 5)
+ggplot(data = npstat, aes(log(Watterson), color=pop)) + 
+  geom_density() + 
+  scale_color_manual(values=mycolors) +
+  xlab("log(Watterson)") + ylab("Density") + theme_classic(base_size=20) +
+  theme(legend.position="none")
 dev.off()
 
 # Graph Tajima's D - boxplot
@@ -129,7 +138,7 @@ pdf("output/figures/pop_structure/diversity_stats/npstat/Pi_npstat_boxplot_Tajim
 ggplot(data = npstat, aes(x = pop, y = Tajima_D, fill=pop)) + 
   geom_boxplot() + 
   scale_color_manual(values=mycolors) +
-  xlab("Population") + ylab("Tajima's D") + theme_classic() +
+  xlab("Population") + ylab("Tajima's D") + theme_classic(base_size=20) +
   guides(fill="none")
 dev.off()
 
@@ -138,7 +147,7 @@ pdf("output/figures/pop_structure/diversity_stats/npstat/Pi_npstat_density_Tajim
 ggplot(data = npstat, aes(Tajima_D, color=pop)) + 
   geom_density() + 
   scale_color_manual(values=mycolors) +
-  xlab("Tajima's D") + ylab("Density") + theme_classic() +
+  xlab("Tajima's D") + ylab("Density") + theme_classic(base_size=20) +
   geom_vline(xintercept=0, linetype="dashed") + theme(legend.position="none")
 dev.off()
 
