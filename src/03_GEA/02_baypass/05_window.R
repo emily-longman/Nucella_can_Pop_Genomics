@@ -6,7 +6,7 @@ rm(list=ls())
 # ================================================================================== #
 
 # Set path as main Github repo
-install.packages(c('rprojroot'))
+#install.packages(c('rprojroot'))
 library(rprojroot)
 
 # List all files and directories below the root
