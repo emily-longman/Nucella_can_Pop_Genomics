@@ -117,6 +117,9 @@ save(wins, file="data/processed/GEA/baypass/baypass_windows.RData")
 save.image("data/processed/GEA/baypass/N.canaliculata_baypass_windows.RData")
 WriteXLS(wins, "data/processed/GEA/baypass/baypass_windows.xls")
 
+# Reload windows
+load("data/processed/GEA/baypass/baypass_windows.RData")
+
 # ================================================================================== #
 
 # Start the summarization process
