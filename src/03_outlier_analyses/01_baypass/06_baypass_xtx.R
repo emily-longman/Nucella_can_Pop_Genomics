@@ -32,10 +32,10 @@ library(WriteXLS)
 # ================================================================================== #
 
 # Read in Baypass results
-NC.omega <- as.matrix(read.table("data/processed/GEA/baypass/omega/NC_baypass_mat_omega.out"))
-XtX <- read.table("data/processed/GEA/baypass/xtx/NC_baypass_core_summary_pi_xtx.out", header=T)
+NC.omega <- as.matrix(read.table("data/processed/outlier_analyses/baypass/omega/NC_baypass_mat_omega.out"))
+XtX <- read.table("data/processed/outlier_analyses/baypass/xtx/NC_baypass_core_summary_pi_xtx.out", header=T)
 pops <- read.table("data/processed/fastq_to_vcf/guide_files/N.canaliculata_pops.vcf_pop_names.txt", header=F)
-snp.meta <- read.table("data/processed/GEA/baypass/snpdet", header=F)
+snp.meta <- read.table("data/processed/outlier_analyses/baypass/snpdet", header=F)
 
 # Re-name pool names 
 colnames(NC.omega) <- pops$V1
@@ -47,18 +47,18 @@ colnames(snp.meta) <- c("chr", "pos", "allele1", "allele2")
 # ================================================================================== #
 
 # Check the behavior of the p-values associated to the XtXst estimator
-pdf("output/figures/GEA/Baypass_xtx_hist.pdf", width = 5, height = 5)
+pdf("output/figures/outlier_analyses/Baypass_xtx_hist.pdf", width = 5, height = 5)
 hist(10**(-1*XtX$log10.1.pval.), freq=F, breaks=50)
 abline(h=1, col="red")
 dev.off()
 
 # Graph xtx
-pdf("output/figures/GEA/Baypass_xtx.pdf", width = 5, height = 5)
+pdf("output/figures/outlier_analyses/Baypass_xtx.pdf", width = 5, height = 5)
 plot(XtX$XtXst)
 dev.off()
 
 # Graph outliers
-pdf("output/figures/GEA/Baypass_xtx_outliers.pdf", width = 5, height = 5)
+pdf("output/figures/outlier_analyses/Baypass_xtx_outliers.pdf", width = 5, height = 5)
 plot(XtX$log10.1.pval., ylab="XtX P-value (-log10 scale)" )
 abline(h=3, lty=2, col="red") #0.001 p-value threshold
 dev.off()
@@ -113,11 +113,11 @@ wins <- foreach(chr.i=unique(SNP.XtX.dt$chr),
 wins[,i:=1:dim(wins)[1]]
 
 # Save windows
-save(wins, file="data/processed/GEA/baypass/baypass_windows.RData")
-save.image("data/processed/GEA/baypass/N.canaliculata_baypass_windows.RData")
+save(wins, file="data/processed/outlier_analyses/baypass/baypass_windows.RData")
+save.image("data/processed/outlier_analyses/baypass/N.canaliculata_baypass_windows.RData")
 
 # Reload windows
-load("data/processed/GEA/baypass/baypass_windows.RData")
+load("data/processed/outlier_analyses/baypass/baypass_windows.RData")
 
 # ================================================================================== #
 
@@ -156,10 +156,10 @@ win.out <- foreach(win.i=1:dim(wins)[1],
 }
 
 # Save window out
-save(win.out, file="data/processed/GEA/baypass/baypass_win.out.RData")
+save(win.out, file="data/processed/outlier_analyses/baypass/baypass_win.out.RData")
 
 # Reload windows
-load("data/processed/GEA/baypass/baypass_win.out.RData")
+load("data/processed/outlier_analyses/baypass/baypass_win.out.RData")
 
 # ================================================================================== #
 
@@ -170,7 +170,7 @@ chr.unique <- unique(win.out$chr)
 win.out$chr.unique <- as.numeric(factor(win.out$chr, levels = chr.unique))
 
 # Graph based on chr
-pdf("output/figures/GEA/Baypass_rnp.pdf", width = 5, height = 5)
+pdf("output/figures/outlier_analyses/Baypass_rnp.pdf", width = 5, height = 5)
 ggplot(win.out, aes(y=rnp.binom.p, x=chr.unique)) + 
   geom_point(col="black", alpha=0.8, size=1.3) + 
   geom_hline(yintercept = -log10(0.01), color="red") +
@@ -178,7 +178,7 @@ ggplot(win.out, aes(y=rnp.binom.p, x=chr.unique)) +
 dev.off()
 
 # Graph based on position
-pdf("output/figures/GEA/Baypass_rnp_pos.pdf", width = 5, height = 5)
+pdf("output/figures/outlier_analyses/Baypass_rnp_pos.pdf", width = 5, height = 5)
 ggplot(win.out, aes(y=rnp.binom.p, x=pos_mean/1e6)) + 
   geom_point(col="black", alpha=0.8, size=1.3) + 
   geom_hline(yintercept = -log10(0.01), color="red") +

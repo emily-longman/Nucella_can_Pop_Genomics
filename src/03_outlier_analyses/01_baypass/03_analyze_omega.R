@@ -29,7 +29,7 @@ library(ape)
 
 # Load data
 pops <- read.table("data/processed/fastq_to_vcf/guide_files/N.canaliculata_pops.vcf_pop_names.txt", header=F)
-NC.omega <- as.matrix(read.table("data/processed/GEA/baypass/omega/NC_baypass_mat_omega.out"))
+NC.omega <- as.matrix(read.table("data/processed/outlier_analyses/baypass/omega/NC_baypass_mat_omega.out"))
 
 # ================================================================================== #
 
@@ -47,7 +47,7 @@ NC.omega_reorder <- as.matrix(read.table("output/tables/NC.omega_reorder.txt", h
 # Create a correlation matrix of the omega values -- assess genomic differentiation between pools
 cor.mat <- cov2cor(NC.omega_reorder)
 
-pdf("output/figures/GEA/Baypass_omega_cor_matrix.pdf", width = 5, height = 5)
+pdf("output/figures/outlier_analyses/Baypass_omega_cor_matrix.pdf", width = 5, height = 5)
 corrplot(cor.mat, method = "color", mar=c(2,1,2,2)+0.1, main=expression("Correlation map based on"~hat(Omega)))
 dev.off()
 
@@ -56,7 +56,7 @@ dev.off()
 # Assess population differentiation with hierarchical clustering
 NC.tree=as.phylo(hclust(as.dist(1-cor.mat**2)))
 
-pdf("output/figures/GEA/Baypass_hier_clustering.pdf", width = 5, height = 5)
+pdf("output/figures/outlier_analyses/Baypass_hier_clustering.pdf", width = 5, height = 5)
 plot(NC.tree,type="p",
      main=expression("Hier. clust. tree based on"~hat(Omega)~"("*d[ij]*"=1-"*rho[ij]*")"))
 dev.off()

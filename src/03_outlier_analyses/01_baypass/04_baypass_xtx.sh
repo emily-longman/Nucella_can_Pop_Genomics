@@ -49,24 +49,24 @@ WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed
 # Generate Folders and files
 
 # Move to working directory
-cd $WORKING_FOLDER/GEA/baypass
+cd $WORKING_FOLDER/outlier_analyses/baypass
 
 # This part of the script will check and generate, if necessary, all of the output folders used in the script
 if [ -d "xtx" ]
 then echo "Working xtx folder exist"; echo "Let's move on."; date
-else echo "Working xtx folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/GEA/baypass/xtx; date
+else echo "Working xtx folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/outlier_analyses/baypass/xtx; date
 fi
 
 #--------------------------------------------------------------------------------
 
 # Change directory 
-cd $WORKING_FOLDER/GEA/baypass/xtx
+cd $WORKING_FOLDER/outlier_analyses/baypass/xtx
 
 # Run baypass in xtx mode
 $baypass -npop 19 \
--gfile $WORKING_FOLDER/GEA/baypass/genobaypass \
--poolsizefile $WORKING_FOLDER/GEA/baypass/poolsize \
--omegafile $WORKING_FOLDER/GEA/baypass/omega/NC_baypass_mat_omega.out \
+-gfile $WORKING_FOLDER/outlier_analyses/baypass/genobaypass \
+-poolsizefile $WORKING_FOLDER/outlier_analyses/baypass/poolsize \
+-omegafile $WORKING_FOLDER/outlier_analyses/baypass/omega/NC_baypass_mat_omega.out \
 -d0yij 4 \
 -outprefix NC_baypass_core \
 -nthreads 20
