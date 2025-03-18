@@ -115,7 +115,6 @@ wins[,i:=1:dim(wins)[1]]
 # Save windows
 save(wins, file="data/processed/GEA/baypass/baypass_windows.RData")
 save.image("data/processed/GEA/baypass/N.canaliculata_baypass_windows.RData")
-WriteXLS(wins, "data/processed/GEA/baypass/baypass_windows.xls")
 
 # Reload windows
 load("data/processed/GEA/baypass/baypass_windows.RData")
@@ -156,32 +155,42 @@ win.out <- foreach(win.i=1:dim(wins)[1],
     )  -> win.out
 }
 
+# Save window out
+save(win.out, file="data/processed/GEA/baypass/baypass_win.out.RData")
+
+# Reload windows
+load("data/processed/GEA/baypass/baypass_win.out.RData")
+
 # ================================================================================== #
 
 # Graph 
 
 # Create unique Chromosome number 
-Chr.unique <- unique(win.out$Chromosome)
-win.out$Chr.unique <- as.numeric(factor(win.out$Chromosome, levels = Chr.unique))
+chr.unique <- unique(win.out$chr)
+win.out$chr.unique <- as.numeric(factor(win.out$chr, levels = chr.unique))
 
-ggplot(win.out, aes(y=-log10(rnp.binom.p), x=Chr.unique)) + 
+# Graph based on chr
+pdf("output/figures/GEA/Baypass_rnp.pdf", width = 5, height = 5)
+ggplot(win.out, aes(y=rnp.binom.p, x=chr.unique)) + 
   geom_point(col="black", alpha=0.8, size=1.3) + 
   geom_hline(yintercept = -log10(0.01), color="red") +
   theme_bw()
+dev.off()
 
 # Graph based on position
-ggplot(win.out, aes(y=-log10(rnp.binom.p), x=pos_mean/1e6)) + 
+pdf("output/figures/GEA/Baypass_rnp_pos.pdf", width = 5, height = 5)
+ggplot(win.out, aes(y=rnp.binom.p, x=pos_mean/1e6)) + 
   geom_point(col="black", alpha=0.8, size=1.3) + 
   geom_hline(yintercept = -log10(0.01), color="red") +
   theme_bw()
+dev.off()
 
+##### NOTE: THESE GRAPHS LOOK OFF - should I not use -log10(0.01) or are all of the 1s because I am hitting limits becuase contigs are short?
 
-
-
+# ================================================================================== #
 
 # Identify contigs with highly significant rnp p
 win.out.sig <- win.out[which(-log10(win.out$rnp.binom.p)>-log10(0.01)),]
-
 
 # ================================================================================== #
 
