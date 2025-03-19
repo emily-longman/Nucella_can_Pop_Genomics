@@ -71,3 +71,6 @@ $baypass -npop 19 \
 -outprefix NC_baypass_core \
 -nthreads 20
 
+
+# Test
+
