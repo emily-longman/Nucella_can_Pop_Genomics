@@ -67,7 +67,7 @@ cd $WORKING_FOLDER/pop_structure/treemix
 # Create output directory
 if [ -d "treemix_output" ]
 then echo "Working treemix_output folder exist"; echo "Let's move on."; date
-else echo "Working treemix_output folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/pop_structure/treemix_output; date
+else echo "Working treemix_output folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/pop_structure/treemix/treemix_output; date
 fi
 
 
