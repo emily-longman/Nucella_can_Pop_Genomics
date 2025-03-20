@@ -61,6 +61,16 @@ then echo "Working treemix folder exist"; echo "Let's move on."; date
 else echo "Working treemix folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/pop_structure/treemix; date
 fi
 
+# Move to working directory
+cd $WORKING_FOLDER/pop_structure/treemix
+
+# Create output directory
+if [ -d "treemix_output" ]
+then echo "Working treemix_output folder exist"; echo "Let's move on."; date
+else echo "Working treemix_output folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/pop_structure/treemix_output; date
+fi
+
+
 #--------------------------------------------------------------------------------
 
 # Reformat genobaypass file for Treemix input file 
@@ -69,7 +79,7 @@ fi
 sed -e "s/ /,/g" $WORKING_FOLDER/outlier_analyses/baypass/genobaypass | sed -E 's/(,[^,]*),/\1 /g' > $WORKING_FOLDER/pop_structure/treemix/Treemix.input
 
 # Add population names to treemix input file
-cat $POPS Treemix.input > Treemix.input.pop.names.gz
+cat $POPS $WORKING_FOLDER/pop_structure/treemix/Treemix.input | gzip > $WORKING_FOLDER/pop_structure/treemix/Treemix.input.pop.names.gz
 
 #--------------------------------------------------------------------------------
 
@@ -77,7 +87,7 @@ cat $POPS Treemix.input > Treemix.input.pop.names.gz
 
 # Do a for loop to represent 19 migration events; use 1000 snp blocks
 for i in {0..19};
-do  treemix -i Treemix.input.pop.names.gz -se -k 1000 -m $i -o $WORKING_FOLDER/pop_structure/treemix/Treemix.Output.$i ;
+do  treemix -i Treemix.input.pop.names.gz -se -k 1000 -m $i -o $WORKING_FOLDER/pop_structure/treemix/treemix_output/Treemix.Output.$i ;
 done
 
 # -se: calculate standard errors of migration weights
