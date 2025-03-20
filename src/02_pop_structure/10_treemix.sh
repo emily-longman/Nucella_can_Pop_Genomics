@@ -36,8 +36,7 @@ module load python3.11-anaconda/2024.02-1
 source ${ANACONDA_ROOT}/etc/profile.d/conda.sh
 #conda create --name treemix #If you haven't already done so, create and name the environment
 conda activate treemix #activate the environment
-conda install bioconda::treemix # If you haven't already done so, install the program
-conda activate treemix 
+#conda install bioconda::treemix # If you haven't already done so, install the program
 
 #--------------------------------------------------------------------------------
 
@@ -76,7 +75,7 @@ cat $POPS Treemix.input > Treemix.input.pop.names.gz
 
 # Run treemix for 1 thru 19 migration events (1 per pop) with blocks of 1000 SNPs
 
-#do a loop, use 1000 snp blocks, and set TSW as the root for the tree
+# Do a for loop to represent 19 migration events; use 1000 snp blocks
 for i in {0..19};
 do  treemix -i Treemix.input.pop.names.gz -se -k 1000 -m $i -o $WORKING_FOLDER/pop_structure/treemix/Treemix.Output.$i ;
 done
