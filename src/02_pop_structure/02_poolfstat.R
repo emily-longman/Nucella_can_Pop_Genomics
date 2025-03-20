@@ -57,6 +57,11 @@ min.cov.per.pool = 20, min.rc = 5, max.cov.per.pool = 120, min.maf = 0.01, nline
 # min.maf = the minimum allele frequency (over all pools) for a SNP to be called (note this is obtained from dividing the read counts for the minor allele over the total read coverage) 
 # nlines.per.readblock = number of lines in sync file to be read simultaneously 
 
+# Save pooldata
+save(pooldata, file="data/processed/pop_structure/pooldata.RData")
+# Reload pooldata
+load("data/processed/outlier_analyses/baypass/baypass_windows.RData")
+
 # ================================================================================== #
 
 # Estimate genome wide Fst 
@@ -76,11 +81,12 @@ pooldata.fst.bjack$Fst
 pooldata.fst.sliding.window <- computeFST(pooldata, sliding.window.size=1000)
 
 # Plot sliding window
-pdf("output/figures/pop_structure/poolfstat/fst.sliding.window.pdf", width = 8, height = 8)
+pdf("output/figures/pop_structure/poolfstat/fst.sliding.window.pdf", width = 14, height = 8)
+par(mar=c(4.5, 5, 5, 1))
 plot(pooldata.fst.sliding.window$sliding.windows.fvalues$CumMidPos/1e6, 
 pooldata.fst.sliding.window$sliding.windows.fvalues$MultiLocusFst,
-xlab="Cumulated Position (in Mb)", ylab="Multi-locus Fst", pch=16)
-abline(h=pooldata.fst.sliding.window$Fst,lty=2, col="red") # Dashed red line indicates the estimated overall genome-wide Fst
+xlab="Cumulated Position (in Mb)", ylab="Multi-locus Fst", pch=16, cex.lab=2)
+abline(h=pooldata.fst.sliding.window$Fst,lty=2, lwd=4, col="red") # Dashed red line indicates the estimated overall genome-wide Fst
 dev.off()
 
 # ================================================================================== #
@@ -106,7 +112,7 @@ pdf("output/figures/pop_structure/poolfstat/pairwise_Fst.pdf", width = 8, height
 plot(pooldata.pairwisefst.bjack, cex=0.5)
 dev.off()
 
-# Save pairwise matrix 
+# Save pairwise matrix as xls for follow-up analyses
 pooldata.pairwisefst.matrix <- pooldata.pairwisefst@PairwiseFSTmatrix
 pooldata.pairwisefst.matrix <- as.data.frame(pooldata.pairwisefst.matrix)
 WriteXLS(pooldata.pairwisefst.matrix, "data/processed/pop_structure/Fst/pooldata.pairwisefst.xls")
@@ -200,7 +206,7 @@ ggplot(data = west_coast) +
   scale_fill_gradient(low = "firebrick", high = "gray27") + 
              coord_fixed(1.3) +
   xlim(c(-128, -114)) +
-  xlab("Longitude") + ylab("Latitude") + theme_classic() + ggtitle("PC 1 projections onto Map")
+  xlab("Longitude") + ylab("Latitude") + theme_classic() + ggtitle("PC 1 Projections")
 dev.off()
 
 pdf("output/figures/pop_structure/poolfstat/Map_PC2.pdf", width = 8, height = 8)
@@ -210,7 +216,7 @@ ggplot(data = west_coast) +
   scale_fill_gradient(low = "cyan1", high = "gray27") + 
              coord_fixed(1.3) +
   xlim(c(-128, -114)) +
-  xlab("Longitude") + ylab("Latitude") + theme_classic() + ggtitle("PC 2 projections onto Map")
+  xlab("Longitude") + ylab("Latitude") + theme_classic() + ggtitle("PC 2 Projections")
 dev.off()
 
 pdf("output/figures/pop_structure/poolfstat/Map_PC3.pdf", width = 8, height = 8)
@@ -220,7 +226,7 @@ ggplot(data = west_coast) +
   scale_fill_gradient(low = "orchid", high = "gray27") + 
              coord_fixed(1.3) +
   xlim(c(-128, -114)) +
-  xlab("Longitude") + ylab("Latitude") + theme_classic() + ggtitle("PC 3 projections onto Map")
+  xlab("Longitude") + ylab("Latitude") + theme_classic() + ggtitle("PC 3 Projections")
 dev.off()
 
 pdf("output/figures/pop_structure/poolfstat/Map_PC4.pdf", width = 8, height = 8)
@@ -230,7 +236,7 @@ ggplot(data = west_coast) +
   scale_fill_gradient(low = "gold", high = "gray27") + 
              coord_fixed(1.3) +
   xlim(c(-128, -114)) +
-  xlab("Longitude") + ylab("Latitude") + theme_classic() + ggtitle("PC 4 projections onto Map")
+  xlab("Longitude") + ylab("Latitude") + theme_classic() + ggtitle("PC 4 Projections")
 dev.off()
 
 pdf("output/figures/pop_structure/poolfstat/Map_PC5.pdf", width = 8, height = 8)
@@ -240,7 +246,7 @@ ggplot(data = west_coast) +
   scale_fill_gradient(low = "darkolivegreen2", high = "gray27") + 
              coord_fixed(1.3) +
   xlim(c(-128, -114)) +
-  xlab("Longitude") + ylab("Latitude") + theme_classic() + ggtitle("PC 5 projections onto Map")
+  xlab("Longitude") + ylab("Latitude") + theme_classic() + ggtitle("PC 5 Projections")
 dev.off()
 
 pdf("output/figures/pop_structure/poolfstat/Map_PC6.pdf", width = 8, height = 8)
@@ -250,11 +256,9 @@ ggplot(data = west_coast) +
   scale_fill_gradient(low = "darkorange1", high = "gray27") + 
              coord_fixed(1.3) +
   xlim(c(-128, -114)) +
-  xlab("Longitude") + ylab("Latitude") + theme_classic() + ggtitle("PC 6 projections onto Map")
+  xlab("Longitude") + ylab("Latitude") + theme_classic() + ggtitle("PC 6 Projections")
 dev.off()
 
-
-save.image("data/processed/pop_structure/N.can_poolfstat.RData")
 
 # ================================================================================== #
 
