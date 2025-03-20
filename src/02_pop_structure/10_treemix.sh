@@ -31,7 +31,13 @@
 # This script will run baypass in core model (i.e., xtx mode) using an omega file. 
 
 # Load modules 
-treemix=/gpfs1/home/e/l/elongman/software/
+# Call package (installed with conda)
+module load python3.11-anaconda/2024.02-1
+source ${ANACONDA_ROOT}/etc/profile.d/conda.sh
+#conda create --name treemix #If you haven't already done so, create and name the environment
+conda activate treemix #activate the environment
+conda install bioconda::treemix # If you haven't already done so, install the program
+conda activate treemix 
 
 #--------------------------------------------------------------------------------
 
@@ -40,9 +46,49 @@ treemix=/gpfs1/home/e/l/elongman/software/
 # WORKING_FOLDER is the core folder where this pipeline is being run.
 WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed
 
+# List of population names
+POPS=$WORKING_FOLDER/pop_structure/guide_files/Treemix_pops.txt
+
 #--------------------------------------------------------------------------------
 
-# Training set simulation
+# Generate Folders and files
 
+# Move to working directory
+cd $WORKING_FOLDER/pop_structure
 
+# This part of the script will check and generate, if necessary, all of the output folders used in the script
+if [ -d "treemix" ]
+then echo "Working treemix folder exist"; echo "Let's move on."; date
+else echo "Working treemix folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/pop_structure/treemix; date
+fi
 
+#--------------------------------------------------------------------------------
+
+# Reformat genobaypass file for Treemix input file 
+
+# Add a comma between alleles for every population, and a space between each population
+$WORKING_FOLDER/outlier_analyses/baypass/genobaypass > $WORKING_FOLDER/pop_structure/treemix/Test.genobaypass
+
+# Change every space to a comma, then change every second comma to a space
+sed -e "s/ /,/g" $WORKING_FOLDER/outlier_analyses/baypass/genobaypass | sed -E 's/(,[^,]*),/\1 /g' > $WORKING_FOLDER/pop_structure/treemix/Treemix.input
+
+# Add population names to treemix input file
+cat $POPS Treemix.input > Treemix.input.pop.names.gz
+
+#--------------------------------------------------------------------------------
+
+# Run treemix for 1 thru 19 migration events (1 per pop) with blocks of 1000 SNPs
+
+#do a loop, use 1000 snp blocks, and set TSW as the root for the tree
+for i in {0..19};
+do  treemix -i Treemix.input.pop.names.gz -se -k 1000 -m $i -o $WORKING_FOLDER/pop_structure/treemix/Treemix.Output.$i ;
+done
+
+# -se: calculate standard errors of migration weights
+# -k: number of SNPs per block for estimation of covariance matrix; accounts for the fact that nearby SNPs are not independent
+# -m: number of migration edges
+
+#--------------------------------------------------------------------------------
+
+# Deactivate conda
+conda deactivate
