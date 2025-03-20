@@ -66,9 +66,6 @@ fi
 
 # Reformat genobaypass file for Treemix input file 
 
-# Add a comma between alleles for every population, and a space between each population
-$WORKING_FOLDER/outlier_analyses/baypass/genobaypass > $WORKING_FOLDER/pop_structure/treemix/Test.genobaypass
-
 # Change every space to a comma, then change every second comma to a space
 sed -e "s/ /,/g" $WORKING_FOLDER/outlier_analyses/baypass/genobaypass | sed -E 's/(,[^,]*),/\1 /g' > $WORKING_FOLDER/pop_structure/treemix/Treemix.input
 
