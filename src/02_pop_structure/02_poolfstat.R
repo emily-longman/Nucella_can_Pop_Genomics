@@ -60,7 +60,7 @@ min.cov.per.pool = 20, min.rc = 5, max.cov.per.pool = 120, min.maf = 0.01, nline
 # Save pooldata
 save(pooldata, file="data/processed/pop_structure/pooldata.RData")
 # Reload pooldata
-load("data/processed/outlier_analyses/baypass/baypass_windows.RData")
+load("data/processed/pop_structure/pooldata.RData")
 
 # ================================================================================== #
 
@@ -265,31 +265,107 @@ dev.off()
 # Compute parameters Fs, F3, F4, D, heterozygosities
 
 # Estimation of f-statistics on Pool-Seq data (with computation of Dstat)
-pooldata.fstats <- compute.fstats(pooldata, nsnp.per.bjack.block = 1000, computeDstat = TRUE)
+pooldata.fstats <- compute.fstats(pooldata, nsnp.per.bjack.block = 1000, return.F2.blockjackknife.samples = TRUE)
+
+# Save pooldata
+save(pooldata.fstats, file="data/processed/pop_structure/pooldata.fstats.RData")
+# Reload pooldata.fstats
+load("data/processed/pop_structure/pooldata.fstats.RData")
+
 
 # Look at stats:
 head(pooldata.fstats@f2.values, 3) # 3 first f2
 head(pooldata.fstats@fst.values, 3) # 3 first Fst
 head(pooldata.fstats@divergence, 3) # 3 first pairwise genetic divergence
 head(pooldata.fstats@f3star.values, 3) # 3 first f3*
-head(pooldata.fstats@f4values, 3) # 3 first f4 
-head(pooldata.fstats@Dstat.values, 3) # 3 first D 
+head(pooldata.fstats@heterozygosities, 3) # 3 first D 
 
 # Plot heterozygosities
 pdf("output/figures/pop_structure/poolfstat/Heterozygosities.pdf", width = 6, height = 6)
 plot(pooldata.fstats, stat.name="heterozygosities", main="Heterozygosities")
 dev.off()
 
+# Plot F3
+pdf("output/figures/pop_structure/poolfstat/F3.pdf", width = 6, height = 6)
+plot(pooldata.fstats, stat.name="F3", main="F3")
+dev.off()
+# A negative f3 statistic is evidence that the target population is admixed. Almost all are positive. 
+# Graph only negative F3
+pdf("output/figures/pop_structure/poolfstat/F3_only_neg.pdf", width = 6, height = 6)
+plot(pooldata.fstats, stat.name="F3", value.range=c(NA, 0), main="F3 (only populations with negative f3 statistics)")
+dev.off()
+
 # ================================================================================== #
 
-# Save heterozygosities data 
-pooldata.fstats.f3.matrix <- pooldata.fstats@f3star.values
-pooldata.fstats.f3.matrix <- as.data.frame(pooldata.fstats.f3.matrix)
-WriteXLS(pooldata.fstats.f3.matrix, "data/processed/pop_structure/Fst/pooldata.fstats.f3_filt.xls")
+# Test for admixture (note: a Z-score < −1.65 provides evidence for admixture)
+tst.sel <- pooldata.fstats@f3.values$`Z-score`< -1.65
+pooldata.fstats@f3.values[tst.sel,]
+#                 Estimate    bjack mean   bjack s.e.    Z-score
+#CBL;ARA,PSG -0.0006874833 -0.0006756751 3.032273e-05 -22.282791
+#CBL;ARA,STC -0.0004121394 -0.0003928102 3.317190e-05 -11.841655
+#SBR;BMR,PB  -0.0012524884 -0.0013422484 6.276391e-04  -2.138567
+#SBR;BMR,PSN -0.0017790245 -0.0016602182 6.470612e-04  -2.565782
+#SBR;FR,PB   -0.0013355210 -0.0013971432 6.297338e-04  -2.218625
+#SBR;FR,PSN  -0.0018677455 -0.0017165174 6.497936e-04  -2.641635
+#SBR;KH,PB   -0.0016284524 -0.0017639007 6.320927e-04  -2.790573
+#SBR;KH,PSN  -0.0021293997 -0.0020184018 6.516912e-04  -3.097175
+#SBR;VD,PB   -0.0019272877 -0.0021025096 6.302147e-04  -3.336180
+#SBR;VD,PSN  -0.0024482292 -0.0023965779 6.500269e-04  -3.686890
+#SBR;PB,PGP  -0.0012845715 -0.0014763223 6.287333e-04  -2.348090
+#SBR;PGP,PSN -0.0018096816 -0.0017313944 6.502507e-04  -2.662657
 
+# Evidence of an admixed origin for CBL with ancestral sources related to ARA, PSG and STC. 
+# Evidence of an admixed origin for SBR with populations from both north and south of that site.
 
-# Save heterozygosities data 
-pooldata.fstats.het.matrix <- pooldata.fstats@heterozygosities
-pooldata.fstats.het.matrix <- as.data.frame(pooldata.fstats.het.matrix)
-WriteXLS(pooldata.fstats.het.matrix, "data/processed/pop_structure/Fst/pooldata.fstats.het_filt.xls")
+# Test for four-population treeness (note:  a Z-score lower than 1.96 in absolute value provides no evidence against the null-hypothesis of treeness for the tested population configuration at the 95% significance threshold)
+tst.sel<-abs(pooldata.fstats@f4.values$`Z-score`)<1.96
+as.data.frame(pooldata.fstats@f4.values)[tst.sel,]
 
+# Estimating admixture proportions with f4-ratios
+# Example of estimating f4 ratios
+compute.f4ratio(pooldata.fstats, num.quadruplet = "HZD,PSN;PB,OCT", den.quadruplet="HZD,PSN;SBR,STR")
+#  Estimate bjack mean bjack s.e.    CI95inf    CI95sup 
+# 3.0296472  2.9891599  0.0992849  2.7945615  3.1837583 
+# Note: Simulated value (α = 0.25) is within the confidence interval
+
+# ================================================================================== #
+
+# Build admixture graph from scratch
+
+# The find.tree.popset function selects maximal sets of unadmixed populations from an fstats object
+scaf.pops <- find.tree.popset(pooldata.fstats, verbose=FALSE)
+
+# List the 15 passing the treeness test for the identified set
+scaf.pops$passing.quaduplet
+
+# State the range of variation of the passing quadruplet
+scaf.pops$Z_f4.range
+
+# The rooted.njtree.builder function builds the scaffold tree based on the set of unadmixed populations (identified above with find.tree.popset) 
+scaf.tree <- rooted.njtree.builder(fstats=pooldata.fstats, pop.sel=scaf.pops$pop.sets[1,], plot.nj=FALSE)
+# Score of the NJ tree: 27.19838 
+
+# Check the fit of the neighbor-joining tree
+scaf.tree$nj.tree.eval
+
+# Note: need to graph using R GUI
+
+# Plot best inferred rooted scaffold tree
+plot(scaf.tree$best.rooted.tree)
+# This tree can be used as a reference graph to construct the complete admixture graph
+
+# Add other populations
+add.pool.OCT <- add.leaf(scaf.tree$best.rooted.tree,leaf.to.add="OCT", 
+                         fstats=pooldata.fstats, verbose=FALSE, drift.scaling=TRUE)
+
+plot(add.pool.OCT$best.fitted.graph)
+
+add.pool.OCT.HZD <- add.leaf(scaf.tree$best.rooted.tree,leaf.to.add="HZD", 
+                         fstats=pooldata.fstats, verbose=FALSE, drift.scaling=TRUE)
+
+plot(add.pool.OCT.HZD$best.fitted.graph)
+
+add.pool.OCT.HZD.SBR <- add.leaf(scaf.tree$best.rooted.tree,leaf.to.add="SBR", 
+                             fstats=pooldata.fstats, verbose=FALSE, drift.scaling=TRUE)
+
+plot(add.pool.OCT.HZD.SBR$best.fitted.graph)
