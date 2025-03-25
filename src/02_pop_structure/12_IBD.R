@@ -43,6 +43,8 @@ geo_mat_log <- log(geo_mat)
 # Run Mantel Test
 fst_mantel <- mantel(as.dist(fsts) ~ as.dist(geo_mat_log), nperm=999)
 fst_mantel
+#    mantelr       pval1       pval2       pval3   llim.2.5%  ulim.97.5% 
+#0.478995128 0.001001001 1.000000000 0.001001001 0.428394132 0.564644807 
 
 # ================================================================================== #
 
@@ -61,6 +63,8 @@ fst_lin = apply(fsts, 2, linearize)
 # Run Mantel Test
 fst_mantel_lin <- mantel(as.dist(fst_lin) ~ as.dist(geo_mat_log), nperm=999)
 fst_mantel_lin
+#    mantelr       pval1       pval2       pval3   llim.2.5%  ulim.97.5% 
+#0.480088794 0.001001001 1.000000000 0.001001001 0.436936062 0.558648777 
 
 # ================================================================================== #
 
