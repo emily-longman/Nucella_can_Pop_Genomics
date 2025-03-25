@@ -18,11 +18,10 @@ setwd(root_path)
 # ================================================================================== #
 
 # Load packages
-install.packages(c('poolfstat', 'ggplot2', 'RColorBrewer', 'WriteXLS'))
+install.packages(c('poolfstat', 'ggplot2', 'RColorBrewer'))
 library(poolfstat)
 library(ggplot2)
 library(RColorBrewer)
-library(WriteXLS)
 
 # ================================================================================== #
 
@@ -115,7 +114,7 @@ dev.off()
 # Save pairwise matrix as xls for follow-up analyses
 pooldata.pairwisefst.matrix <- pooldata.pairwisefst@PairwiseFSTmatrix
 pooldata.pairwisefst.matrix <- as.data.frame(pooldata.pairwisefst.matrix)
-WriteXLS(pooldata.pairwisefst.matrix, "data/processed/pop_structure/Fst/pooldata.pairwisefst.xls")
+write.csv(pooldata.pairwisefst.matrix, "data/processed/pop_structure/Fst/pooldata.pairwisefst.csv")
 
 # ================================================================================== #
 
