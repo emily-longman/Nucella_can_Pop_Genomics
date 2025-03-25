@@ -69,19 +69,21 @@ fst_mantel_lin
 e_Dist <- as.matrix(geo_mat_log)
 g_Dist <- as.matrix(fst_lin)
 
-df <- data.frame(Genetic_Distance = g_Dist[lower.tri(g_Dist)], Slope_Distance = e_Dist[ lower.tri(e_Dist)])
+df <- data.frame(Genetic_Distance = g_Dist[lower.tri(g_Dist)], Slope_Distance = e_Dist[lower.tri(e_Dist)])
 df <- df[ !is.infinite(df$Slope_Distance),]
 
-write.table(df, "output/tables/IBD.plot.txt", sep="\t", row.names=FALSE)
+# Write df
+write.csv(df, "output/tables/IBD.plot.csv")
+# Add columns classifying pairwise contrast (S, N, X)
+df.clust <- read.csv("output/tables/IBD.plot.mod.csv", header=T)
 
-IBD_plot_clust <- read_excel("IBD.plot.clust.xlsx", 
-       col_types = c("numeric", "numeric", "skip", 
-      "text"))
-
-colors=c( "#B3EE3A", "#FFA500","#36648B", "#CD69C9")
-colScale <- scale_colour_manual(name = "Cluster1",values = colors)
+# Specify colors
+colors = c("blue", "red", "purple")
+colors = c("#0000FF", "#CC0033", "#990099")
 
 pdf("output/figures/pop_structure/IBD/IBD_plot.pdf")
-ggplot(df, aes(x=Slope_Distance, y=Genetic_Distance)) + geom_point(aes(size=1.8)) + 
-  stat_smooth(method=lm, formula = y ~ x, colour="black") + xlab("log(geographic distance)") + ylab("FST/(1-FST)")+ theme_classic()
+ggplot(df.clust, aes(x=Slope_Distance, y=Genetic_Distance)) + geom_point(aes(fill=Cluster), size=3, shape = 21) + 
+scale_fill_manual(values=colors) + stat_smooth(method=lm, formula = y ~ x, colour="black") + 
+xlab("log(Geographic Distance)") + ylab("FST/(1-FST)")+ theme_classic(base_size = 16) + guides(fill="none")
 dev.off()
+
