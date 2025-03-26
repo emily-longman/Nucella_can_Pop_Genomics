@@ -141,7 +141,6 @@ win.out <- foreach(win.i=1:dim(wins)[1],
     filter(!is.na(rank_norm)) %>%
     summarise(chr = wins[win.i]$chr,
               pos_mean = mean(pos),
-              pos_mean = mean(pos),
               pos_min = min(pos),
               pos_max = max(pos),
               win=win.i,
@@ -161,6 +160,46 @@ save(win.out, file="data/processed/outlier_analyses/baypass/baypass_win.out.RDat
 # Reload windows
 load("data/processed/outlier_analyses/baypass/baypass_win.out.RData")
 
+####
+
+win.out.001 <- foreach(win.i=1:dim(wins)[1], 
+                   .errorhandling = "remove",
+                   .combine = "rbind"
+)%do%{
+  
+  message(paste(win.i, dim(wins)[1], sep=" / "))
+  
+  
+  win.tmp <- inner.rnf %>%
+    filter(chr == wins[win.i]$chr) %>%
+    filter(pos >= wins[win.i]$start & pos <= wins[win.i]$end)
+  
+  pr.i <- c(0.001)
+  
+  win.tmp %>% 
+    filter(!is.na(rank_norm)) %>%
+    summarise(chr = wins[win.i]$chr,
+              pos_mean = mean(pos),
+              pos_min = min(pos),
+              pos_max = max(pos),
+              win=win.i,
+              pr=pr.i,
+              rnp.pr=c(mean(rank_norm<=pr.i)),
+              rnp.binom.p=c(binom.test(sum(rank_norm<=pr.i), 
+                                       length(rank_norm), pr.i)$p.value),
+              max.p=max(log10.1.pval.),
+              nSNPs = n(),
+              sum.rnp=sum(rank_norm<=pr.i),
+    )  -> win.out.001
+}
+
+# Save window out
+save(win.out.001, file="data/processed/outlier_analyses/baypass/baypass_win.out.001.RData")
+
+# Reload windows
+load("data/processed/outlier_analyses/baypass/baypass_win.out.001.RData")
+
+
 # ================================================================================== #
 
 # Graph 
@@ -171,36 +210,46 @@ win.out$chr.unique <- as.numeric(factor(win.out$chr, levels = chr.unique))
 
 # Graph based on chr
 pdf("output/figures/outlier_analyses/Baypass_rnp.pdf", width = 5, height = 5)
-ggplot(win.out, aes(y=rnp.binom.p, x=chr.unique)) + 
+ggplot(win.out, aes(y=-log10(rnp.binom.p), x=chr.unique)) + 
   geom_point(col="black", alpha=0.8, size=1.3) + 
+  geom_hline(yintercept = -log10(0.01), color="red") +
+  theme_bw()
+dev.off()
+
+# Graph based on chr - filter for windows with >50 SNPs and max p for that window > 2
+pdf("output/figures/outlier_analyses/Baypass_rnp_filt.pdf", width = 5, height = 5)
+ggplot(filter(win.out, nSNPs > 50 & max.p > 2), aes(y=-log10(rnp.binom.p), 
+x=chr.unique, size = max.p)) + 
+  geom_point(alpha=0.8) + 
   geom_hline(yintercept = -log10(0.01), color="red") +
   theme_bw()
 dev.off()
 
 # Graph based on position
 pdf("output/figures/outlier_analyses/Baypass_rnp_pos.pdf", width = 5, height = 5)
-ggplot(win.out, aes(y=rnp.binom.p, x=pos_mean/1e6)) + 
-  geom_point(col="black", alpha=0.8, size=1.3) + 
+ggplot(filter(win.out, nSNPs > 50 & max.p > 2), 
+aes(y=-log10(rnp.binom.p), x=pos_mean/1e6, size = max.p)) + 
+  geom_point( alpha=0.8, 
+  #size=1.3
+  ) + 
   geom_hline(yintercept = -log10(0.01), color="red") +
   theme_bw()
 dev.off()
 
-##### NOTE: THESE GRAPHS LOOK OFF - should I not use -log10(0.01) or are all of the 1s because I am hitting limits becuase contigs are short?
-
 # ================================================================================== #
 
 # Identify contigs with highly significant rnp p
-win.out.sig <- win.out[which(-log10(win.out$rnp.binom.p)>-log10(0.01)),]
+win.out.sig <- win.out[which(-log10(win.out$rnp.binom.p) >= -log10(0.01)),]
 
 # ================================================================================== #
 
 # Create outlier SNP list 
 SNPs.Interest <- foreach(i=1:dim(win.out.sig)[1], .combine = "rbind")%do%{
-  tmp.snps <- data.binary.SNP.filt %>%
-  filter(Chromosome == win.out.sig[i,]$Chromosome) %>%
-  filter(Position >= win.out.sig[i,]$pos_min & Position <= win.out.sig[i,]$pos_max)
+  tmp.snps <- inner.rnf %>%
+  filter(chr == win.out.sig[i,]$chr) %>%
+  filter(pos >= win.out.sig[i,]$pos_min & pos <= win.out.sig[i,]$pos_max)
 }
 
 # Write file of outlier SNPs
-write.csv(SNPs.Interest, "Nucella_GWAS_outlier_SNPs.csv")
+write.csv(SNPs.Interest, "/data/processed/outlier_analyses/baypass/Nucella_outlier_SNPs.csv")
 
