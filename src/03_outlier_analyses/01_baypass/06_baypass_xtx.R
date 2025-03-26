@@ -253,3 +253,39 @@ SNPs.Interest <- foreach(i=1:dim(win.out.sig)[1], .combine = "rbind")%do%{
 # Write file of outlier SNPs
 write.csv(SNPs.Interest, "/data/processed/outlier_analyses/baypass/Nucella_outlier_SNPs.csv")
 
+
+# ================================================================================== #
+# ================================================================================== #
+# pval=0.001
+# Create unique Chromosome number 
+chr.unique <- unique(win.out.001$chr)
+win.out.001$chr.unique <- as.numeric(factor(win.out.001$chr, levels = chr.unique))
+# Graph based on chr
+pdf("output/figures/outlier_analyses/Baypass_rnp_pval_0.001.pdf", width = 5, height = 5)
+ggplot(win.out.001, aes(y=-log10(rnp.binom.p), x=chr.unique)) + 
+  geom_point(col="black", alpha=0.8, size=1.3) + 
+  geom_hline(yintercept = -log10(0.001), color="red") +
+  theme_bw()
+dev.off()
+# Graph based on chr - filter for windows with >50 SNPs and max p for that window > 2
+pdf("output/figures/outlier_analyses/Baypass_rnp_filt_pval_0.001.pdf", width = 5, height = 5)
+ggplot(filter(win.out.001, nSNPs > 50 & max.p > 2), aes(y=-log10(rnp.binom.p), 
+x=chr.unique, color = max.p)) + 
+  geom_point(alpha=0.8) + 
+  geom_hline(yintercept = -log10(0.001), color="red") +
+  theme_bw()
+dev.off()
+# Identify contigs with highly significant rnp p -- 178 SNPS
+win.out.001.sig <- win.out.001[which(-log10(win.out.001$rnp.binom.p) >= -log10(0.001)),]
+
+# Create outlier SNP list 
+SNPs.Interest.pval.001 <- foreach(i=1:dim(win.out.001.sig)[1], .combine = "rbind")%do%{
+  tmp.snps <- inner.rnf %>%
+  filter(chr == win.out.001.sig[i,]$chr) %>%
+  filter(pos >= win.out.001.sig[i,]$pos_min & pos <= win.out.001.sig[i,]$pos_max)
+}
+
+# Write file of outlier SNPs
+write.csv(SNPs.Interest.pval.001, "Nucella_outlier_SNPs_pval0.001")
+
+#write.csv(SNPs.Interest.pval.001, "/data/processed/outlier_analyses/baypass/Nucella_outlier_SNPs.csv")
