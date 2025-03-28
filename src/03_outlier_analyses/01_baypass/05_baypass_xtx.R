@@ -159,7 +159,7 @@ save(win.out, file="data/processed/outlier_analyses/baypass/baypass_win.out.RDat
 # Reload windows
 load("data/processed/outlier_analyses/baypass/baypass_win.out.RData")
 
-####
+################################
 
 win.out.001 <- foreach(win.i=1:dim(wins)[1], 
                    .errorhandling = "remove",
@@ -201,6 +201,8 @@ load("data/processed/outlier_analyses/baypass/baypass_win.out.001.RData")
 
 # ================================================================================== #
 
+# pval=0.01
+
 # Graph 
 
 # Create unique Chromosome number 
@@ -240,8 +242,6 @@ dev.off()
 # Identify contigs with highly significant rnp p
 win.out.sig <- win.out[which(-log10(win.out$rnp.binom.p) >= -log10(0.01)),]
 
-# ================================================================================== #
-
 # Create outlier SNP list 
 SNPs.Interest <- foreach(i=1:dim(win.out.sig)[1], .combine = "rbind")%do%{
   tmp.snps <- inner.rnf %>%
@@ -255,7 +255,12 @@ write.csv(SNPs.Interest, "/data/processed/outlier_analyses/baypass/Nucella_outli
 
 # ================================================================================== #
 # ================================================================================== #
+# ================================================================================== #
+
 # pval=0.001
+
+# Graph 
+
 # Create unique Chromosome number 
 chr.unique <- unique(win.out.001$chr)
 win.out.001$chr.unique <- as.numeric(factor(win.out.001$chr, levels = chr.unique))
@@ -274,6 +279,9 @@ x=chr.unique, color = max.p)) +
   geom_hline(yintercept = -log10(0.001), color="red") +
   theme_bw()
 dev.off()
+
+# ================================================================================== #
+
 # Identify contigs with highly significant rnp p -- 178 SNPS
 win.out.001.sig <- win.out.001[which(-log10(win.out.001$rnp.binom.p) >= -log10(0.001)),]
 
@@ -285,6 +293,6 @@ SNPs.Interest.pval.001 <- foreach(i=1:dim(win.out.001.sig)[1], .combine = "rbind
 }
 
 # Write file of outlier SNPs
-write.csv(SNPs.Interest.pval.001, "Nucella_outlier_SNPs_pval0.001")
+write.csv(SNPs.Interest.pval.001, "data/processed/outlier_analyses/baypass/Outlier_SNPs/Nucella_outlier_SNPs_pval0.001")
 
 #write.csv(SNPs.Interest.pval.001, "/data/processed/outlier_analyses/baypass/Nucella_outlier_SNPs.csv")
