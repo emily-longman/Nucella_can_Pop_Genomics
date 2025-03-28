@@ -8,6 +8,6 @@
 
 # Directories with large data files
 scratch/*
-data/raw/enviro/*
+data/raw/*
 data/processed/*
 output/*
