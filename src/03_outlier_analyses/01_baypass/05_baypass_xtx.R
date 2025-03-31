@@ -113,7 +113,6 @@ wins[,i:=1:dim(wins)[1]]
 
 # Save windows
 save(wins, file="data/processed/outlier_analyses/baypass/baypass_windows.RData")
-save.image("data/processed/outlier_analyses/baypass/N.canaliculata_baypass_windows.RData")
 
 # Reload windows
 load("data/processed/outlier_analyses/baypass/baypass_windows.RData")
@@ -291,6 +290,7 @@ SNPs.Interest.pval.001 <- foreach(i=1:dim(win.out.001.sig)[1], .combine = "rbind
   filter(chr == win.out.001.sig[i,]$chr) %>%
   filter(pos >= win.out.001.sig[i,]$pos_min & pos <= win.out.001.sig[i,]$pos_max)
 }
+
 
 # Write file of outlier SNPs
 write.csv(SNPs.Interest.pval.001, "data/processed/outlier_analyses/baypass/Outlier_SNPs/Nucella_outlier_SNPs_pval0.001")
