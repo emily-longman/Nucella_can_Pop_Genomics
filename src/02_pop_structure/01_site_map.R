@@ -10,10 +10,10 @@ install.packages(c('rprojroot'))
 library(rprojroot)
 
 # List all files and directories below the root
-dir(find_root_file("output",  criterion = has_file("README.md")))
-output_path_from_root <- find_root_file("output", criterion = has_file("README.md"))
+dir(find_root_file(criterion = has_file("README.md")))
+root_path <- find_root_file(criterion = has_file("README.md"))
 # Set working directory as path from root
-setwd(output_path_from_root)
+setwd(root_path)
 
 # ================================================================================== #
 
@@ -41,10 +41,10 @@ sites <- data.frame(
   latitude = c(44.83777, 44.50540, 44.24999, 43.30402, 42.84097, 41.77121, 40.03011, 39.60461, 39.28090, 38.51198, 38.31900, 
                37.18506, 36.51939, 36.44750, 35.72893, 35.66549, 35.28994, 34.88117, 34.73024),
   site.abrev = c("FC", "SLR", "SH", "ARA", "CBL", "PSG", "STC", "KH", "VD", "FR", "BMR", "PGP", "PL", "SBR", "PSN", "PB", "HZD", "OCT", "STR"), 
-  site.full = c("Fogarty Creek"," Seal Rock",  "Strawberry Hill", "Cape Arago", "Cape Blanco",  "Point Saint George", "Shelter Cove", 
+  site.full = c("Fogarty Creek","Seal Rock",  "Strawberry Hill", "Cape Arago", "Cape Blanco",  "Point Saint George", "Shelter Cove", 
                 "Kibesillah Hill", "Van Damme", "Fort Ross", "Bodega Marine Reserve", "Pigeon Point", "Point Lobos", "Soberanes Point", 
                 "Point Sierra Nevada", "Piedras Blancas", "Hazards" , "Occulto", "Stairs"),
-  site.abrev.full = c("Fogarty Creek (FC)"," Seal Rock (SLR)",  "Strawberry Hill (SH)", "Cape Arago (ARA)", "Cape Blanco (CBL)",  
+  site.abrev.full = c("Fogarty Creek (FC)","Seal Rock (SLR)",  "Strawberry Hill (SH)", "Cape Arago (ARA)", "Cape Blanco (CBL)",  
                 "Point Saint George (PSG)", "Shelter Cove (STC)", "Kibesillah Hill (KH)", "Van Damme (VD)", "Fort Ross (FR)", 
                 "Bodega Marine Reserve (BMR)", "Pigeon Point (PGP)", "Point Lobos (PL)", "Soberanes Point (SBR)", 
                 "Point Sierra Nevada (PSN)", "Piedras Blancas (PB)", "Hazards (HZD)" , "Occulto (OCT)", "Stairs (STR)"))
@@ -78,7 +78,7 @@ mycolors <- rev(colorRampPalette(brewer.pal(11, "RdBu"))(nb.cols))
 # ================================================================================== #
 
 # Create site map (site codes)
-pdf("figures/Site_map_abrev.pdf", width = 8, height = 8)
+pdf("output/figures/Site_map_abrev.pdf", width = 8, height = 8)
 g <- ggplot(data = west_coast) + 
   geom_polygon(aes(x = long, y = lat, group = group), fill = "white", color = "black") + 
   geom_point(data = sites, aes(x = longitude, y = latitude), size = 5, 
@@ -91,7 +91,7 @@ g + annotate(geom = 'text', size = 5,
 dev.off()
 
 # Create site map (full site names)
-pdf("figures/Site_map_full_names.pdf", width = 8, height = 8)
+pdf("output/figures/Site_map_full_names.pdf", width = 8, height = 8)
 g <- ggplot(data = west_coast) + 
   geom_polygon(aes(x = long, y = lat, group = group), fill = "white", color = "black") + 
   geom_point(data = sites, aes(x = longitude, y = latitude), size = 4, 
@@ -104,7 +104,7 @@ g + annotate(geom = 'text', size = 5,
 dev.off()
 
 # Create site map (abreviations and full site names)
-pdf("figures/Site_map_abrev_full_names.pdf", width = 8, height = 8)
+pdf("output/figures/Site_map_abrev_full_names.pdf", width = 8, height = 8)
 g <- ggplot(data = west_coast) + 
   geom_polygon(aes(x = long, y = lat, group = group), fill = "white", color = "black") + 
   geom_point(data = sites, aes(x = longitude, y = latitude), size = 4, 
@@ -114,6 +114,16 @@ g <- ggplot(data = west_coast) +
   xlab("Longitude") + ylab("Latitude") + theme_classic(base_size=15)
 g + annotate(geom = 'text', size = 6,
          x = -126, y = 33.2, label = 'Pacific Ocean', fontface = 'italic')
+dev.off()
+
+# ================================================================================== #
+
+# Plot just site legend
+
+pdf("output/figures/Site_legend.pdf", width = 8, height = 8)
+plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
+legend("topleft", legend = sites$site.abrev.full, pch=19, cex=2, bty='n', col = mycolors)
+mtext(expression(bold("Sites")), at=0.2, cex=3)
 dev.off()
 
 # ================================================================================== #

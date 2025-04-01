@@ -97,7 +97,7 @@ pooldata.pairwisefst <- compute.pairwiseFST(pooldata, verbose=FALSE)
 
 # Graph heatmap
 pdf("output/figures/pop_structure/poolfstat/heatmap.pdf", width = 8, height = 8)
-heatmap(pooldata.pairwisefst)
+heatmap(pooldata.pairwisefst, cexRow=1.7, cexCol=1.7)
 dev.off()
 
 # Block-Jackknife estimation of pairwise Fst standard error and confidence intervals
@@ -130,28 +130,31 @@ colors.reorder <- mycolors[c(19,2,3,4,11,5,1,10,17,14,6,8,7,13,9,18,16,12,15)]
 
 # Plotting PC1 and PC2
 pdf("output/figures/pop_structure/poolfstat/PCA_all_SNPs_PC1_PC2.pdf", width = 8, height = 8)
+par(mar=c(5,6,4,1)+.1) # Adjust margins
 pca <- plot(pooldata.pca$pop.loadings[,1],pooldata.pca$pop.loadings[,2],
 xlab=paste0("PC",1," (",round(pooldata.pca$perc.var[1],2),"%)"),
 ylab=paste0("PC",2," (",round(pooldata.pca$perc.var[2],2),"%)"),
-col="black", bg=colors.reorder, pch=21, cex = 3)
+col="black", bg=colors.reorder, pch=21, cex = 3, cex.lab = 1.75)
 abline(h=0,lty=2,col="grey") ; abline(v=0,lty=2,col="grey")
 dev.off()
 
 # Plotting PC3 and PC4
 pdf("output/figures/pop_structure/poolfstat/PCA_all_SNPs_PC3_PC4.pdf", width = 8, height = 8)
+par(mar=c(5,6,4,1)+.1) # Adjust margins
 pca <- plot(pooldata.pca$pop.loadings[,3],pooldata.pca$pop.loadings[,4],
 xlab=paste0("PC",3," (",round(pooldata.pca$perc.var[3],2),"%)"),
 ylab=paste0("PC",4," (",round(pooldata.pca$perc.var[4],2),"%)"),
-col="black", bg=colors.reorder,pch=21, cex = 3)
+col="black", bg=colors.reorder,pch=21, cex = 3, cex.lab = 1.75)
 abline(h=0,lty=2,col="grey") ; abline(v=0,lty=2,col="grey")
 dev.off()
 
 # Plotting PC5 and PC6
 pdf("output/figures/pop_structure/poolfstat/PCA_all_SNPs_PC5_PC6.pdf", width = 8, height = 8)
+par(mar=c(5,6,4,1)+.1) # Adjust margins
 pca <- plot(pooldata.pca$pop.loadings[,5],pooldata.pca$pop.loadings[,6],
 xlab=paste0("PC",5," (",round(pooldata.pca$perc.var[5],2),"%)"),
 ylab=paste0("PC",6," (",round(pooldata.pca$perc.var[6],2),"%)"),
-col="black", bg=colors.reorder,pch=21, cex = 3)
+col="black", bg=colors.reorder,pch=21, cex = 3, cex.lab = 1.75)
 abline(h=0,lty=2,col="grey") ; abline(v=0,lty=2,col="grey")
 dev.off()
 
@@ -159,19 +162,21 @@ dev.off()
 
 # Plotting PC1 and PC2
 pdf("output/figures/pop_structure/poolfstat/PCA_all_SNPs_PC1_PC2_names.pdf", width = 8, height = 8)
+par(mar=c(5,6,4,1)+.1) # Adjust margins
 pca <- plot(pooldata.pca$pop.loadings[,1],pooldata.pca$pop.loadings[,2],
 xlab=paste0("PC",1," (",round(pooldata.pca$perc.var[1],2),"%)"),
 ylab=paste0("PC",2," (",round(pooldata.pca$perc.var[2],2),"%)"))
-text(pooldata.pca$pop.loadings[,1], pooldata.pca$pop.loadings[,2], pooldata@poolnames, cex=0.5)
+text(pooldata.pca$pop.loadings[,1], pooldata.pca$pop.loadings[,2], pooldata@poolnames, cex=0.5, cex.lab = 1.75)
 abline(h=0,lty=2,col="grey") ; abline(v=0,lty=2,col="grey")
 dev.off()
 
 # Plotting PC3 and PC4
 pdf("output/figures/pop_structure/poolfstat/PCA_all_SNPs_PC3_PC4_names.pdf", width = 8, height = 8)
+par(mar=c(5,6,4,1)+.1) # Adjust margins
 pca <- plot(pooldata.pca$pop.loadings[,3],pooldata.pca$pop.loadings[,4],
 xlab=paste0("PC",3," (",round(pooldata.pca$perc.var[3],2),"%)"),
 ylab=paste0("PC",4," (",round(pooldata.pca$perc.var[4],2),"%)"))
-text(pooldata.pca$pop.loadings[,3], pooldata.pca$pop.loadings[,4], pooldata@poolnames, cex=0.5)
+text(pooldata.pca$pop.loadings[,3], pooldata.pca$pop.loadings[,4], pooldata@poolnames, cex=0.5, cex.lab = 1.75)
 abline(h=0,lty=2,col="grey") ; abline(v=0,lty=2,col="grey")
 dev.off()
 
@@ -198,6 +203,9 @@ metadata$PC5 <- round(pooldata.pca$pop.loadings[,5],3)
 metadata$PC6 <- round(pooldata.pca$pop.loadings[,6],3)
 
 
+# Graph Projections of PCs
+
+# Projection of PC 1
 pdf("output/figures/pop_structure/poolfstat/Map_PC1.pdf", width = 8, height = 8)
 ggplot(data = west_coast) + 
   geom_polygon(aes(x = long, y = lat, group = group), fill = "white", color = "black") + 
@@ -205,9 +213,10 @@ ggplot(data = west_coast) +
   scale_fill_gradient(low = "firebrick", high = "gray27") + 
              coord_fixed(1.3) +
   xlim(c(-128, -114)) +
-  xlab("Longitude") + ylab("Latitude") + theme_classic() + ggtitle("PC 1 Projections")
+  xlab("Longitude") + ylab("Latitude") + theme_classic(base_size = 12) + ggtitle("PC 1 Projections")
 dev.off()
 
+# Projection of PC 2
 pdf("output/figures/pop_structure/poolfstat/Map_PC2.pdf", width = 8, height = 8)
 ggplot(data = west_coast) + 
   geom_polygon(aes(x = long, y = lat, group = group), fill = "white", color = "black") + 
@@ -218,6 +227,7 @@ ggplot(data = west_coast) +
   xlab("Longitude") + ylab("Latitude") + theme_classic() + ggtitle("PC 2 Projections")
 dev.off()
 
+# Projection of PC 3
 pdf("output/figures/pop_structure/poolfstat/Map_PC3.pdf", width = 8, height = 8)
 ggplot(data = west_coast) + 
   geom_polygon(aes(x = long, y = lat, group = group), fill = "white", color = "black") + 
@@ -228,6 +238,7 @@ ggplot(data = west_coast) +
   xlab("Longitude") + ylab("Latitude") + theme_classic() + ggtitle("PC 3 Projections")
 dev.off()
 
+# Projection of PC 4
 pdf("output/figures/pop_structure/poolfstat/Map_PC4.pdf", width = 8, height = 8)
 ggplot(data = west_coast) + 
   geom_polygon(aes(x = long, y = lat, group = group), fill = "white", color = "black") + 
@@ -238,6 +249,7 @@ ggplot(data = west_coast) +
   xlab("Longitude") + ylab("Latitude") + theme_classic() + ggtitle("PC 4 Projections")
 dev.off()
 
+# Projection of PC 5
 pdf("output/figures/pop_structure/poolfstat/Map_PC5.pdf", width = 8, height = 8)
 ggplot(data = west_coast) + 
   geom_polygon(aes(x = long, y = lat, group = group), fill = "white", color = "black") + 
@@ -248,6 +260,7 @@ ggplot(data = west_coast) +
   xlab("Longitude") + ylab("Latitude") + theme_classic() + ggtitle("PC 5 Projections")
 dev.off()
 
+# Projection of PC 6
 pdf("output/figures/pop_structure/poolfstat/Map_PC6.pdf", width = 8, height = 8)
 ggplot(data = west_coast) + 
   geom_polygon(aes(x = long, y = lat, group = group), fill = "white", color = "black") + 
@@ -258,6 +271,119 @@ ggplot(data = west_coast) +
   xlab("Longitude") + ylab("Latitude") + theme_classic() + ggtitle("PC 6 Projections")
 dev.off()
 
+
+#######
+
+# Alternative graphing of projections of PCs
+
+# Projection of PC1
+pdf("output/figures/pop_structure/poolfstat/Map_PC1_alt.pdf", width = 8, height = 8)
+ggplot(data = west_coast) + 
+  geom_polygon(aes(x = long, y = lat, group = group), fill = "white", color = "black") + 
+  geom_point(data = metadata, aes(x = Long, y = Lat, fill = PC1), shape = 21, size = 6) + 
+  scale_fill_gradient(low = "cyan", high = "black") + 
+             coord_fixed(1.3) + theme_classic(base_size = 20) +
+  xlim(c(-125.5, -114))  +
+  xlab("Longitude") + ylab("Latitude") + 
+  ggtitle(paste0("PC 1 Projections (",round(pooldata.pca$perc.var[1],2),"%)")) + 
+  theme(plot.title=element_text(family='', face='bold', size=25)) +
+  theme(legend.position =  c(0.9, 0.55))
+dev.off()
+# Projection of PC2
+pdf("output/figures/pop_structure/poolfstat/Map_PC2_alt.pdf", width = 8, height = 8)
+ggplot(data = west_coast) + 
+  geom_polygon(aes(x = long, y = lat, group = group), fill = "white", color = "black") + 
+  geom_point(data = metadata, aes(x = Long, y = Lat, fill = PC2), shape = 21, size = 6) + 
+  scale_fill_gradient(low = "cyan", high = "black") + 
+             coord_fixed(1.3) + theme_classic(base_size = 20) +
+  xlim(c(-125.5, -114))  +
+  xlab("Longitude") + ylab("Latitude") + 
+  ggtitle(paste0("PC 2 Projections (",round(pooldata.pca$perc.var[2],2),"%)")) + 
+  theme(plot.title=element_text(family='', face='bold', size=25)) +
+  theme(legend.position =  c(0.9, 0.55))
+dev.off()
+# Projection of PC3
+pdf("output/figures/pop_structure/poolfstat/Map_PC3_alt.pdf", width = 8, height = 8)
+ggplot(data = west_coast) + 
+  geom_polygon(aes(x = long, y = lat, group = group), fill = "white", color = "black") + 
+  geom_point(data = metadata, aes(x = Long, y = Lat, fill = PC3), shape = 21, size = 6) + 
+  scale_fill_gradient(low = "cyan", high = "black") + 
+             coord_fixed(1.3) + theme_classic(base_size = 20) +
+  xlim(c(-125.5, -114))  +
+  xlab("Longitude") + ylab("Latitude") + 
+  ggtitle(paste0("PC 3 Projections (",round(pooldata.pca$perc.var[3],2),"%)")) + 
+  theme(plot.title=element_text(family='', face='bold', size=25)) +
+  theme(legend.position =  c(0.9, 0.55))
+dev.off()
+# Projection of PC4
+pdf("output/figures/pop_structure/poolfstat/Map_PC4_alt.pdf", width = 8, height = 8)
+ggplot(data = west_coast) + 
+  geom_polygon(aes(x = long, y = lat, group = group), fill = "white", color = "black") + 
+  geom_point(data = metadata, aes(x = Long, y = Lat, fill = PC4), shape = 21, size = 6) + 
+  scale_fill_gradient(low = "cyan", high = "black") + 
+             coord_fixed(1.3) + theme_classic(base_size = 20) +
+  xlim(c(-125.5, -114))  +
+  xlab("Longitude") + ylab("Latitude") + 
+  ggtitle(paste0("PC 4 Projections (",round(pooldata.pca$perc.var[4],2),"%)")) + 
+  theme(plot.title=element_text(family='', face='bold', size=25)) +
+  theme(legend.position =  c(0.9, 0.55))
+dev.off()
+# Projection of PC5
+pdf("output/figures/pop_structure/poolfstat/Map_PC5_alt.pdf", width = 8, height = 8)
+ggplot(data = west_coast) + 
+  geom_polygon(aes(x = long, y = lat, group = group), fill = "white", color = "black") + 
+  geom_point(data = metadata, aes(x = Long, y = Lat, fill = PC5), shape = 21, size = 6) + 
+  scale_fill_gradient(low = "cyan", high = "black") + 
+             coord_fixed(1.3) + theme_classic(base_size = 20) +
+  xlim(c(-125.5, -114))  +
+  xlab("Longitude") + ylab("Latitude") + 
+  ggtitle(paste0("PC 5 Projections (",round(pooldata.pca$perc.var[5],2),"%)")) + 
+  theme(plot.title=element_text(family='', face='bold', size=25)) +
+  theme(legend.position =  c(0.9, 0.55))
+dev.off()
+# Projection of PC6
+pdf("output/figures/pop_structure/poolfstat/Map_PC6_alt.pdf", width = 8, height = 8)
+ggplot(data = west_coast) + 
+  geom_polygon(aes(x = long, y = lat, group = group), fill = "white", color = "black") + 
+  geom_point(data = metadata, aes(x = Long, y = Lat, fill = PC6), shape = 21, size = 6) + 
+  scale_fill_gradient(low = "cyan", high = "black") + 
+             coord_fixed(1.3) + theme_classic(base_size = 20) +
+  xlim(c(-125.5, -114))  +
+  xlab("Longitude") + ylab("Latitude") + 
+  ggtitle(paste0("PC 6 Projections (",round(pooldata.pca$perc.var[6],2),"%)")) + 
+  theme(plot.title=element_text(family='', face='bold', size=25)) +
+  theme(legend.position =  c(0.9, 0.55))
+dev.off()
+
+# Coordinates of site labels
+sites <- data.frame(
+  longitude = c(-124.0593, -124.0848, -124.1148, -124.4015, -124.5647, -124.2529, -124.0809, -123.7895, -123.8036, 
+                -123.2551, -123.0740, -122.3976, -121.9537, -121.9290, -121.3187, -121.2868, -120.8838, -120.6399, -120.6157),
+  latitude = c(44.83777, 44.50540, 44.24999, 43.30402, 42.84097, 41.77121, 40.03011, 39.60461, 39.28090, 38.51198, 38.31900, 
+               37.18506, 36.51939, 36.44750, 35.72893, 35.66549, 35.28994, 34.88117, 34.73024),
+  site.abrev = c("FC", "SLR", "SH", "ARA", "CBL", "PSG", "STC", "KH", "VD", "FR", "BMR", "PGP", "PL", "SBR", "PSN", "PB", "HZD", "OCT", "STR"))
+
+lat.site.labels <- c(44.83777+0.04, 44.50540, 44.24999-0.04, 43.30402, 42.84097, 41.77121, 40.03011, 39.60461-0.06, 39.28090, 38.51198+0.04, 38.31900-0.05, 
+               37.18506, 36.51939+0.1, 36.44750-0.09, 35.72893+0.14, 35.66549-0.07, 35.28994-0.02, 34.88117, 34.73024-0.14)
+
+long.site.labels.abrev <- c(-124.0593-0.7, -124.0848-0.75, -124.1148-0.75, -124.4015-0.75, -124.5647-0.75, -124.2529-0.75, 
+                      -124.0809-0.75, -123.7895-0.6, -123.8036-0.7, -123.2551-0.65, -123.0740-0.8, -122.3976-0.75, 
+                      -121.9537-0.55, -121.9290-0.75, -121.3187-0.75, -121.2868-0.75, -120.8838-0.72, -120.6399-0.75, -120.6157-0.7)
+
+# Projection of PC1 with site codes
+pdf("output/figures/pop_structure/poolfstat/Map_PC1_alt_site_labels.pdf", width = 8, height = 8)
+ggplot(data = west_coast) + 
+  geom_polygon(aes(x = long, y = lat, group = group), fill = "white", color = "black") + 
+  geom_point(data = metadata, aes(x = Long, y = Lat, fill = PC1), shape = 21, size = 6) + 
+  scale_fill_gradient(low = "cyan", high = "black") + 
+             coord_fixed(1.3) + theme_classic(base_size = 20) +
+  xlim(c(-125.5, -114))  +
+  xlab("Longitude") + ylab("Latitude") + 
+  geom_text(data=sites, aes(long.site.labels.abrev, lat.site.labels, label=site.abrev))
+  ggtitle(paste0("PC 1 Projections (",round(pooldata.pca$perc.var[1],2),"%)")) + 
+  theme(plot.title=element_text(family='', face='bold', size=25)) +
+  theme(legend.position =  c(0.7, 0.55))
+dev.off()
 
 # ================================================================================== #
 
