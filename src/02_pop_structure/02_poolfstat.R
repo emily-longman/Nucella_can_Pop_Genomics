@@ -133,7 +133,7 @@ pdf("output/figures/pop_structure/poolfstat/PCA_all_SNPs_PC1_PC2.pdf", width = 8
 pca <- plot(pooldata.pca$pop.loadings[,1],pooldata.pca$pop.loadings[,2],
 xlab=paste0("PC",1," (",round(pooldata.pca$perc.var[1],2),"%)"),
 ylab=paste0("PC",2," (",round(pooldata.pca$perc.var[2],2),"%)"),
-col="black", bg=colors.reorder, pch=21, cex = 3, main="Read Count data")
+col="black", bg=colors.reorder, pch=21, cex = 3)
 abline(h=0,lty=2,col="grey") ; abline(v=0,lty=2,col="grey")
 dev.off()
 
@@ -142,7 +142,7 @@ pdf("output/figures/pop_structure/poolfstat/PCA_all_SNPs_PC3_PC4.pdf", width = 8
 pca <- plot(pooldata.pca$pop.loadings[,3],pooldata.pca$pop.loadings[,4],
 xlab=paste0("PC",3," (",round(pooldata.pca$perc.var[3],2),"%)"),
 ylab=paste0("PC",4," (",round(pooldata.pca$perc.var[4],2),"%)"),
-col="black", bg=colors.reorder,pch=21, cex = 3, main="Read Count data")
+col="black", bg=colors.reorder,pch=21, cex = 3)
 abline(h=0,lty=2,col="grey") ; abline(v=0,lty=2,col="grey")
 dev.off()
 
@@ -151,7 +151,7 @@ pdf("output/figures/pop_structure/poolfstat/PCA_all_SNPs_PC5_PC6.pdf", width = 8
 pca <- plot(pooldata.pca$pop.loadings[,5],pooldata.pca$pop.loadings[,6],
 xlab=paste0("PC",5," (",round(pooldata.pca$perc.var[5],2),"%)"),
 ylab=paste0("PC",6," (",round(pooldata.pca$perc.var[6],2),"%)"),
-col="black", bg=colors.reorder,pch=21, cex = 3, main="Read Count data")
+col="black", bg=colors.reorder,pch=21, cex = 3)
 abline(h=0,lty=2,col="grey") ; abline(v=0,lty=2,col="grey")
 dev.off()
 
