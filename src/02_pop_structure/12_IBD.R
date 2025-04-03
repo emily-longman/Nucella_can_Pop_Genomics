@@ -33,7 +33,7 @@ fsts <- read.csv("data/processed/pop_structure/Fst/pooldata.pairwisefst.csv", he
 
 # ================================================================================== #
 
-# Make geo dist a matrix
+# Make geographic distance a matrix
 geo_mat <- data.matrix(geo_dist, rownames.force=NA)
 # Log transform the geographic distance matrix
 geo_mat_log <- log(geo_mat)
@@ -68,7 +68,7 @@ fst_mantel_lin
 
 # ================================================================================== #
 
-# Make IBD plot 
+# Make Isolation by Distance (IBD) plot 
 
 e_Dist <- as.matrix(geo_mat_log)
 g_Dist <- as.matrix(fst_lin)
@@ -82,12 +82,12 @@ write.csv(df, "output/tables/IBD.plot.csv")
 df.clust <- read.csv("output/tables/IBD.plot.mod.csv", header=T)
 
 # Specify colors
-colors = c("blue", "red", "purple")
-colors = c("#0000FF", "#CC0033", "#990099")
+colors = c("#4575b4", "#d73027", "#fee090")
 
+# Graph IBD
 pdf("output/figures/pop_structure/IBD/IBD_plot.pdf")
-ggplot(df.clust, aes(x=Slope_Distance, y=Genetic_Distance)) + geom_point(aes(fill=Cluster), size=3, shape = 21) + 
+ggplot(df.clust, aes(x=Slope_Distance, y=Genetic_Distance)) + geom_point(aes(fill=Cluster), size=4, shape = 21) + 
 scale_fill_manual(values=colors) + stat_smooth(method=lm, formula = y ~ x, colour="black") + 
-xlab("log(Geographic Distance)") + ylab("FST/(1-FST)")+ theme_classic(base_size = 16) + guides(fill="none")
+xlab("log(Geographic Distance)") + ylab("FST/(1-FST)")+ theme_classic(base_size = 25) + guides(fill="none")
 dev.off()
 
