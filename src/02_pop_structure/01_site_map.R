@@ -83,7 +83,7 @@ g <- ggplot(data = west_coast) +
   geom_polygon(aes(x = long, y = lat, group = group), fill = "white", color = "black") + 
   geom_point(data = sites, aes(x = longitude, y = latitude), size = 5, 
              shape = 21, fill = mycolors) + coord_fixed(1.3) +
-  geom_text(data=sites, aes(long.site.labels, long.site.labels.abrev, label=site.abrev))+ 
+  geom_text(data=sites, aes(long.site.labels.abrev, lat.site.labels, label=site.abrev))+ 
   xlim(c(-128, -114)) +
   xlab("Longitude") + ylab("Latitude") + theme_classic() 
 g + annotate(geom = 'text', size = 5,
@@ -120,9 +120,15 @@ dev.off()
 
 # Plot just site legend
 
-pdf("output/figures/Site_legend.pdf", width = 8, height = 8)
+pdf("output/figures/Site_legend.pdf", width = 8, height = 10)
 plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
 legend("topleft", legend = sites$site.abrev.full, pch=19, cex=2, bty='n', col = mycolors)
+mtext(expression(bold("Sites")), at=0.2, cex=3)
+dev.off()
+
+pdf("output/figures/Site_legend_abrev.pdf", width = 8, height = 10)
+plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
+legend("topleft", legend = sites$site.abrev, pch=19, cex=2, bty='n', col = mycolors)
 mtext(expression(bold("Sites")), at=0.2, cex=3)
 dev.off()
 
