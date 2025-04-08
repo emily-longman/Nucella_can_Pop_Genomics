@@ -223,15 +223,3 @@ N.canaliculata_annotated_SNPs <- left_join(annotation, snp.dt, by = join_by(SNP_
 write.csv(N.canaliculata_annotated_SNPs, "data/processed/outlier_analyses/snpeff/N.canaliculata_SNPs_bonferroni_annotated.txt")
 write.csv(N.canaliculata_annotated_SNPs, "data/processed/outlier_analyses/snpeff/N.canaliculata_SNPs_bonferroni_annotated.csv")
 
-
-
-
-
-
-
-
-
-#####
-
-#example from D. bas to search genome for specific nucleotide sequences.
-samtools faidx GCA_035041595.1_ASM3504159v1_genomic.fna.masked.fa "JAWNLB010000001.1":5-6
