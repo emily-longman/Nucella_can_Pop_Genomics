@@ -18,10 +18,14 @@ setwd(root_path)
 # ================================================================================== #
 
 # Load packages
-install.packages(c('poolfstat', 'ggplot2', 'RColorBrewer'))
+install.packages(c('poolfstat', 'tidyverse', 'ggplot2', 'RColorBrewer', 'maps', 'mapdata', 'ggrepel'))
 library(poolfstat)
+library(tidyverse)
 library(ggplot2)
 library(RColorBrewer)
+library(maps) 
+library(mapdata)
+library(ggrepel)
 
 # ================================================================================== #
 
@@ -182,9 +186,6 @@ dev.off()
 
 # ================================================================================== #
 
-library(maps) 
-library(mapdata)
-library(ggrepel)
 
 # Read in metadata 
 metadata <- read.csv("data/processed/pop_structure/guide_files/Populations_metadata.csv", header=T)
@@ -422,9 +423,71 @@ dev.off()
 
 # ================================================================================== #
 
-# Test for admixture (note: a Z-score < −1.65 provides evidence for admixture)
+# Graph F3 
+
+# Save F3 values as a data frame
+pooldata.fstats@f3.values %>% as.data.frame -> f3.object
+# Rename columns
+f3.object %>% rename(bjack_mean='bjack mean', bjack_s.e.='bjack s.e.') -> f3.object
+
+# Split row name up into focal pop and the two parent/source 
+f3.object %>% mutate(pair_info = row.names(.)) %>% 
+separate(pair_info, into = c("Site","Parents"), sep = ";") %>% 
+separate(Parents, into = c("P1","P2"), sep = ",") -> f3.object.flt
+
+# Order sites
+f3.object.flt$Site <- factor(f3.object.flt$Site, 
+levels=c("FC", "SLR", "SH", "ARA", "CBL", "PSG", "STC", "KH", "VD", "FR", "BMR", "PGP", "PL", "SBR", "PSN", "PB", "HZD", "OCT", "STR"))
+
+# Graph boxplot of f3 values
+pdf("output/figures/pop_structure/poolfstat/F3_box_plot.pdf", width = 12, height = 6)
+ggplot(data = f3.object.flt, aes(x=Site, y =`bjack mean`)) + geom_boxplot() + theme_classic(base_size = 20) 
+dev.off()
+
+# Summarize F3 for each Site
+f3.object.flt %>% group_by(Site) %>% dplyr::summarize(avg.F3=mean(bjack_mean)) -> f3.object.sum
+
+# Combine metadata with F3 statistics
+f3.object.sum.meta <- left_join(f3.object.sum, metadata, by="Site")
+
+# Coordinates of site labels
+sites <- data.frame(
+  longitude = c(-124.0593, -124.0848, -124.1148, -124.4015, -124.5647, -124.2529, -124.0809, -123.7895, -123.8036, 
+                -123.2551, -123.0740, -122.3976, -121.9537, -121.9290, -121.3187, -121.2868, -120.8838, -120.6399, -120.6157),
+  latitude = c(44.83777, 44.50540, 44.24999, 43.30402, 42.84097, 41.77121, 40.03011, 39.60461, 39.28090, 38.51198, 38.31900, 
+               37.18506, 36.51939, 36.44750, 35.72893, 35.66549, 35.28994, 34.88117, 34.73024),
+  site.abrev = c("FC", "SLR", "SH", "ARA", "CBL", "PSG", "STC", "KH", "VD", "FR", "BMR", "PGP", "PL", "SBR", "PSN", "PB", "HZD", "OCT", "STR"))
+
+lat.site.labels <- c(44.83777+0.04, 44.50540, 44.24999-0.04, 43.30402, 42.84097, 41.77121, 40.03011, 39.60461, 39.28090, 38.51198+0.04, 38.31900-0.07, 
+               37.18506, 36.51939+0.2, 36.44750-0.1, 35.72893+0.14, 35.66549-0.07, 35.28994-0.02, 34.88117, 34.73024-0.14)
+
+long.site.labels.abrev <- c(-124.0593-0.7, -124.0848-0.8, -124.1148-0.75, -124.4015-0.8, -124.5647-0.75, -124.2529-0.8, 
+                      -124.0809-0.75, -123.7895-0.7, -123.8036-0.7, -123.2551-0.75, -123.0740-0.85, -122.3976-0.8, 
+                      -121.9537-0.65, -121.9290-0.8, -121.3187-0.8, -121.2868-0.75, -120.8838-0.8, -120.6399-0.8, -120.6157-0.8)
+
+# Projection of f3 statistics
+pdf("output/figures/pop_structure/poolfstat/F3_Map.pdf", width = 8, height = 8)
+ggplot(data = west_coast) + 
+  geom_polygon(aes(x = long, y = lat, group = group), fill = "white", color = "black") + 
+  geom_point(data = f3.object.sum.meta, aes(x = Long, y = Lat, fill = avg.F3), shape = 21, size = 6) + 
+  scale_fill_gradient(low = "cyan", high = "black") + 
+             coord_fixed(1.3) + theme_classic(base_size = 20) +
+  xlim(c(-125.5, -114))  +
+  xlab("Longitude") + ylab("Latitude") + 
+  geom_text(data=sites, aes(long.site.labels.abrev, lat.site.labels, label=site.abrev)) +
+  ggtitle("F3 Projections") + 
+  theme(plot.title=element_text(family='', face='bold', size=25)) +
+  theme(legend.position =  c(0.85, 0.55))
+dev.off()
+
+# ================================================================================== #
+
+# Test for admixture (note: a Z-score < −1.65 provides evidence for admixture at the 95% significance threshold)
+# Z-score = ratio of the block-jackknife estimated mean and standard-error
 tst.sel <- pooldata.fstats@f3.values$`Z-score`< -1.65
-pooldata.fstats@f3.values[tst.sel,]
+
+pooldata.fstats@f3.values[tst.sel,] -> test.sel.df
+test.sel.df
 #                 Estimate    bjack mean   bjack s.e.    Z-score
 #CBL;ARA,PSG -0.0006874833 -0.0006756751 3.032273e-05 -22.282791
 #CBL;ARA,STC -0.0004121394 -0.0003928102 3.317190e-05 -11.841655
@@ -441,6 +504,26 @@ pooldata.fstats@f3.values[tst.sel,]
 
 # Evidence of an admixed origin for CBL with ancestral sources related to ARA, PSG and STC. 
 # Evidence of an admixed origin for SBR with populations from both north and south of that site.
+
+# Rename columns
+test.sel.df %>% rename(bjack_mean='bjack mean', bjack_s.e.='bjack s.e.') -> test.sel.df
+
+# Split row name up into focal pop and the two parent/source 
+test.sel.df %>% mutate(pair_info = row.names(.)) %>% 
+separate(pair_info, into = c("Site","Parents"), sep = ";") %>% 
+separate(Parents, into = c("P1","P2"), sep = ",") -> test.sel.df.flt
+
+# Graph
+pdf("output/figures/pop_structure/poolfstat/F3_test_sel.pdf", width = 12, height = 6)
+ggplot(data = test.sel.df.flt, aes(y=rownames(test.sel.df.flt), x=bjack_mean)) + geom_point() + 
+geom_errorbar(aes(y=rownames(test.sel.df.flt), xmin=bjack_mean-bjack_s.e., xmax=bjack_mean+bjack_s.e.), width=0.4, position = position_dodge(.9)) +
+geom_vline(xintercept=0, color="red", linetype="dashed", linewidth=1.5) + xlim(NA,0.0001) + xlab("F3 Statistic") + ylab("") +
+theme_classic(base_size = 20) 
+dev.off()
+
+
+
+# ================================================================================== #
 
 # Test for four-population treeness (note:  a Z-score lower than 1.96 in absolute value provides no evidence against the null-hypothesis of treeness for the tested population configuration at the 95% significance threshold)
 tst.sel<-abs(pooldata.fstats@f4.values$`Z-score`)<1.96
