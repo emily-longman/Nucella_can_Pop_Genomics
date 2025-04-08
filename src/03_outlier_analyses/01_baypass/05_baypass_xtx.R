@@ -297,16 +297,17 @@ dev.off()
 
 # ================================================================================== #
 
-# Identify contigs with highly significant rnp p -- 178 SNPS
+# Identify contigs with highly significant rnp p -- 
+
+# Identity outlier SNPs 178 SNPS
 win.out.001.sig <- win.out.001[which(-log10(win.out.001$rnp.binom.p) >= -log10(0.001)),]
 
-# Create outlier SNP list 
+# Create contig list SNP list  (total of 70,206 SNPs)
 SNPs.Interest.pval.001 <- foreach(i=1:dim(win.out.001.sig)[1], .combine = "rbind")%do%{
   tmp.snps <- inner.rnf %>%
   filter(chr == win.out.001.sig[i,]$chr) %>%
   filter(pos >= win.out.001.sig[i,]$pos_min & pos <= win.out.001.sig[i,]$pos_max)
 }
-
 
 # Write file of outlier SNPs
 write.csv(SNPs.Interest.pval.001, "data/processed/outlier_analyses/baypass/Outlier_SNPs/Nucella_outlier_SNPs_pval0.001")
