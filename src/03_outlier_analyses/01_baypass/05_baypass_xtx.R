@@ -19,7 +19,7 @@ setwd(root_path)
 
 # Load packages
 source("/gpfs1/home/e/l/elongman/software/baypass_public/utils/baypass_utils.R")
-install.packages(c('data.table', 'dplyr', 'ggplot2', 'mvtnorm', 'geigen', 'tidyverse', 'foreach'))
+install.packages(c('data.table', 'dplyr', 'ggplot2', 'mvtnorm', 'geigen', 'tidyverse', 'foreach', 'WriteXLS'))
 library(data.table)
 library(dplyr)
 library(ggplot2)
@@ -59,7 +59,7 @@ dev.off()
 
 # Graph outliers
 pdf("output/figures/outlier_analyses/Baypass_xtx_outliers.pdf", width = 5, height = 5)
-plot(XtX$log10.1.pval., ylab="XtX P-value (-log10 scale)" )
+plot(XtX$log10.1.pval., ylab="-log10(XtX P-value)" )
 abline(h=3, lty=2, col="red") #0.001 p-value threshold
 dev.off()
 
@@ -68,6 +68,22 @@ dev.off()
 # Merge baypass results and SNP metadata 
 SNP.XtX <- cbind(snp.meta, XtX)
 SNP.XtX.dt <- as.data.table(SNP.XtX)
+
+# ================================================================================== #
+
+# Identify bonferroni outliers
+
+# Graph Bonferroni outliers (0.05 divided by the number of SNPs tested)
+pdf("output/figures/outlier_analyses/Baypass_xtx_outliers_bonferroni.pdf", width = 5, height = 5)
+plot(XtX$log10.1.pval., ylab="-log10(XtX P-value)" , xlab="Position")
+abline(h=-log10(0.05/dim(XtX)[1]), col="red")
+dev.off()
+
+# Identify bonferroni significant SNPs -- 8 SNPS
+bonf.sig.SNPs <- SNP.XtX.dt[which(SNP.XtX.dt$log10.1.pval. >= -log10(0.05/dim(SNP.XtX.dt)[1])),]
+
+# Write file of bonferroni outlier SNPs
+write.csv(bonf.sig.SNPs, "data/processed/outlier_analyses/baypass/Outlier_SNPs/Nucella_outlier_SNPs_bonferroni")
 
 # ================================================================================== #
 
@@ -294,5 +310,3 @@ SNPs.Interest.pval.001 <- foreach(i=1:dim(win.out.001.sig)[1], .combine = "rbind
 
 # Write file of outlier SNPs
 write.csv(SNPs.Interest.pval.001, "data/processed/outlier_analyses/baypass/Outlier_SNPs/Nucella_outlier_SNPs_pval0.001")
-
-#write.csv(SNPs.Interest.pval.001, "/data/processed/outlier_analyses/baypass/Nucella_outlier_SNPs.csv")
