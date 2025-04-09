@@ -56,11 +56,21 @@ library(groupdata2)
 data <- fread("protein_file_names.txt", header = F)
 dim(data) # 40634  4
 
+# Break up the data into 3 runs - will run a bash script for each run
+data_run1 <- data[1:14000,]
+data_run2 <- data[14001:28000,]
+data_run3 <- data[28001:40634,]
+
 # Break up the protein names up into chunks
-group(data, n=45, method = "greedy") -> protein_file_names
+group(data_run1, n=15, method = "greedy") -> protein_file_names_run_1
+group(data_run2, n=15, method = "greedy") -> protein_file_names_run_2
+group(data_run3, n=15, method = "greedy") -> protein_file_names_run_3
 
 # Write guide file
-write.table(protein_file_names, "protein_file_names_array.txt", col.names = F, row.names = F, quote = F)
-# Note the guide file has dimensions:  40634, 5 (903 partitions with 45 protein names in each)
+write.table(protein_file_names_run_1, "protein_file_names_array_run_1.txt", col.names = F, row.names = F, quote = F)
+write.table(protein_file_names_run_2, "protein_file_names_array_run_2.txt", col.names = F, row.names = F, quote = F)
+write.table(protein_file_names_run_3, "protein_file_names_array_run_3.txt", col.names = F, row.names = F, quote = F)
+
+# Note each guide file has dimensions:  14000, 5 (934 partitions with 15 protein names in each)
 
 q()
