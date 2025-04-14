@@ -83,7 +83,7 @@ grep -EA 1 "${prot}" $WORKING_FOLDER/data/processed/outlier_analyses/protein.fa 
 # Use the blastp command to compare the Nucella protein file with the uniprot database
 $ncbi/blastp -query $WORKING_FOLDER/data/processed/outlier_analyses/annotation/${prot}.fa \
 -db $WORKING_FOLDER/data/processed/outlier_analyses/gene_ontology/uniprot/uniref90 \
--out $WORKING_FOLDER/data/processed/outlier_analyses/gene_ontology/annotation/blastp_uniref90_${prot} \
+-out $WORKING_FOLDER/data/processed/outlier_analyses/gene_ontology/annotation \
 -outfmt 6 \
 -evalue 1e-5 \
 -max_target_seqs 5
