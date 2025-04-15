@@ -73,7 +73,7 @@ awk -F "\t" '{print $11}' $SNP | sed '1d' | uniq > $WORKING_FOLDER/data/processe
 
 #--------------------------------------------------------------------------------
 
-# Extract proteins
+# Extract and blast proteins of outlier SNPs
 cat $WORKING_FOLDER/data/processed/outlier_analyses/annotation/SNP.protein.names.txt | \
 while read prot
 do echo ${prot}
