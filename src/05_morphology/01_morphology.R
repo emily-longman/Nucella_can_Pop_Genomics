@@ -18,13 +18,14 @@ setwd(root_path)
 # ================================================================================== #
 
 # Load packages
-install.packages(c('poolfstat', 'tidyverse', 'ggplot2', 'RColorBrewer', 'pheatmap'))
+install.packages(c('geomorph', 'poolfstat', 'tidyverse', 'ggplot2', 'RColorBrewer', 'pheatmap'))
+library(geomorph)
 library(poolfstat)
 library(tidyverse)
 library(ggplot2)
 library(RColorBrewer)
 library(pheatmap)
-library(geomorph)
+library(ggbiplot)
 
 # ================================================================================== #
 
@@ -140,6 +141,30 @@ xlab("PC1 (21.60%)") + ylab("PC3 (10.90%)") +
 theme_classic(base_size = 25) + guides(fill="none")
 dev.off()
 
+
+# ================================================================================== #
+
+# Graph PC1 versus latitude
+pdf("output/figures/morphology/PCA_ggplot_PC1_lat.pdf", width = 8, height = 8)
+par(mar=c(5,5,4,1)+.1) # Adjust margins
+ggplot(pc_scores_metadata, aes(Latitude, Comp1)) + 
+geom_point(aes(fill=Site.Code), size=3, shape = 21) + 
+scale_fill_manual(values=mycolors) + geom_vline(xintercept=36.8007, linetype="dashed", color="black") +
+xlab("Latitude") + ylab("PC1 (21.60%)") + 
+theme_classic(base_size = 25) + guides(fill="none")
+dev.off()
+
+# Graph PC2 versus latitude
+pdf("output/figures/morphology/PCA_ggplot_PC2_lat.pdf", width = 8, height = 8)
+par(mar=c(5,5,4,1)+.1) # Adjust margins
+ggplot(pc_scores_metadata, aes(Latitude, Comp2)) + 
+geom_point(aes(fill=Site.Code), size=3, shape = 21) + 
+scale_fill_manual(values=mycolors) + geom_vline(xintercept=36.8007, linetype="dashed", color="black") +
+xlab("Latitude") + ylab("PC2 (19.65%)") + 
+theme_classic(base_size = 25) + guides(fill="none")
+dev.off()
+
+
 # ================================================================================== #
 
 
@@ -148,6 +173,21 @@ pdf("output/figures/morphology/pheatmap.pdf", width = 8.5, height = 8)
 pheatmap(proc_dist, border_color = "black", fontsize_col = 16, fontsize_row = 16)
 dev.off()
 
+# ================================================================================== #
+
+gdf <- geomorph.data.frame(Nucella_gpa, genetic.structure=metadata$genetic.structure, Site.Code=metadata$Site.Code)
+attributes(gdf)
+anova(procD.lm(coords ~ Csize * Site.Code, data = gdf))
+
+
+# ================================================================================== #
+
+# Extract PC1 population data for baypass
+
+pop.data <- pc_scores_metadata %>% 
+group_by(Site.Code) %>% summarise(mean.pc1=mean(Comp1), sd.pc1=sd(Comp1), CV.pc1=sd(Comp1)/mean(Comp1), mean.pc2=mean(Comp2), sd.pc2=sd(Comp2), CV.pc2=sd(Comp2)/mean(Comp2))
+
+write.csv(pop.data, "data/processed/morphometrics/pc.morphology.csv")
 
 # ================================================================================== #
 
@@ -166,22 +206,17 @@ metadata$Population <- metadata$Site_full
 metadata$PC1_gen <- round(pooldata.pca$pop.loadings[,1],3)
 
 # Join
-pc_meta <- left_join(pc_scores, metadata, by="Population")
+pc_meta <- left_join(pc_scores_metadata, metadata, by="Population")
+
+# Order
+pc_meta$Site <- factor(pc_meta$Site, levels=c("FC", "SLR", "SH", "ARA", "CBL", "PSG", "STC", "KH", "VD", "FR", "BMR", "PGP", "PL", "SBR", "PSN", "PB", "HZD", "OCT", "STR"))
+
 
 # Graph Genetic PC1 against morphology PC1
 pdf("output/figures/morphology/Genetic_morph_PC.pdf", width = 8, height = 8)
-pcs <- plot(pc_meta$PC1_gen, pc_meta$PC1, 
-xlab="Genetic PC1",
-ylab="Morphology PC1", pch=21, cex=1, cex.lab=1.75)
+ggplot(pc_meta, aes(x=PC1_gen, y=Comp1)) + geom_point(aes(fill=Site), size=3, shape = 21) + 
+scale_fill_manual(values=mycolors) +
+xlab("PC1 Genetic") + ylab("PC1 Morphology")  +
+theme_classic(base_size = 25) + theme(legend.position="none") 
 dev.off()
-
-
-
-
-
-
-# ================================================================================== #
-# ================================================================================== #
-# Read in PC scores
-pc_scores <- read.csv("data/processed/morphometrics/PC_scores.csv", header=T)
 

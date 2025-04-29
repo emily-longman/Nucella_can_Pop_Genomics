@@ -5,7 +5,7 @@
 # Request cluster resources ----------------------------------------------------
 
 # Name this job
-#SBATCH --job-name=baypass_C2_no_PGP
+#SBATCH --job-name=baypass_morphology_PC
 
 # Specify partition
 #SBATCH --partition=week
@@ -31,8 +31,7 @@
 
 #--------------------------------------------------------------------------------
 
-# This script will run baypass in C2 mode using an omega file. 
-# This option gives a constrast file under the core model. 
+# This script will run baypass using PC1 and PC2 of the morphology shape data and using an omega file. 
 
 # Load modules 
 module load gcc/13.3.0-xp3epyt
@@ -50,26 +49,26 @@ WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed
 # Generate Folders and files
 
 # Move to working directory
-cd $WORKING_FOLDER/outlier_analyses/baypass
+cd $WORKING_FOLDER/morphometrics
 
 # This part of the script will check and generate, if necessary, all of the output folders used in the script
-if [ -d "C2" ]
-then echo "Working C2 folder exist"; echo "Let's move on."; date
-else echo "Working C2 folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/outlier_analyses/baypass/C2; date
+if [ -d "baypass" ]
+then echo "Working baypass folder exist"; echo "Let's move on."; date
+else echo "Working baypass folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/morphometrics/baypass; date
 fi
 
 #--------------------------------------------------------------------------------
 
 # Change directory 
-cd $WORKING_FOLDER/GEA/baypass/C2
+cd $WORKING_FOLDER/morphometrics/baypass
 
-# Run baypass in C2 mode with a contrast file
+# Run baypass with morphometric data
 $baypass -npop 19 \
 -gfile $WORKING_FOLDER/outlier_analyses/baypass/genobaypass \
 -poolsizefile $WORKING_FOLDER/outlier_analyses/baypass/poolsize \
 -omegafile $WORKING_FOLDER/outlier_analyses/baypass/omega/NC_baypass_mat_omega.out \
--contrastfile $WORKING_FOLDER/outlier_analyses/guide_files/NC.baypass.C2_guide.file_no_PGP.txt \
+-efile $WORKING_FOLDER/morphometrics/guide_files/Baypass_morphology_PC.txt \
 -d0yij 4 \
--outprefix NC_baypass_C2_no_PGP \
+-outprefix NC_baypass_morphology_PC \
 -nthreads 20
 
