@@ -57,10 +57,19 @@ then echo "Working baypass folder exist"; echo "Let's move on."; date
 else echo "Working baypass folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/morphometrics/baypass; date
 fi
 
+# Change directory 
+cd $WORKING_FOLDER/morphometrics/baypass
+
+# This part of the script will check and generate, if necessary, all of the output folders used in the script
+if [ -d "CV" ]
+then echo "Working CV folder exist"; echo "Let's move on."; date
+else echo "Working CV folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/morphometrics/baypass/CV; date
+fi
+
 #--------------------------------------------------------------------------------
 
 # Change directory 
-cd $WORKING_FOLDER/morphometrics/baypass
+cd $WORKING_FOLDER/morphometrics/baypass/CV
 
 # Run baypass with morphometric data
 $baypass -npop 19 \
