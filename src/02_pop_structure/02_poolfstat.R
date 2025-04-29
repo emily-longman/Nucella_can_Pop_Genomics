@@ -432,6 +432,27 @@ pdf("output/figures/pop_structure/poolfstat/Heterozygosities.pdf", width = 6, he
 plot(pooldata.fstats, stat.name="heterozygosities", main="Heterozygosities")
 dev.off()
 
+# Save heterozygosities as a data frame 
+pooldata.fstats@heterozygosities %>% as.data.frame -> het.object
+# Rename columns
+het.object %>% rename(bjack_mean='bjack mean', bjack_s.e.='bjack s.e.') -> het.object
+# Order sites
+het.object$Site <- row.names(het.object)
+het.object$Site <- factor(het.object$Site, 
+levels=c("STR", "OCT", "HZD", "PB", "PSN", "SBR", "PL", "PGP", "BMR", "FR", "KH", "STC", "PSG", "CBL", "ARA", "SH", "SLR", "FC"))
+
+
+# Graph heterozyogisities with ggplot
+pdf("output/figures/pop_structure/poolfstat/heterozygosities_mean_se_plot.pdf", width = 8, height = 10)
+ggplot(data = het.object, aes(x=bjack_mean, y=Site)) + geom_point() + 
+geom_errorbar(aes(xmin=bjack_mean-bjack_s.e., xmax=bjack_mean+bjack_s.e.), width=.2) + xlab("Heterozygosity") +
+theme_classic(base_size = 24) 
+dev.off()
+
+# ================================================================================== #
+
+# Graph F3 
+
 # Plot F3
 pdf("output/figures/pop_structure/poolfstat/F3.pdf", width = 6, height = 6)
 plot(pooldata.fstats, stat.name="F3", main="F3")
@@ -441,10 +462,6 @@ dev.off()
 pdf("output/figures/pop_structure/poolfstat/F3_only_neg.pdf", width = 6, height = 6)
 plot(pooldata.fstats, stat.name="F3", value.range=c(NA, 0), main="F3 (only populations with negative f3 statistics)")
 dev.off()
-
-# ================================================================================== #
-
-# Graph F3 
 
 # Save F3 values as a data frame
 pooldata.fstats@f3.values %>% as.data.frame -> f3.object
@@ -541,60 +558,3 @@ geom_errorbar(aes(y=rownames(test.sel.df.flt), xmin=bjack_mean-bjack_s.e., xmax=
 geom_vline(xintercept=0, color="red", linetype="dashed", linewidth=1.5) + xlim(NA,0.0001) + xlab("F3 Statistic") + ylab("") +
 theme_classic(base_size = 20) 
 dev.off()
-
-
-
-# ================================================================================== #
-
-# Test for four-population treeness (note:  a Z-score lower than 1.96 in absolute value provides no evidence against the null-hypothesis of treeness for the tested population configuration at the 95% significance threshold)
-tst.sel<-abs(pooldata.fstats@f4.values$`Z-score`)<1.96
-as.data.frame(pooldata.fstats@f4.values)[tst.sel,]
-
-# Estimating admixture proportions with f4-ratios
-# Example of estimating f4 ratios
-compute.f4ratio(pooldata.fstats, num.quadruplet = "HZD,PSN;PB,OCT", den.quadruplet="HZD,PSN;SBR,STR")
-#  Estimate bjack mean bjack s.e.    CI95inf    CI95sup 
-# 3.0296472  2.9891599  0.0992849  2.7945615  3.1837583 
-# Note: Simulated value (α = 0.25) is within the confidence interval
-
-# ================================================================================== #
-
-# Build admixture graph from scratch
-
-# The find.tree.popset function selects maximal sets of unadmixed populations from an fstats object
-scaf.pops <- find.tree.popset(pooldata.fstats, verbose=FALSE)
-
-# List the 15 passing the treeness test for the identified set
-scaf.pops$passing.quaduplet
-
-# State the range of variation of the passing quadruplet
-scaf.pops$Z_f4.range
-
-# The rooted.njtree.builder function builds the scaffold tree based on the set of unadmixed populations (identified above with find.tree.popset) 
-scaf.tree <- rooted.njtree.builder(fstats=pooldata.fstats, pop.sel=scaf.pops$pop.sets[1,], plot.nj=FALSE)
-# Score of the NJ tree: 27.19838 
-
-# Check the fit of the neighbor-joining tree
-scaf.tree$nj.tree.eval
-
-# Note: need to graph using R GUI
-
-# Plot best inferred rooted scaffold tree
-plot(scaf.tree$best.rooted.tree)
-# This tree can be used as a reference graph to construct the complete admixture graph
-
-# Add other populations
-add.pool.OCT <- add.leaf(scaf.tree$best.rooted.tree,leaf.to.add="OCT", 
-                         fstats=pooldata.fstats, verbose=FALSE, drift.scaling=TRUE)
-
-plot(add.pool.OCT$best.fitted.graph)
-
-add.pool.OCT.HZD <- add.leaf(scaf.tree$best.rooted.tree,leaf.to.add="HZD", 
-                         fstats=pooldata.fstats, verbose=FALSE, drift.scaling=TRUE)
-
-plot(add.pool.OCT.HZD$best.fitted.graph)
-
-add.pool.OCT.HZD.SBR <- add.leaf(scaf.tree$best.rooted.tree,leaf.to.add="SBR", 
-                             fstats=pooldata.fstats, verbose=FALSE, drift.scaling=TRUE)
-
-plot(add.pool.OCT.HZD.SBR$best.fitted.graph)
