@@ -1,7 +1,7 @@
 # Graph shell morphometric data.
 
 # Clear memory
-rm(list=ls()) 
+rm(list=ls())
 
 # ================================================================================== #
 
