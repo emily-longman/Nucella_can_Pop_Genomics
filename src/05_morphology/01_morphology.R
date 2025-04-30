@@ -51,17 +51,45 @@ proc_dist <- proc_dist[,-1]
 
 # Generalized Procrustes Analysis
 
+# Perform a Procrustes analysis of landmark data
+Nucella_gpa <- gpagen(Nucella_landmarks)
+
+# ================================================================================== #
+
 # Graph distribution of raw landmarks
 pdf("output/figures/morphology/Nucella_landmarks.pdf", width = 8, height = 8)
 plot(Nucella_landmarks)
 dev.off()
 
-# Perform a Procrustes analysis of landmark data
-Nucella_gpa <- gpagen(Nucella_landmarks)
-
 # Graph Procrustes coordinates
 pdf("output/figures/morphology/Procrustes_coord.pdf", width = 8, height = 8)
 plot(Nucella_gpa)
+dev.off()
+
+# Generate consensus shape
+consensus <- apply(Nucella_gpa$coords, c(1,2), mean)
+# Graph consensus shape
+pdf("output/figures/morphology/Consensus.pdf", width = 6, height = 6)
+plot(consensus, asp=1, type="n")
+for(i in 1: length(Nucella_gpa$coords[,,3]))
+points(Nucella_gpa$coords[,,i], pch=21, col="black", bg="darkgrey")
+points(consensus, col="black", bg="blue", pch=21, cex=1.5)
+dev.off()
+
+# Transformation grid 
+# Make reference specimen
+ref <- mshape(Nucella_gpa$coords)
+# Target specimen (in this case all specimens)
+gp1.mn <- mshape(Nucella_gpa$coords[,,1:15])
+# Graph transformation grid of target specimen to reference
+pdf("output/figures/morphology/Transformation_grid.pdf", width = 6, height = 6)
+plotRefToTarget(ref, gp1.mn, mag=2)
+dev.off()
+
+# If want to make a transformation grid for a specific specimen
+gp.370 <- mshape(Nucella_gpa$coords[,,370])
+pdf("output/figures/morphology/Transformation_grid_370.pdf", width = 6, height = 6)
+plotRefToTarget(ref, gp.370, mag=2)
 dev.off()
 
 # ================================================================================== #
@@ -85,6 +113,8 @@ plot(Nucella_pca, xlab="PC1 (21.60%)", ylab="PC2 (19.65%)",
 xlim=c(-.1, .1), ylim=c(-.1, .1), col="black", bg=metadata$Site.Code, pch=21, cex=1, cex.lab=2)
 abline(h=0, lty=2, col="grey"); abline(v=0, lty=2, col="grey")
 dev.off()
+
+#####
 
 # Save PC scores
 pc_scores <- Nucella_pca$x
@@ -141,6 +171,123 @@ xlab("PC1 (21.60%)") + ylab("PC3 (10.90%)") +
 theme_classic(base_size = 25) + guides(fill="none")
 dev.off()
 
+# ================================================================================== #
+
+# Picknplot of PCA - allows you to pick a point then draw a deformation grid - need to do this on R studio
+PCA <- plot(Nucella_pca)
+#picknplot.shape(PCA)
+
+# ================================================================================== #
+
+# Heatmap of Procrustes distances among the populations
+pdf("output/figures/morphology/pheatmap.pdf", width = 8.5, height = 8)
+pheatmap(proc_dist, border_color = "black", fontsize_col = 16, fontsize_row = 16)
+dev.off()
+
+# ================================================================================== #
+
+# Look at association of shape with classifiers
+
+# Create data frame with shape data and classifiers
+gdf <- geomorph.data.frame(Nucella_gpa, genetic.structure=metadata$genetic.structure, Site.Code=metadata$Site.Code, latitude=metadata$Latitude)
+attributes(gdf)
+
+# ================================================================================== #
+
+# Perform Procrustes ANOVA with permuations 
+fit.size <- procD.lm(coords ~ log(Csize), data = gdf)
+summary(fit.size) 
+anova(fit.size) #Significant association with shape and size
+
+# Graph Allometry
+# Predictor Line
+pdf("output/figures/morphology/Allometry_PredLine.pdf", width = 8, height = 8)
+plotAllometry(fit.size, size=gdf$Csize, logsz=TRUE, method="PredLine", col=gdf$Site.Code)
+dev.off()
+# Regression Score
+pdf("output/figures/morphology/Allometry_RegScore.pdf", width = 8, height = 8)
+plotAllometry(fit.size, size=gdf$Csize, logsz=TRUE, method="RegScore", col=gdf$Site.Code)
+dev.off()
+# Alternate way to generate predictor line with regression 
+#pdf("output/figures/morphology/Allometry_PredLine.pdf", width = 8, height = 8)
+#plot(fit.size, type="regression", reg.type="PredLine", predictor=log(gdf$Csize))
+#dev.off()
+
+# Partial least squares analyses to see relationship between shape and size
+PLS <- two.b.pls(log(gdf$Csize), gdf$coords)
+
+# Graph PLS
+pdf("output/figures/morphology/PLS.pdf", width = 8, height = 8)
+plot(PLS, col=gdf$Site.Code)
+dev.off()
+
+# Graph Common allometric component (CAC)
+pdf("output/figures/morphology/Allometry_CAC.pdf", width = 8, height = 8)
+plot(fit.size, size=gdf$Csize, logsz=TRUE, method="CAC", col=gdf$Site.Code)
+dev.off()
+
+# ================================================================================== #
+
+# Perform Procrustes ANOVA analysis of Site with size
+fit <- procD.lm(coords ~ log(Csize) * Site.Code, data = gdf)
+# ANOVA summary
+summary(fit)
+
+# Fixed effects
+fit.2 <- procD.lm(coords ~ log(Csize) + Site.Code, data = gdf)
+# ANOVA summary
+summary(fit.2)
+
+# Pairwise differences between sites
+PW <- pairwise(fit.size, fit, group=gdf$Site.Code)
+summary(PW, test.type="dist", confidence=0.95)
+
+# Graph Common allometric component (CAC)
+pdf("output/figures/morphology/Model_CAC.pdf", width = 8, height = 8)
+plot(fit, size=gdf$Csize, logsz=TRUE, method="CAC", col=gdf$Site.Code)
+dev.off()
+
+# Morphological disparity of the groups from the overall mean; Procrustes variance for each group, pairwise differences and significance of differences
+MD1 <- morphol.disparity(coords~1, groups=~Site.Code, data=gdf)
+# Morphological disparity while accounting for allometry
+MD2 <- morphol.disparity(coords~Csize, groups=NULL, data=gdf)
+# Morphological disparity of the groups from the allometric mean
+MD3 <- morphol.disparity(coords~Csize, groups=~Site.Code, data=gdf)
+
+# ================================================================================== #
+
+# Perform Procrustes regression with permuations 
+lat.regression.fit <- procD.lm(coords ~ log(Csize) * latitude, data = gdf)
+anova(lat.regression.fit)
+
+# Regression
+pdf("output/figures/morphology/latitude_regression.pdf", width = 8, height = 8)
+plot(lat.regression.fit)
+dev.off()
+
+# Extract C size data
+regression.scores.Csize <- as.matrix(lat.regression.fit$X)
+
+# Merge PC scores with metadata
+regression_scores_Csize_metadata <- cbind(metadata, regression.scores.Csize)
+
+# Graph lat versus log Csize 
+pdf("output/figures/morphology/lat_csize.pdf", width = 9, height = 8)
+par(mar=c(5,5,4,1)+.1) # Adjust margins
+ggplot(regression_scores_Csize_metadata, aes(x=latitude, y=regression_scores_Csize_metadata[,20])) + 
+geom_point(aes(fill=Site.Code), size=3, shape = 21) + geom_vline(xintercept=36.8007, linetype="dashed", color="black") +
+scale_fill_manual(values=mycolors) + xlab("Latitude") + ylab("log(Centroid Size)") +
+theme_classic(base_size = 25) + guides(fill="none")
+dev.off()
+
+# ================================================================================== #
+
+# Extract PC1 and PC2 population data for baypass
+
+pop.data <- pc_scores_metadata %>% 
+group_by(Site.Code) %>% summarise(mean.pc1=mean(Comp1), sd.pc1=sd(Comp1), CV.pc1=sd(Comp1)/mean(Comp1), mean.pc2=mean(Comp2), sd.pc2=sd(Comp2), CV.pc2=sd(Comp2)/mean(Comp2))
+
+write.csv(pop.data, "data/processed/morphometrics/pc.morphology.csv")
 
 # ================================================================================== #
 
@@ -164,33 +311,8 @@ xlab("Latitude") + ylab("PC2 (19.65%)") +
 theme_classic(base_size = 25) + guides(fill="none")
 dev.off()
 
-
 # ================================================================================== #
-
-
-# Heatmap of Procrustes distances among the populations
-pdf("output/figures/morphology/pheatmap.pdf", width = 8.5, height = 8)
-pheatmap(proc_dist, border_color = "black", fontsize_col = 16, fontsize_row = 16)
-dev.off()
-
 # ================================================================================== #
-
-gdf <- geomorph.data.frame(Nucella_gpa, genetic.structure=metadata$genetic.structure, Site.Code=metadata$Site.Code)
-attributes(gdf)
-anova(procD.lm(coords ~ Csize * Site.Code, data = gdf))
-
-
-# ================================================================================== #
-
-# Extract PC1 population data for baypass
-
-pop.data <- pc_scores_metadata %>% 
-group_by(Site.Code) %>% summarise(mean.pc1=mean(Comp1), sd.pc1=sd(Comp1), CV.pc1=sd(Comp1)/mean(Comp1), mean.pc2=mean(Comp2), sd.pc2=sd(Comp2), CV.pc2=sd(Comp2)/mean(Comp2))
-
-write.csv(pop.data, "data/processed/morphometrics/pc.morphology.csv")
-
-# ================================================================================== #
-
 
 # Load pooldata object 
 load("data/processed/pop_structure/pooldata.RData")
@@ -219,4 +341,5 @@ scale_fill_manual(values=mycolors) +
 xlab("PC1 Genetic") + ylab("PC1 Morphology")  +
 theme_classic(base_size = 25) + theme(legend.position="none") 
 dev.off()
+
 
