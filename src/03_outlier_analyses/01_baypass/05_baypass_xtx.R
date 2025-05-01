@@ -59,7 +59,7 @@ dev.off()
 
 # Graph outliers
 pdf("output/figures/outlier_analyses/Baypass_xtx_outliers.pdf", width = 5, height = 5)
-plot(XtX$log10.1.pval., ylab="-log10(XtX P-value)" )
+plot(XtX$log10.1.pval., ylab="-log10(XtX P-value)")
 abline(h=3, lty=2, col="red") #0.001 p-value threshold
 dev.off()
 
