@@ -66,10 +66,6 @@ dev.off()
 # Join baypass morphology PC results with snp metadata
 baypass_morph_PC_pos <- cbind(snp.meta, baypass_morph_PC)
 
-# Colors for chromosomes
-chr_levels <- unique(baypass_morph_PC_pos$chr)
-chr_colors <- rep(c("#1f78b4", "#33a02c"), length.out = length(chr_levels)) 
-
 # Graph with ggplot
 pdf("output/figures/morphology/baypass/Baypass_xtx_outliers_PC_ggplot.pdf", width = 10, height = 5)
 ggplot(baypass_morph_PC_pos, aes(x = chr, y = log10.1.pval.)) +
@@ -78,19 +74,19 @@ geom_hline(yintercept = -log10(0.05/dim(baypass_morph_PC)[1]), linetype = "dashe
 theme_classic(base_size = 20) +  
 theme(panel.spacing = unit(0.5, "lines"),
 axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-axis.text.y = element_text(size = 12),
-labs(x = "Position", y = expression(-log[10](italic(p)))))
+axis.text.y = element_text(size = 12)) +
+labs(x = "Position", y = expression(-log[10](italic(p))))
 dev.off()
 
 # ================================================================================== #
 
 # Identify SNP list for PC morphology baypass results
 
-# Identify bonferroni significant SNPs
+# Identify bonferroni significant SNPs -- 10 SNPs
 baypass_morph_PC_pos_bonf_sig_SNPs <- baypass_morph_PC_pos[which(baypass_morph_PC_pos$log10.1.pval. >= -log10(0.05/dim(baypass_morph_PC_pos)[1])),]
 
 # Write file of bonferroni outlier SNPs
-write.csv(baypass_morph_PC_pos_bonf_sig_SNPs, "output/figures/morphology/baypass/baypass_morph_PC_pos_bonf_sig_SNPs")
+write.csv(baypass_morph_PC_pos_bonf_sig_SNPs, "data/processed/morphometrics/baypass/baypass_morph_PC_pos_bonf_sig_SNPs")
 
 # ================================================================================== #
 # ================================================================================== #
@@ -116,3 +112,30 @@ abline(h=-log10(0.05/dim(baypass_morph_CV)[1]), lty=1, col="red") # Bonferroni t
 dev.off()
 
 # ================================================================================== #
+
+# Fancier graphing with ggplot
+
+# Join baypass morphology PC results with snp metadata
+baypass_morph_CV_pos <- cbind(snp.meta, baypass_morph_CV)
+
+# Graph with ggplot
+pdf("output/figures/morphology/baypass/Baypass_xtx_outliers_CV_ggplot.pdf", width = 10, height = 5)
+ggplot(baypass_morph_CV_pos, aes(x = chr, y = log10.1.pval.)) +
+geom_jitter(size = 1, alpha = 0.7, show.legend = FALSE, height=NULL) + 
+geom_hline(yintercept = -log10(0.05/dim(baypass_morph_CV)[1]), linetype = "dashed", color = "red", linewidth = 0.8)  +  
+theme_classic(base_size = 20) +  
+theme(panel.spacing = unit(0.5, "lines"),
+axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+axis.text.y = element_text(size = 12)) +
+labs(x = "Position", y = expression(-log[10](italic(p))))
+dev.off()
+
+# ================================================================================== #
+
+# Identify SNP list for CV morphology baypass results
+
+# Identify bonferroni significant SNPs -- 6 SNPS
+baypass_morph_CV_pos_bonf_sig_SNPs <- baypass_morph_CV_pos[which(baypass_morph_CV_pos$log10.1.pval. >= -log10(0.05/dim(baypass_morph_CV_pos)[1])),]
+
+# Write file of bonferroni outlier SNPs
+write.csv(baypass_morph_CV_pos_bonf_sig_SNPs, "data/processed/morphometrics/baypass/baypass_morph_CV_pos_bonf_sig_SNPs")
