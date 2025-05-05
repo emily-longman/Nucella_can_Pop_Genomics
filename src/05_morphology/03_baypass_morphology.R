@@ -53,8 +53,9 @@ plot(baypass_morph_PC$XtXst)
 dev.off()
 
 # Graph outliers
-pdf("output/figures/morphology/baypass/Baypass_xtx_outliers_PC.pdf", width = 10, height = 5)
-plot(baypass_morph_PC$log10.1.pval., ylab="-log10(P-value)" )
+pdf("output/figures/morphology/baypass/Baypass_xtx_outliers_PC.pdf", width = 10, height = 5)\
+par(mar=c(5,5,4,1)+.1) # Adjust margins
+plot(baypass_morph_PC$log10.1.pval., ylab="-log10(P-value)", xlab="Position")
 abline(h=-log10(0.001), lty=2, col="red") #0.001 p-value threshold
 abline(h=-log10(0.05/dim(baypass_morph_PC)[1]), lty=1, col="red") # Bonferroni threshold
 dev.off()
@@ -106,7 +107,8 @@ dev.off()
 
 # Graph outliers
 pdf("output/figures/morphology/baypass/Baypass_xtx_outliers_CV.pdf", width = 10, height = 5)
-plot(baypass_morph_CV$log10.1.pval., ylab="-log10(P-value)" )
+par(mar=c(5,5,4,1)+.1) #Adjust margins
+plot(baypass_morph_CV$log10.1.pval., ylab=expression(-log[10](italic(p))), xlab="Position")
 abline(h=-log10(0.001), lty=2, col="red") #0.001 p-value threshold
 abline(h=-log10(0.05/dim(baypass_morph_CV)[1]), lty=1, col="red") # Bonferroni threshold
 dev.off()
