@@ -21,8 +21,6 @@ setwd(root_path)
 install.packages(c('data.table', 'tidyverse', 'ggplot2', 'RColorBrewer'))
 library(data.table)
 library(tidyverse)
-library(ggplot2)
-library(RColorBrewer)
 
 # ================================================================================== #
 # ================================================================================== #
@@ -83,6 +81,7 @@ str(bio_oracle_sites)
 # ================================================================================== #
 
 # Write table
+write.csv(bio_oracle, "data/processed/GEA/data/bio_oracle.csv")
 write.csv(bio_oracle_sites, "data/processed/GEA/data/bio_oracle_sites.csv")
 
 # ================================================================================== #
@@ -144,4 +143,5 @@ str(bio_oracle_ssp585_sites)
 # ================================================================================== #
 
 # Write table
+write.csv(bio_oracle_ssp585, "data/processed/GEA/data/bio_oracle_ssp585.csv")
 write.csv(bio_oracle_ssp585_sites, "data/processed/GEA/data/bio_oracle_ssp585_sites.csv")
