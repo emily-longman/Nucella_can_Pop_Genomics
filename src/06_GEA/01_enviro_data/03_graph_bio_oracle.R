@@ -44,7 +44,7 @@ bio_oracle_present <- bio_oracle %>%
 
 # ================================================================================== #
 
-# Specify parameters 
+# Specify parameters
 
 # Set geographic constraints
 latitude_range <- c(34, 45)
