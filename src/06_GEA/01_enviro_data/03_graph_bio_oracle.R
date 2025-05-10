@@ -227,3 +227,6 @@ env_ssp585_values$cell <- 1:nrow(env_ssp585_values)
 
 # Save the raster stack
 writeRaster(env_ssp585_stack, "data/processed/GEA/data/tif_files/bio-oracle_env_ssp585_stack_raster.tif", format = "GTiff")
+
+
+# ================================================================================== #
