@@ -73,7 +73,7 @@ mycolors <- rev(colorRampPalette(brewer.pal(11, "RdBu"))(1000))
 values(study_raster) <- NA
 
 # Graph empty template
-pdf("output/figures/GEA/Raster_template.pdf", width = 5, height = 5)
+pdf("output/figures/GEA/enviro/Raster_template.pdf", width = 5, height = 5)
 plot(study_raster, main = "West Coast Raster Template")
 dev.off()
 
@@ -95,20 +95,20 @@ temp_raster <- rasterize(coordinates, study_raster, bio_oracle_2010_temp_mean$th
 str(temp_raster)
 
 # Graph temperature raster
-pdf("output/figures/GEA/Test_Raster_bio-oracle_temp_mean.pdf", width = 3.25, height = 5)
+pdf("output/figures/GEA/enviro/Test_Raster_bio-oracle_temp_mean.pdf", width = 3.25, height = 5)
 plot(temp_raster, col = mycolors, axes = TRUE, box = FALSE,
 xlim = c(-130, 115), ylim = c(33, 46), 
 xlab="Longitude", ylab="Latitude", main = "Rasterized thetao_mean")
 dev.off()
 
 # Write raster tif file
-writeRaster(temp_raster, filename = "output/figures/GEA/Test_biooracle_thetao_mean_test_raster.tif", format = "GTiff")
+writeRaster(temp_raster, filename = "output/figures/GEA/enviro/Test_biooracle_thetao_mean_test_raster.tif", format = "GTiff")
 
 # Graph with ggplot
 # Change to data frame
 raster_df <- as.data.frame(temp_raster, xy = TRUE, na.rm = TRUE)
 # Graph 
-pdf("output/figures/GEA/Test_Raster_bio-oracle_temp_mean_ggplot.pdf", width = 3.5, height = 5)
+pdf("output/figures/GEA/enviro/Test_Raster_bio-oracle_temp_mean_ggplot.pdf", width = 3.5, height = 5)
 ggplot(raster_df, aes(x = x, y = y, fill = layer)) +
   geom_raster(aes(fill=layer)) +
   scale_fill_gradientn(colours=brewer.pal(5, "RdBu")) +
@@ -144,7 +144,7 @@ for (var in env_variables) {
     common_zlim <- c(10, 26)
     
     # Plot the raster for the current environmental variable
-    pdf(paste("output/figures/GEA/Raster_bio-oracle_present_",var,".pdf", sep = ""), width = 3.1, height = 5)
+    pdf(paste("output/figures/GEA/enviro/Raster_bio-oracle_present_",var,".pdf", sep = ""), width = 3.1, height = 5)
     plot(env_raster, xlim = c(-130, 115), ylim = c(33, 46), col = mycolors, axes = TRUE, box = FALSE, xlab="Longitude", ylab="Latitude") 
     dev.off()
  
@@ -197,7 +197,7 @@ for (var in env_variables) {
     common_zlim <- c(10, 26)
     
     # Plot the raster for the current environmental variable
-    pdf(paste("output/figures/GEA/Raster_bio-oracle_ssp585_",var,".pdf", sep = ""), width = 3.1, height = 5)
+    pdf(paste("output/figures/GEA/enviro/Raster_bio-oracle_ssp585_",var,".pdf", sep = ""), width = 3.1, height = 5)
     plot(env_raster, xlim = c(-130, 115), ylim = c(33, 46), col = mycolors, axes = TRUE, box = FALSE, xlab="Longitude", ylab="Latitude") 
     dev.off()
  
@@ -230,3 +230,5 @@ writeRaster(env_ssp585_stack, "data/processed/GEA/data/tif_files/bio-oracle_env_
 
 
 # ================================================================================== #
+
+# Save R data

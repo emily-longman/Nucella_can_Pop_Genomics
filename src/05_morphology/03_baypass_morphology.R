@@ -1,4 +1,4 @@
-# Graph Baypass C2 output.
+# Graph Baypass morphology output.
 
 # Clear memory
 rm(list=ls()) 

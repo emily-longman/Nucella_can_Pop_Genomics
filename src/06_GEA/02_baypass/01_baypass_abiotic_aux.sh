@@ -5,7 +5,7 @@
 # Request cluster resources ----------------------------------------------------
 
 # Name this job
-#SBATCH --job-name=baypass_abiotic
+#SBATCH --job-name=baypass_abiotic_aux
 
 # Specify partition
 #SBATCH --partition=week
@@ -66,10 +66,19 @@ then echo "Working abiotic folder exist"; echo "Let's move on."; date
 else echo "Working abiotic folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/GEA/baypass/abiotic; date
 fi
 
+# Change directory 
+cd $WORKING_FOLDER/GEA/baypass/abiotic
+
+# This part of the script will check and generate, if necessary, all of the output folders used in the script
+if [ -d "aux_mode" ]
+then echo "Working aux_mode folder exist"; echo "Let's move on."; date
+else echo "Working aux_mode folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/GEA/baypass/abiotic/aux_mode; date
+fi
+
 #--------------------------------------------------------------------------------
 
 # Change directory 
-cd $WORKING_FOLDER/GEA/baypass/abiotic
+cd $WORKING_FOLDER/GEA/baypass/abiotic/aux_mode
 
 # Run baypass with morphometric data
 $baypass -npop 19 \
@@ -78,6 +87,7 @@ $baypass -npop 19 \
 -omegafile $WORKING_FOLDER/outlier_analyses/baypass/omega/NC_baypass_mat_omega.out \
 -efile $WORKING_FOLDER/GEA/guide_files/Baypass_abiotic.txt \
 -d0yij 4 \
+-auxmodel \
 -outprefix NC_baypass_abiotic \
 -nthreads 20
 
