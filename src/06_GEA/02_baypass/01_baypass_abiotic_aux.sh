@@ -88,6 +88,6 @@ $baypass -npop 19 \
 -efile $WORKING_FOLDER/GEA/guide_files/Baypass_abiotic.txt \
 -d0yij 4 \
 -auxmodel \
--outprefix NC_baypass_abiotic \
+-outprefix NC_baypass_abiotic_aux \
 -nthreads 20
 
