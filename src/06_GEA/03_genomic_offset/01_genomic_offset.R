@@ -1,0 +1,61 @@
+# Perform genomic offset analyses with Bio-Oracle data
+# Note: prior to running the R script, need to load R and GDAL module on the VACC
+# module load R/4.4.1
+# module load gdal
+
+# Clear memory
+rm(list=ls()) 
+
+# ================================================================================== #
+
+# Set path as main Github repo
+install.packages(c('rprojroot'))
+library(rprojroot)
+
+# List all files and directories below the root
+dir(find_root_file(criterion = has_file("README.md")))
+root_path <- find_root_file(criterion = has_file("README.md"))
+# Set working directory as path from root
+setwd(root_path)
+
+# ================================================================================== #
+
+# Load packages
+install.packages(c('data.table', 'tidyverse', 'ggplot2', 'RColorBrewer', 'viridis', 'terra', 'raster', 'SeqArray'))
+library(data.table)
+library(tidyverse)
+library(ggplot2)
+library(RColorBrewer)
+library(viridis)
+library(terra)
+library(raster)
+
+# Load gradientForest
+install.packages("gradientForest", repos="http://R-Forge.R-project.org")
+library(gradientForest)
+
+# Load SeqArray
+if (!require("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+BiocManager::install(version = "3.20")
+BiocManager::install("SeqArray")
+library(SeqArray)
+
+# ================================================================================== #
+
+# Load poolobject
+load("data/processed/pop_structure/pooldata.RData")
+
+# Extract data for SNPs of interest
+str(pooldata)
+head(pooldata)
+
+
+# ================================================================================== #
+
+
+# Open the GDS file
+genofile <- seqOpen("data/processed/outlier_analyses/snpeff/N.canaliculata_SNPs.annotate.gds")
+
+# Read in significant SNPs
+baypass_pos_bonf_sig_SNP <- read.table("data/processed/GEA/baypass/abiotic/baypass_pos_bonf_sig_SNPs.txt", header=T)

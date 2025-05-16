@@ -84,10 +84,12 @@ dev.off()
 # Identify SNP list for baypass results
 
 # Identify bonferroni significant SNPs
-baypass_pos_bonf_sig_SNPs <- baypass_pos[which(baypass_pos$log10.1.pval. >= -log10(0.05/dim(baypass_pos)[1])),]
+baypass_pos_bonf_sig_SNPs <- data.frame(baypass_pos[which(baypass_pos$log10.1.pval. >= -log10(0.05/dim(baypass_pos)[1])),])
 
 # Write file of bonferroni outlier SNPs
-write.csv(baypass_pos_bonf_sig_SNPs, "data/processed/GEA/baypass/abiotic/baypass_pos_bonf_sig_SNPs")
+write.table(baypass_pos_bonf_sig_SNPs, "data/processed/GEA/baypass/abiotic/baypass_pos_bonf_sig_SNPs.txt", sep="\t", row.names=FALSE)
+write.csv(baypass_pos_bonf_sig_SNPs, "data/processed/GEA/baypass/abiotic/baypass_pos_bonf_sig_SNPs.csv", row.names=FALSE)
+write.csv(baypass_pos_bonf_sig_SNPs, "data/processed/GEA/baypass/abiotic/baypass_pos_bonf_sig_SNPs", row.names=FALSE)
 
 # ================================================================================== #
 # ================================================================================== #
