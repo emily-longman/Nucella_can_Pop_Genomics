@@ -58,4 +58,17 @@ head(pooldata)
 genofile <- seqOpen("data/processed/outlier_analyses/snpeff/N.canaliculata_SNPs.annotate.gds")
 
 # Read in significant SNPs
-baypass_pos_bonf_sig_SNP <- read.table("data/processed/GEA/baypass/abiotic/baypass_pos_bonf_sig_SNPs.txt", header=T)
+baypass_pos_bonf_sig_SNPs <- read.table("data/processed/GEA/baypass/abiotic/baypass_pos_bonf_sig_SNPs.txt", header=T)
+
+# Extract SNP metadata from genofile
+genofile_SNP <- data.table(
+  variant.id = seqGetData(genofile, "variant.id"),
+  chr = seqGetData(genofile, "chromosome"),
+  pos = seqGetData(genofile, "position"))
+
+# Filter genofile to only significant SNPs
+sig_SNPs <- genofile_SNP %>%
+  semi_join(baypass_pos_bonf_sig_SNPs, by = c("chr", "pos"))
+
+# Set filter in GDS to only those SNPs
+seqSetFilter(genofile, variant.id = sig_SNPs$variant.id)
