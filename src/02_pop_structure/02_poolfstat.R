@@ -439,7 +439,7 @@ het.object %>% rename(bjack_mean='bjack mean', bjack_s.e.='bjack s.e.') -> het.o
 # Order sites
 het.object$Site <- row.names(het.object)
 het.object$Site <- factor(het.object$Site, 
-levels=c("STR", "OCT", "HZD", "PB", "PSN", "SBR", "PL", "PGP", "BMR", "FR", "KH", "STC", "PSG", "CBL", "ARA", "SH", "SLR", "FC"))
+levels=c("STR", "OCT", "HZD", "PB", "PSN", "SBR", "PL", "PGP", "BMR", "FR", "VD","KH", "STC", "PSG", "CBL", "ARA", "SH", "SLR", "FC"))
 
 
 # Graph heterozyogisities with ggplot
