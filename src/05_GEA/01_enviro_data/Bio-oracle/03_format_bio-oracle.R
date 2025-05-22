@@ -18,9 +18,12 @@ setwd(root_path)
 # ================================================================================== #
 
 # Load packages
-install.packages(c('data.table', 'tidyverse', 'ggplot2', 'RColorBrewer'))
+install.packages(c('data.table', 'tidyverse', 'ggplot2', 'RColorBrewer', 'psych'))
 library(data.table)
 library(tidyverse)
+library(ggplot2)
+library(RColorBrewer)
+library(psych)
 
 # ================================================================================== #
 # ================================================================================== #
@@ -85,6 +88,25 @@ write.csv(bio_oracle, "data/processed/GEA/data/bio_oracle.csv")
 write.csv(bio_oracle_sites, "data/processed/GEA/data/bio_oracle_sites.csv")
 
 # ================================================================================== #
+
+# Assess correlations among the Bio-oracle environmental variables
+
+# Bivariate scatter plots below the diagonal, histograms on the diagonal, and the Pearson correlation above the diagonal
+pdf("output/figures/GEA/enviro/Bio-oracle/Bio-oracle_correlations.pdf", width = 10, height = 10)
+pairs.panels(bio_oracle_sites[,4:12], scale=T)
+dev.off()
+
+# Many of the variables are correlated
+# Remove temp max, temp min, temp range, o2, 
+bio_oracle_sites_sub <- bio_oracle_sites[,-c(4,5,6,8,10)]
+
+pdf("output/figures/GEA/enviro/Bio-oracle/Bio-oracle_correlations_sub.pdf", width = 10, height = 10)
+pairs.panels(bio_oracle_sites_sub[,4:7], scale=T)
+dev.off()
+
+# -- everything is super correlated; I don't know which to keep
+
+# ================================================================================== #
 # ================================================================================== #
 
 # Future data
@@ -143,5 +165,5 @@ str(bio_oracle_ssp585_sites)
 # ================================================================================== #
 
 # Write table
-write.csv(bio_oracle_ssp585, "data/processed/GEA/data/bio_oracle_ssp585.csv")
-write.csv(bio_oracle_ssp585_sites, "data/processed/GEA/data/bio_oracle_ssp585_sites.csv")
+write.csv(bio_oracle_ssp585, "data/processed/GEA/enviro_data/Bio-oracle/bio_oracle_ssp585.csv")
+write.csv(bio_oracle_ssp585_sites, "data/processed/GEA/enviro_data/Bio-oracle/bio_oracle_ssp585_sites.csv")
