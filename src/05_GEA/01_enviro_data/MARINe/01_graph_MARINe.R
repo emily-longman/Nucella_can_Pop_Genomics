@@ -211,7 +211,7 @@ pdf("output/figures/GEA/enviro/MARINe/Correlations_prey_sub.pdf", width = 10, he
 pairs.panels(biodiversity_means[,c(7:9,11)], scale=T)
 dev.off()
 
-##
+######
 
 # Just competitors and predators
 pdf("output/figures/GEA/enviro/MARINe/Correlations_comp_pred.pdf", width = 10, height = 10)
