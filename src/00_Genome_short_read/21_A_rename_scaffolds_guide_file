@@ -1,0 +1,50 @@
+#### Create guide file for array
+
+#--------------------------------------------------------------------------------
+
+#Define important file locations
+
+# Working folder is core folder where this pipeline is being run.
+WORKING_FOLDER_SCRATCH=/gpfs2/scratch/elongman/Nucella_can_drilling_genomics/data/processed/short_read_assembly
+
+#This is the location where the reference genome.
+REFERENCE=$WORKING_FOLDER_SCRATCH/pilon/polished_genome_round_5/polished_assembly.fasta
+
+#--------------------------------------------------------------------------------
+
+# Create guide file - i.e., a list of the scaffold names
+
+# Move to rename scaffolds directory
+cd $WORKING_FOLDER_SCRATCH/rename_scaffolds
+
+# Get all of the scaffold names 
+grep ">" $REFERENCE > scaffold_names.txt
+
+# Get rid of the ">"
+sed -i 's/>//g' scaffold_names.txt
+
+#--------------------------------------------------------------------------------
+
+# Modify in R
+
+#Load module
+module load R/4.4.0
+
+#Open R in VACC
+R
+
+install.packages(c('data.table', 'tidyverse', 'groupdata2'))
+
+library(data.table)
+library(tidyverse)
+library(groupdata2)
+
+data <- fread("scaffold_names.txt", header = F)
+
+group(data, n=30, method = "greedy") -> guide_file_array
+
+write.table(guide_file_array, "guide_file_array.txt", col.names = F, row.names = F, quote = F)
+
+# Note guide_file_array has dimensions:  19014, 2 
+
+q()

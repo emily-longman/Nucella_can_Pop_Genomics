@@ -1,0 +1,36 @@
+#### create guide file for array
+
+# Create file list 
+
+WORKING_FOLDER_SCRATCH=/gpfs2/scratch/elongman/Nucella_can_drilling_genomics/data/processed/short_read_assembly
+WORKING_FOLDER_NETFILES=/netfiles/pespenilab_share/Nucella/processed/Base_Genome/short_read_assembly
+
+backbone=$WORKING_FOLDER_SCRATCH/DBG2OLC/DBG2OLC_KmC_2_MinOv_100_Adth_0.01/DBG2OLC_KmC_2_MinOv_100_Adth_0.01.backbone_raw.fasta
+
+# Get all of the contig names 
+grep ">" $backbone > backbone_names.txt
+
+# Get rid of the ">"
+sed -i 's/>//g' backbone_names.txt
+
+sed -i 's/B/b/g' backbone_names.txt
+
+sed -i 's/_/-/g' backbone_names.txt
+
+# Modify in R
+
+R #to open R in VACC
+
+library(data.table)
+library(tidyverse)
+library(groupdata2)
+
+data <- fread("backbone_names.txt")
+
+group(data, n=30, method = "greedy") -> guide_file_array
+
+write.table(guide_file_array, "guide_file_array.txt", col.names = F, row.names = F, quote = F)
+
+# Note guide_file_array has dimensions 27922, 2 
+
+q()

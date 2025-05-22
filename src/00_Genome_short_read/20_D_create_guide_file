@@ -1,0 +1,36 @@
+#### Create guide file for array
+
+# Create file list 
+
+WORKING_FOLDER_SCRATCH=/gpfs2/scratch/elongman/Nucella_can_drilling_genomics/data/processed/short_read_assembly
+
+REFERENCE=$WORKING_FOLDER_SCRATCH/pilon/polished_genome_round_4/polished_assembly.fasta
+
+cd $WORKING_FOLDER_SCRATCH/pilon
+
+# Get all of the contig names 
+grep ">" $REFERENCE > scaffold_names_5.txt
+
+# Get rid of the ">"
+sed -i 's/>//g' scaffold_names_5.txt
+
+# Modify in R
+module load R/4.4.0
+
+R #to open R in VACC
+
+install.packages(c('data.table', 'tidyverse', 'groupdata2'))
+
+library(data.table)
+library(tidyverse)
+library(groupdata2)
+
+data <- fread("scaffold_names_5.txt", header = F)
+
+group(data, n=30, method = "greedy") -> guide_file_array
+
+write.table(guide_file_array, "guide_file_array_5.txt", col.names = F, row.names = F, quote = F)
+
+# Note guide_file_array has dimensions:  19014, 2 
+
+q()
