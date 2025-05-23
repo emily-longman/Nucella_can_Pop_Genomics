@@ -47,7 +47,7 @@ bio_oracle <- bio_oracle[-1,]
 
 # Change latitude and longitude to numeric
 bio_oracle <- bio_oracle %>%
-  mutate(latitude = as.numeric(latitude), longitude = as.numeric(longitude))
+mutate(latitude = as.numeric(latitude), longitude = as.numeric(longitude))
 
 # Filter bio-oracle data for the 19 sites (will set NA for any lat long combo not specified, then will filter out those rows)
 # Note: latitude and longitude need to be rounded to nearest 0.025 or 0.075
@@ -83,28 +83,16 @@ str(bio_oracle_sites)
 
 # ================================================================================== #
 
-# Write table
-write.csv(bio_oracle, "data/processed/GEA/enviro_data/Bio-oracle/bio_oracle.csv", row.names=FALSE)
-write.csv(bio_oracle_sites, "data/processed/GEA/enviro_data/Bio-oracle/bio_oracle_sites.csv", row.names=FALSE)
+# Extract data for most recent decade
+bio_oracle_sites_2010 <- bio_oracle_sites %>% 
+filter(time == "2010-01-01T00:00:00Z")
 
 # ================================================================================== #
 
-# Assess correlations among the Bio-oracle environmental variables
-
-# Bivariate scatter plots below the diagonal, histograms on the diagonal, and the Pearson correlation above the diagonal
-pdf("output/figures/GEA/enviro/Bio-oracle/Bio-oracle_correlations.pdf", width = 10, height = 10)
-pairs.panels(bio_oracle_sites[,4:12], scale=T)
-dev.off()
-
-# Many of the variables are correlated
-# Remove temp max, temp min, temp range, o2, 
-bio_oracle_sites_sub <- bio_oracle_sites[,-c(4,5,6,8,10)]
-
-pdf("output/figures/GEA/enviro/Bio-oracle/Bio-oracle_correlations_sub.pdf", width = 10, height = 10)
-pairs.panels(bio_oracle_sites_sub[,4:7], scale=T)
-dev.off()
-
-# -- everything is super correlated; I don't know which to keep
+# Write table
+write.csv(bio_oracle, "data/processed/GEA/enviro_data/Bio-oracle/bio_oracle.csv", row.names=FALSE)
+write.csv(bio_oracle_sites, "data/processed/GEA/enviro_data/Bio-oracle/bio_oracle_sites.csv", row.names=FALSE)
+write.csv(bio_oracle_sites_2010, "data/processed/GEA/enviro_data/Bio-oracle/bio_oracle_sites_2010.csv", row.names=FALSE)
 
 # ================================================================================== #
 # ================================================================================== #
@@ -128,7 +116,7 @@ bio_oracle_ssp585 <- bio_oracle_ssp585[-1,]
 
 # Change latitude and longitude to numeric
 bio_oracle_ssp585 <- bio_oracle_ssp585 %>%
-  mutate(latitude = as.numeric(latitude), longitude = as.numeric(longitude))
+mutate(latitude = as.numeric(latitude), longitude = as.numeric(longitude))
 
 # Filter bio-oracle data for the 19 sites (will set NA for any lat long combo not specified, then will filter out those rows)
 # Note: latitude and longitude need to be rounded to nearest 0.025 or 0.075
@@ -164,6 +152,13 @@ str(bio_oracle_ssp585_sites)
 
 # ================================================================================== #
 
+# Extract only the last decade of data (i.e., )
+bio_oracle_sites_ssp585_2090 <- bio_oracle_ssp585_sites %>% 
+filter(time == "2090-01-01T00:00:00Z")
+
+# ================================================================================== #
+
 # Write table
 write.csv(bio_oracle_ssp585, "data/processed/GEA/enviro_data/Bio-oracle/bio_oracle_ssp585.csv", row.names=FALSE)
 write.csv(bio_oracle_ssp585_sites, "data/processed/GEA/enviro_data/Bio-oracle/bio_oracle_ssp585_sites.csv", row.names=FALSE)
+write.csv(bio_oracle_sites_ssp585_2090, "data/processed/GEA/enviro_data/Bio-oracle/bio_oracle_sites_ssp585_2090.csv", row.names=FALSE)
