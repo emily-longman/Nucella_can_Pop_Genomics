@@ -84,8 +84,8 @@ str(bio_oracle_sites)
 # ================================================================================== #
 
 # Write table
-write.csv(bio_oracle, "data/processed/GEA/data/bio_oracle.csv")
-write.csv(bio_oracle_sites, "data/processed/GEA/data/bio_oracle_sites.csv")
+write.csv(bio_oracle, "data/processed/GEA/enviro_data/Bio-oracle/bio_oracle.csv", row.names=FALSE)
+write.csv(bio_oracle_sites, "data/processed/GEA/enviro_data/Bio-oracle/bio_oracle_sites.csv", row.names=FALSE)
 
 # ================================================================================== #
 
@@ -165,5 +165,5 @@ str(bio_oracle_ssp585_sites)
 # ================================================================================== #
 
 # Write table
-write.csv(bio_oracle_ssp585, "data/processed/GEA/enviro_data/Bio-oracle/bio_oracle_ssp585.csv")
-write.csv(bio_oracle_ssp585_sites, "data/processed/GEA/enviro_data/Bio-oracle/bio_oracle_ssp585_sites.csv")
+write.csv(bio_oracle_ssp585, "data/processed/GEA/enviro_data/Bio-oracle/bio_oracle_ssp585.csv", row.names=FALSE)
+write.csv(bio_oracle_ssp585_sites, "data/processed/GEA/enviro_data/Bio-oracle/bio_oracle_ssp585_sites.csv", row.names=FALSE)
