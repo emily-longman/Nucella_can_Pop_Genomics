@@ -7,11 +7,10 @@ rm(list=ls())
 # ================================================================================== #
 
 # Set path as main Github repo
+# Install and load package
 install.packages(c('rprojroot'))
 library(rprojroot)
-
-# List all files and directories below the root
-dir(find_root_file(criterion = has_file("README.md")))
+# Specify root path
 root_path <- find_root_file(criterion = has_file("README.md"))
 # Set working directory as path from root
 setwd(root_path)
@@ -140,7 +139,7 @@ group_by(marine_site_name, latitude, longitude, georegion, state_province) %>%
 summarise(num.years=n(), mean_density = mean(density_per_m2), sd_density = sd(density_per_m2), se_perc_cov = sd_density/sqrt(num.years))
 
 # Graph predator density 
-pdf("output/figures/GEA/enviro/MARINe/MARINe_pisaster_density.pdf", width = 10, height = 10)
+pdf("output/figures/GEA/enviro/MARINe/MARINe_pisaster_density.pdf", width = 8, height = 10)
 ggplot(data = swath_filt_sum, aes(x=mean_density, y=marine_site_name,)) + geom_point(size=3, col="#730b43") + 
 geom_errorbar(aes(xmin=mean_density-se_perc_cov, xmax=mean_density+se_perc_cov), width=.2, col="#730b43") +
 xlab(bquote("Pisaster Density/ m"^2)) + ylab("") +
@@ -158,12 +157,15 @@ write.csv(swath_filt_sum, "data/processed/GEA/enviro_data/MARINe/swath_filt_sum.
 # Load summary data
 biodiversity_means <- read.csv("data/processed/GEA/enviro_data/MARINe/Biodiversity_means.csv", header=T)
 
+biodiversity_means$marine_site_name <- factor(biodiversity_means$marine_site_name, levels=c("Fogarty Creek", "Seal Rock", "Bob Creek", "Cape Arago", "Coquille Point", "Point Saint George", 
+"Shelter Cove", "Kibesillah Hill", "Windermere Point", "Bodega", "Pigeon Point", "Point Lobos", "Garrapata", 
+"Point Sierra Nevada", "Piedras Blancas", "Hazards", "Stairs"))
 # ================================================================================== #
 
 # Run NMDS
 set.seed(2)
 biodiversity_mds <- metaMDS(biodiversity_means[,7:15], distance = "bray", trymax = 50)
-biodiversity_mds 
+biodiversity_mds
 
 # Extract the axes of nmds and add columns with site info
 data_scores <- as.data.frame(scores(biodiversity_mds, "sites"))  
@@ -180,12 +182,31 @@ nb.cols <- 19
 mycolors <- rev(colorRampPalette(brewer.pal(11, "RdBu"))(nb.cols))
 
 # Graph NMDS
-pdf("output/figures/GEA/enviro/MARINe/NMDS.pdf", width = 10, height = 10)
+pdf("output/figures/GEA/enviro/MARINe/MARINe_NMDS.pdf", width = 10, height = 10)
 ggplot() + 
 geom_point(data=data_scores, aes(x=NMDS1, y=NMDS2, colour=marine_site_name), size=3) + 
 geom_text(data=species_scores, aes(x=NMDS1, y=NMDS2, label=species), size=3) + 
 coord_equal() +
 theme_bw() + scale_color_manual(values=mycolors)
+dev.off()
+
+# ================================================================================== #
+
+# Biplot of biotic data
+
+# Perform the PCA
+pca_biodiversity <- prcomp(biodiversity_means[,7:15], scale.=TRUE)
+
+# Graph biplot
+pdf("output/figures/GEA/enviro/MARINe/MARINe_biplot.pdf", width = 10, height = 10)
+biplot(pca_biodiversity)
+dev.off()
+
+# Graph biplot with ggplot and ggfortify
+pdf("output/figures/GEA/enviro/MARINe/MARINe_biplot_ggplot.pdf", width = 10.5, height = 8)
+autoplot(pca_biodiversity, data=biodiversity_means, color="black", fill="marine_site_name", size=6, shape=21,
+loadings=TRUE, loadings.label=TRUE, loadings.label.size=6) + scale_fill_manual(values=mycolors) + ylim(-0.6,0.6) + xlim(-0.6,0.6)+
+theme_bw(base_size=20)
 dev.off()
 
 # ================================================================================== #

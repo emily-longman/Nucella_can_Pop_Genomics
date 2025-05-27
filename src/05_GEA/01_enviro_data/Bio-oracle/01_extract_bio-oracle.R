@@ -9,11 +9,10 @@ rm(list=ls())
 # ================================================================================== #
 
 # Set path as main Github repo
+# Install and load package
 install.packages(c('rprojroot'))
 library(rprojroot)
-
-# List all files and directories below the root
-dir(find_root_file(criterion = has_file("README.md")))
+# Specify root path
 raw_data_path_from_root <- find_root_file("data", "raw", "Bio-oracle", criterion = has_file("README.md"))
 # Set working directory as path from root
 setwd(raw_data_path_from_root)
