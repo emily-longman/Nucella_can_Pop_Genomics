@@ -47,20 +47,24 @@ str(pooldata)
 
 # Turn the ref allele read count data object into a dataframe and add SNP name (Chr and pos)
 readcount <- as.data.frame(pooldata@refallele.readcount)
+readcov <- as.data.frame(pooldata@readcoverage)
+allele_freq <- as.data.frame(readcount/readcov)
+
+# Extract SNP info
 snp_name <- paste(pooldata@snp.info$Chromosome, pooldata@snp.info$Position)
-rownames(readcount) <- snp_name
+rownames(allele_freq) <- snp_name
 
 # Transpose dataframe
-readcount_t <- t(readcount)
+allele_freq_t <- t(allele_freq)
 
 # Set rownames as sites
-rownames(readcount_t) <- pooldata@poolnames
+rownames(allele_freq_t) <- pooldata@poolnames
 
 # Check to make sure no missing data
-sum(is.na(readcount_t))
+sum(is.na(allele_freq_t))
 
 # Subsample SNP list for testing - 1,000,000 SNPs
-readcount_t_sub <- readcount_t[,sample(1:ncol(readcount_t), 1000000)]
+allele_freq_t_sub <- allele_freq_t[,sample(1:ncol(allele_freq_t), 1000000)]
 
 # ================================================================================== #
 
@@ -70,14 +74,14 @@ readcount_t_sub <- readcount_t[,sample(1:ncol(readcount_t), 1000000)]
 str(bio_oracle_sites_2010)
 
 # Re-order bio-oracle data so in same order as read count data
-sites <- rownames(readcount_t)
+sites <- rownames(allele_freq_t)
 bio_oracle_sites_2010$location = factor(bio_oracle_sites_2010$location, levels = sites)
 bio_oracle_sites_2010_ordered <- bio_oracle_sites_2010[order(bio_oracle_sites_2010$location), ]
 # Make site names characters, not factors 
 bio_oracle_sites_2010_ordered$location <- as.character(bio_oracle_sites_2010_ordered$location)
 
 # Confirm that read count data and environmental data are in the same order
-identical(rownames(readcount_t), bio_oracle_sites_2010_ordered[,13])
+identical(rownames(allele_freq_t), bio_oracle_sites_2010_ordered[,13])
 
 # ================================================================================== #
 
@@ -115,30 +119,30 @@ dev.off()
 # ================================================================================== #
 
 # Run the rda
-N_can_rda <- rda(readcount_t ~ ., data = bio_oracle_sites_2010_ordered_sub, scale = T)
+N_can_rda <- rda(allele_freq_t ~ ., data = bio_oracle_sites_2010_ordered_sub, scale = T)
 #N_can_rda_sub <- rda(readcount_t_sub ~ ., data = bio_oracle_sites_2010_ordered_sub, scale = T)
 
 # ================================================================================== #
 
 # Summary
 N_can_rda
-#Call: rda(formula = readcount_t_sub ~ thetao_mean + chl_mean + o2_mean +
+#Call: rda(formula = allele_freq_t ~ thetao_mean + chl_mean + o2_mean +
 #ph_min + so_mean, data = bio_oracle_sites_2010_ordered_sub, scale = T)
 #-- Model Summary --
 #                Inertia Proportion Rank
 #Total         8.277e+06  1.000e+00     
-#Constrained   4.257e+06  5.143e-01    5
-#Unconstrained 4.020e+06  4.857e-01   13
+#Constrained   4.798e+06  5.796e-01    5
+#Unconstrained 3.480e+06  4.204e-01   13
 #Inertia is correlations
 #-- Eigenvalues --
 #Eigenvalues for constrained axes:
 #   RDA1    RDA2    RDA3    RDA4    RDA5 
-#2611482  521193  463846  353904  306436 
+#3016365  676763  499643  364405  240386
 #Eigenvalues for unconstrained axes:
 #   PC1    PC2    PC3    PC4    PC5    PC6    PC7    PC8    PC9   PC10   PC11 
-#642823 509856 419584 389588 312623 269878 245746 238589 235098 206888 194693 
+#695221 483267 443629 337181 304638 236463 210065 188701 171075 158338 105783 
 #  PC12   PC13 
-#184013 170966 
+# 79687  65594 
 
 # Notes:
 # Number of constrained RDA axes is the same as the number of predictors in the model.
@@ -146,7 +150,7 @@ N_can_rda
 
 # Calculate R2 (must adjust based on the number of predictors)
 RsquareAdj(N_can_rda)
-# Our environmental predictors explain 32.7% of the variation! This is fairly high for the full SNP list since you would assume most are neutral.
+# Our environmental predictors explain 41.79% of the variation! This is fairly high for the full SNP list since you would assume most are neutral.
 
 # Calculate eigenvalues of constrained axes
 summary(eigenvals(N_can_rda, model = "constrained"))
@@ -160,13 +164,7 @@ dev.off()
 # Test for significance of of SNP data and enviro predictors
 sig_full <- anova.cca(N_can_rda, parallel=getOption("mc.cores")) # default is permutation=999
 sig_full
-#Permutation test for rda under reduced model
-#Permutation: free
-#Number of permutations: 999
-#Model: rda(formula = readcount_t ~ thetao_mean + chl_mean + o2_mean + ph_min + so_mean, data = bio_oracle_sites_2010_ordered_sub, scale = T)
-#         Df Variance     F Pr(>F)    
-#Model     5  4256860 2.753  0.001 ***
-#Residual 13  4020346    
+# Takes a long time to finish
 
 # Test for significance of each constrained axis (helps identify candidate loci)
 signif.axis <- anova.cca(N_can_rda, by="axis", parallel=getOption("mc.cores"))
@@ -176,7 +174,7 @@ signif.axis
 # Check Variance Inflation Factors (VIF) - i.e., this tests for multicollinearity among predictors (you want them less than 10, ideally less than 5)
 vif.cca(N_can_rda)
 #thetao_mean    chl_mean     o2_mean      ph_min     so_mean 
-#   2.090068    2.811177   11.244335    2.079426    8.231358 
+#    2.090068    2.811177   11.244335    2.079426    8.231358 
 
 # ================================================================================== #
 

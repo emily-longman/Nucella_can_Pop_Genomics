@@ -30,6 +30,7 @@ library(geigen)
 
 # Read in Baypass results
 baypass_morph_CV <- read.table("data/processed/morphometrics/baypass/CV/aux_mode/NC_baypass_morphology_CV_aux_summary_pi_xtx.out", header=T)
+betai_CV_snp <- read.table("data/processed/morphometrics/baypass/CV/aux_mode/NC_baypass_morphology_CV_aux_summary_betai.out", header=T)
 snp.meta <- read.table("data/processed/outlier_analyses/baypass/snpdet", header=F)
 
 # Re-name snp metadata
@@ -84,7 +85,7 @@ dev.off()
 
 # In aux mode, no SNPs passed the bonferroni correction
 
-# Identify bonferroni significant SNPs -- 6 SNPS
+# Identify bonferroni significant SNPs 
 #baypass_morph_CV_aux_pos_bonf_sig_SNPs <- baypass_morph_CV_pos[which(baypass_morph_CV_pos$log10.1.pval. >= -log10(0.05/dim(baypass_morph_CV_pos)[1])),]
 
 # Write file of bonferroni outlier SNPs
