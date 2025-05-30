@@ -183,6 +183,9 @@ PCA <- plot(Nucella_pca)
 pdf("output/figures/morphology/pheatmap.pdf", width = 8.5, height = 8)
 pheatmap(proc_dist, border_color = "black", fontsize_col = 16, fontsize_row = 16)
 dev.off()
+pdf("output/figures/morphology/pheatmap_alt.pdf", width = 8.5, height = 8)
+pheatmap(proc_dist, border_color = "black", fontsize_col = 16, fontsize_row = 16, color=rev(viridis(n=361, alpha=1,begin=0, end=1, option="viridis")))
+dev.off()
 
 # ================================================================================== #
 

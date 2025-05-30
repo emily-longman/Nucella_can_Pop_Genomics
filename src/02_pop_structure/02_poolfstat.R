@@ -18,11 +18,12 @@ setwd(root_path)
 # ================================================================================== #
 
 # Load packages
-install.packages(c('poolfstat', 'tidyverse', 'ggplot2', 'RColorBrewer', 'maps', 'mapdata', 'ggrepel', 'pheatmap'))
+install.packages(c('poolfstat', 'tidyverse', 'ggplot2', 'RColorBrewer', 'viridis', 'maps', 'mapdata', 'ggrepel', 'pheatmap'))
 library(poolfstat)
 library(tidyverse)
 library(ggplot2)
 library(RColorBrewer)
+library(viridis)
 library(maps) 
 library(mapdata)
 library(ggrepel)
@@ -124,6 +125,9 @@ write.csv(pooldata.pairwisefst.matrix, "data/processed/pop_structure/Fst/pooldat
 # Graph Fst heatmap with pheatmap 
 pdf("output/figures/pop_structure/poolfstat/pheatmap_Fst.pdf", width = 8, height = 8)
 pheatmap(pooldata.pairwisefst.matrix, border_color = "black", fontsize_col = 16, fontsize_row = 16)
+dev.off()
+pdf("output/figures/pop_structure/poolfstat/pheatmap_Fst_alt.pdf", width = 8, height = 8)
+pheatmap(pooldata.pairwisefst.matrix, border_color = "black", fontsize_col = 16, fontsize_row = 16, color=rev(viridis(n=361, alpha=1,begin=0, end=1, option="viridis")))
 dev.off()
 
 # ================================================================================== #
