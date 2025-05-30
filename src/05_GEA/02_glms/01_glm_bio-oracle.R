@@ -37,7 +37,8 @@ y = as.numeric(args[2]) ### this is the chunk argument  1-X
 
 # Load pooldata object
 load("data/processed/pop_structure/pooldata.RData")
-# Load SNPs of interest (baypass rnp outlier SNPs: p=0.001)
+# Load SNPs of interest (baypass POD outlier SNPs)
+baypass_sig_SNPs <- read.table("data/processed/outlier_analyses/baypass/POD/baypass_sig_SNPs")
 load("data/processed/outlier_analyses/baypass/Outlier_SNPs/SNPs.Interest.pval.001.RData")
 # Load bio-oracle environmental data
 bio_oracle_sites_2010 <- read.csv("data/processed/GEA/enviro_data/Bio-oracle/bio_oracle_sites_2010.csv", header=T)
