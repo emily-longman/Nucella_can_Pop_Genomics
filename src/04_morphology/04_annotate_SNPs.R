@@ -147,26 +147,30 @@ snp.dt <- data.table(
 # Load SNPs of interest
 baypass_morph_PC_pos_bonf_sig_SNPs <- read.csv("data/processed/morphometrics/baypass/baypass_morph_PC_pos_bonf_sig_SNPs", header=T)
 baypass_morph_CV_pos_bonf_sig_SNPs <- read.csv("data/processed/morphometrics/baypass/baypass_morph_CV_pos_bonf_sig_SNPs", header=T)
+baypass_morph_CV1_pos_bonf_sig_SNPs <- read.csv("data/processed/morphometrics/baypass/CV_1/baypass_morph_CV1_pos_bonf_sig_SNPs.csv", header=T)
+baypass_morph_CV2_pos_bonf_sig_SNPs <- read.csv("data/processed/morphometrics/baypass/CV_2/baypass_morph_CV2_pos_bonf_sig_SNPs.csv", header=T)
 
 # Create SNP ID column
 snps_PC <- baypass_morph_PC_pos_bonf_sig_SNPs %>% mutate(SNP_id = paste(chr, pos, sep = "_"))
 snps_CV <- baypass_morph_CV_pos_bonf_sig_SNPs %>% mutate(SNP_id = paste(chr, pos, sep = "_"))
+snps_CV1 <- baypass_morph_CV1_pos_bonf_sig_SNPs %>% mutate(SNP_id = paste(chr, pos, sep = "_"))
+snps_CV2 <- baypass_morph_CV2_pos_bonf_sig_SNPs %>% mutate(SNP_id = paste(chr, pos, sep = "_"))
 
 # Check structure
 str(snps)
 
 #--------------------------------------------------------------------------------
 
-# Extract annotation data for each SNP of interest (snps_PC)
-annotation.PC = 
-foreach(i=1:dim(snps_PC)[1], 
+# Extract annotation data for each SNP of interest (snps_CV1)
+annotation.CV1 = 
+foreach(i=1:dim(snps_CV1)[1], 
 .combine = "rbind",
 .errorhandling = "remove")%do%{
 
 message(i)
 seqResetFilter(genofile)
 
-tmp.i = snps_PC[i,]$SNP_id
+tmp.i = snps_CV1[i,]$SNP_id
 
 pos.tmp = snp.dt %>% filter(SNP_id %in% tmp.i) %>% .$id
 
@@ -209,16 +213,16 @@ return(annotate.list)
 }
 
 
-# Extract annotation data for each SNP of interest (snps_CV)
-annotation.CV = 
-foreach(i=1:dim(snps_CV)[1], 
+# Extract annotation data for each SNP of interest (snps_CV2)
+annotation.CV2 = 
+foreach(i=1:dim(snps_CV2)[1], 
 .combine = "rbind",
 .errorhandling = "remove")%do%{
 
 message(i)
 seqResetFilter(genofile)
 
-tmp.i = snps_CV[i,]$SNP_id
+tmp.i = snps_CV2[i,]$SNP_id
 
 pos.tmp = snp.dt %>% filter(SNP_id %in% tmp.i) %>% .$id
 
@@ -263,12 +267,12 @@ return(annotate.list)
 #--------------------------------------------------------------------------------
 
 # Join annotation and SNP information
-baypass_morph_PC_pos_bonf_sig_SNPs_annotated <- left_join(annotation.PC, snp.dt, by = join_by(SNP_id))
+baypass_morph_CV1_pos_bonf_sig_SNPs_annotated <- left_join(annotation.CV1, snp.dt, by = join_by(SNP_id))
 # Write output
-write.csv(baypass_morph_PC_pos_bonf_sig_SNPs_annotated, "data/processed/morphometrics/baypass/baypass_morph_PC_pos_bonf_sig_SNPs_annotated.csv")
+write.csv(baypass_morph_CV1_pos_bonf_sig_SNPs_annotated, "data/processed/morphometrics/baypass/CV_1/baypass_morph_CV1_pos_bonf_sig_SNPs_annotated.csv", row.names=FALSE)
 
 
 # Join annotation and SNP information
-baypass_morph_CV_pos_bonf_sig_SNPs_annotated <- left_join(annotation.CV, snp.dt, by = join_by(SNP_id))
+baypass_morph_CV2_pos_bonf_sig_SNPs_annotated <- left_join(annotation.CV2, snp.dt, by = join_by(SNP_id))
 # Write output
-write.csv(baypass_morph_CV_pos_bonf_sig_SNPs_annotated, "data/processed/morphometrics/baypass/baypass_morph_CV_pos_bonf_sig_SNPs_annotated.csv")
+write.csv(baypass_morph_CV2_pos_bonf_sig_SNPs_annotated, "data/processed/morphometrics/baypass/CV_2/baypass_morph_CV2_pos_bonf_sig_SNPs_annotated.csv", row.names=FALSE)
