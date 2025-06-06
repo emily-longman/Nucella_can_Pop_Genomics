@@ -124,9 +124,10 @@ data_win
 # ================================================================================== #
 
 model.output =
-  # For each SNP in a given window extract allele freq then run GLM with bio-oracle data
+  # For each SNP in a given window extract allele freq then run model with bio-oracle data
   foreach(i=1:dim(data_win)[1], .combine = "rbind")%do%{
     
+    # Reset filter
     seqResetFilter(genofile)
 
     ###############################################################
