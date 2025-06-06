@@ -76,6 +76,7 @@ wins <- foreach(chr.i=unique(snp.dt$chr),
                              start=seq(from=min(tmp$pos), to=max(tmp$pos)-win.bp, by=step.bp),
                              end=seq(from=min(tmp$pos), to=max(tmp$pos)-win.bp, by=step.bp) + win.bp)
                 } }
+
 # Add column with window number
 wins[,i:=1:dim(wins)[1]]
 
