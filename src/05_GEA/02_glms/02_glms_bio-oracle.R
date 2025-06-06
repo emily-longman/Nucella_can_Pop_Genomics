@@ -17,7 +17,7 @@ setwd(root_path)
 # ================================================================================== #
 
 # Load packages
-# install.packages(c('data.table', 'tidyverse', 'foreach', 'poolfstat', 'magrittr', 'reshape2', 'broom', 'SNPRelate'))
+# install.packages(c('data.table', 'tidyverse', 'foreach', 'poolfstat', 'magrittr', 'reshape2', 'broom', 'stats', 'fastglm'))
 library(data.table)
 library(tidyverse)
 library(foreach)
@@ -26,6 +26,7 @@ library(magrittr)
 library(reshape2)
 library(broom)
 library(stats)
+library(fastglm)
 
 # Install and load SeqArray
 #if (!require("BiocManager", quietly = TRUE))
@@ -64,6 +65,11 @@ load("data/processed/GEA/glms/glms_windows.RData")
 # Rename "location" column as "sampleId"
 names(bio_oracle_sites_2010)[names(bio_oracle_sites_2010) == "location"] <- "sampleId"
 
+# Create demography column based on genetic clustering
+bio_oracle_sites_2010$demography <- 
+ifelse(bio_oracle_sites_2010$sampleId == "PL" | bio_oracle_sites_2010$sampleId == "SBR", "Admix",
+ifelse(bio_oracle_sites_2010$latitude >= 36.8, "North", "South"))
+
 # Create SNP_id column for outlier SNP list
 baypass_POD_sig_SNPs <- baypass_POD_sig_SNPs %>% mutate(SNP_id = paste(chr, pos, sep = "_"))
 
@@ -78,6 +84,17 @@ snp.dt <- data.table(
 
 # Filter for only outlier SNPs (NOTE: somehow getting one less SNP than in baypass_POD_sig_SNPs)
 snp.dt.sig <- snp.dt %>% filter(snp.dt$SNP_id %in% baypass_POD_sig_SNPs$SNP_id)
+
+# ================================================================================== #
+
+# Define anova function for comparing glms
+anovaFun <- function(m1, m2) {
+  ll1 <- as.numeric(logLik(m1))
+  ll2 <- as.numeric(logLik(m2))
+  parameter <- abs(attr(logLik(m1), "df") -  attr(logLik(m2), "df"))
+  chisq <- -2*(ll1-ll2)
+  1-pchisq(chisq, parameter)
+    }
 
 # ================================================================================== #
 # ================================================================================== #
@@ -133,36 +150,34 @@ model.output =
     ###############################################################
 
     # Calculate allele frequency for SNP i in window k in chunk y
-    seqSetFilter(genofile, variant.id=data_win$variant.id[i], verbose=T)
+    seqSetFilter(genofile, variant.id=data_win$variant.id[i], verbose = T)
 
-      # Extract allele depth
-      ad_i <- seqGetData(genofile, "annotation/format/AD")
-      # Extract total depth
-      dp_i <- seqGetData(genofile, "annotation/format/DP")
+      # Extract allele depth ('ad') of alternate allele for SNP i
+      ad_i <- seqGetData(genofile, "annotation/format/AD") %>% .$data %>% .[,2]
+      # Extract total depth ('dp') for SNP i
+      dp_i <- seqGetData(genofile, "annotation/format/DP")[,1]
 
-        # Create af data table with ad, dp, sample ID and variant id
-      af_i <- data.table(ad=expand.grid(ad_i$data)[,1], dp=dp_i[,1], 
-      sampleId=rep(seqGetData(genofile, "sample.id"), dim(ad_i$data)[2]),
-      variant.id=rep(seqGetData(genofile, "variant.id"), each=dim(ad_i$data)[1]))
-      
+      # Create af data table with ad, dp, sample ID and variant id for SNP i
+      af_i <- data.table(ad=ad_i, dp=dp_i, af=ad_i/dp_i,
+      sampleId=seqGetData(genofile, "sample.id"),
+      variant.id=rep(seqGetData(genofile, "variant.id"), each=length(ad_i)))
+
       # Merge allele freq table af_i and snp.dt
       af_i_snp <- merge(af_i, snp.dt, by="variant.id")
-      
-      # Calculate allele frequency ('af')
-      af_i_snp[,af:=ad/dp]
+
       # Calculate the mean effective coverage ('nEff') (note: each pool consists of 20 dogwhelks)
-      af_i_snp[,nEff:=round((dp*2*20 - 1)/(dp+2*20))]
-      # Calculate the effective read-depth
+      nSnail=20
+      af_i_snp[,nEff:=round((dp*2*nSnail)/(2*nSnail+dp-1))]
+      # Calculate the effective allele freq
       af_i_snp[,af_nEff:=round(af*nEff)/nEff]
-      
+
     ###############################################################
 
     # Join with bio-oracle environmental data
     left_join(af_i_snp, bio_oracle_sites_2010, by ="sampleId") -> af_i_snp_enviro
     
     # Create long format data table with the enviro data in column "value" and the specific variable identified in column "column"
-    af_i_snp_enviro %>% as_tibble %>% gather(key = "enviro_var", value = "value", `thetao_max`:`so_mean`) ->
-      gathered_data
+    af_i_snp_enviro %>% as_tibble %>% gather(key = "enviro_var", value = "value", `thetao_max`:`so_mean`) -> gathered_data
     
     # Get names of environmental variables
     unique(gathered_data$enviro_var) -> enviro_vars_names
@@ -170,7 +185,7 @@ model.output =
     ###############################################################
 
     # Null t0 model
-    t0 <- lm(af~1, data=af_i_snp_enviro)
+    t0 <- lm(af~1, data=gathered_data)
 
     # Run model for each variable
     real_estimates =
@@ -180,23 +195,25 @@ model.output =
         gathered_data %>% filter(enviro_var == j) -> inner.tmp
         
         # Model allele freq for 'j' enviro variable
-        t1 <- lm(af~(value), data=inner.tmp)
-        t1.sum <- (summary(t1))
-        # Likelihood ratio test (LRT) between enviro model and null model
-        LRT.aov <- anova(t0, t1, test="Chisq")
+        y <- inner.tmp$af_nEff
+        X.null <- model.matrix(~1, inner.tmp)
+        X.dem <- model.matrix(~as.factor(demography), inner.tmp)
+        X.dem.env <- model.matrix(~as.factor(demography)+value, inner.tmp)
+        t0 <- fastglm(x=X.null, y=y, family=binomial(), weights=inner.tmp$nEff, method=0)
+        t1.demo <- fastglm(x=X.dem, y=y, family=binomial(), weights=inner.tmp$nEff, method=0)
+        t1.dem.env <- fastglm(x=X.dem.env, y=y, family=binomial(), weights=inner.tmp$nEff, method=0)
         
         # Generate output table with model comparison information for each variable
         data.frame(
-          test_code = 0,
-          chr = unique(af_i_snp$chr),
-          pos = unique(af_i_snp$pos),
+          chr = unique(inner.tmp$chr),
+          pos = unique(inner.tmp$pos),
           variable = j,
           missing=seqMissing(genofile),
           data = "real",
-          lrt_p = LRT.aov$`Pr(>Chi)`[2],
-          AIC_enviro = AIC(t1),
-          AIC_null = AIC(t0),
-          Beta = last(t1$coef))
+          AIC=c(AIC(t1.dem.env)),
+          b_enviro=last(t1.dem.env$coef),
+          se_enviro=last(t1.dem.env$se),
+          p_lrt=anovaFun(t1.demo, t1.dem.env))
           
       } # End run for all j enviro var
 
@@ -204,38 +221,41 @@ model.output =
 
     # Permutations to generate null expectation of association between af and enviro var
     permutation_estimates = 
-      foreach(j=enviro_vars_names_sub, .combine = "rbind", .errorhandling = "remove")%do%{
+      foreach(j=enviro_vars_names, .combine = "rbind", .errorhandling = "remove")%do%{
                 
         # Extract data for 'j' environmental variable
         gathered_data %>% filter(enviro_var == j) -> inner.tmp
                 
                 # Do 100 permutations; 
-                foreach(l=1:100, .combine = "rbind")%do%{
-                  message(paste("Permutation number:", l))
+          foreach(l=1:100, .combine = "rbind")%do%{
+            message(paste("Permutation number:", l))
                   
-                  # Shuffle enviro data for 'j' enviro variable
-                  inner.tmp %>% mutate(suffle_value = sample(value)) -> inner.tmp.shuffle
+            # Shuffle enviro data for 'j' enviro variable
+            inner.tmp %>% mutate(suffle_value = sample(value)) -> inner.tmp.shuffle
                   
-                  # Model allele freq for 'j' enviro variable with shuffled data
-                  t1 <- lm(af~(suffle_value), data=inner.tmp.shuffle)
-                  t1.sum <- (summary(t1))
-                  LRT.aov <- anova(t0, t1, test="Chisq")
+            # Model allele freq for 'j' enviro variable
+            y <- inner.tmp.shuffle$af_nEff
+            X.null <- model.matrix(~1, inner.tmp.shuffle)
+            X.dem <- model.matrix(~as.factor(demography), inner.tmp.shuffle)
+            X.dem.env <- model.matrix(~as.factor(demography)+value, inner.tmp.shuffle)
+            t0 <- fastglm(x=X.null, y=y, family=binomial(), weights=inner.tmp.shuffle$nEff, method=0)
+            t1.demo <- fastglm(x=X.dem, y=y, family=binomial(), weights=inner.tmp.shuffle$nEff, method=0)
+            t1.dem.env <- fastglm(x=X.dem.env, y=y, family=binomial(), weights=inner.tmp.shuffle$nEff, method=0)
                   
                   # Generate output table with model comparison information for each variable for the shuffled data
-                  data.frame(
-                    test_code = l,
-                    chr = unique(af_i_snp$chr),
-                    pos = unique(af_i_snp$pos),
-                    variable = j,
-                    missing = seqMissing(genofile),
-                    data = "permutation",
-                    lrt_p = LRT.aov$`Pr(>Chi)`[2],
-                    AIC_wea = AIC(t1),
-                    AIC_null = AIC(t0),
-                    Beta = last(t1$coef))
+                data.frame(
+                  chr = unique(inner.tmp.shuffle$chr),
+                  pos = unique(inner.tmp.shuffle$pos),
+                  variable = j,
+                  missing=seqMissing(genofile),
+                  data = "real",
+                  AIC=c(AIC(t1.dem.env)),
+                  b_enviro=last(t1.dem.env$coef),
+                  se_enviro=last(t1.dem.env$se),
+                  p_lrt=anovaFun(t1.demo, t1.dem.env))
                   
                 } # End for i permutation
-              } # End run for all j enviro var
+              } # End run for j enviro var
 
     # Combine real estimates and permutations
     rbind(real_estimates, permutation_estimates) -> all_data
@@ -254,6 +274,6 @@ system(paste("mkdir", folder_name, sep = " "))
 folder_name <- paste("data/processed/GEA/glms/glms_window_analysis/LM_100perm_Bio-Oracle_window_", y, sep = "")
 system(paste("mkdir", folder_name, sep = " "))
 
-# Save file for window y
+# Save file for window k in chunk y
 file_name <- paste("LM_100perm_Bio-Oracle_y", y, "chr", wins$chr[k], "start", wins$start[k], "stop", wins$end[k], sep = "_")
 save(model.output.test, file = paste(folder_name, "/" , file_name, ".Rdata", sep = "") )
