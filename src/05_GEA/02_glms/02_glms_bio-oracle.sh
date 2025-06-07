@@ -48,7 +48,7 @@ module load R/4.4.1
 WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
 
 # Script folder.
-SCRIPT_FOLDER=$WORKING_FOLDER/src/src/05_GEA/02_glms
+SCRIPT_FOLDER=$WORKING_FOLDER/src/05_GEA/02_glms
 
 #--------------------------------------------------------------------------------
 
