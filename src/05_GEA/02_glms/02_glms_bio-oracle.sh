@@ -23,7 +23,7 @@
 #SBATCH --cpus-per-task=8
 
 # Submit job array
-#SBATCH --array=999 #1-1000%50
+#SBATCH --array=999 #0-999%50
 
 # Name output of this job using %x=job-name and %j=job-id
 #SBATCH --output=./slurmOutput/%x.%A_%a.out
@@ -54,7 +54,7 @@ SCRIPT_FOLDER=$WORKING_FOLDER/src/05_GEA/02_glms
 
 # Input files
 chunk=1
-array=${SLURM_ARRAY_TASK_ID}
+array=$((${SLURM_ARRAY_TASK_ID}+1))
 
 echo "I am running chunk:" ${chunk} "and array:" ${array}
 
