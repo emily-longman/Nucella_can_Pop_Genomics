@@ -226,7 +226,6 @@ glm.model.output =
                 
           # Do 100 permutations; 
           foreach(l=1:100, .combine = "rbind")%do%{
-            message(paste("Permutation number:", l))
                   
             # Shuffle enviro data for 'j' enviro variable
             inner.tmp %>% mutate(suffle_value = sample(value)) -> inner.tmp.shuffle
