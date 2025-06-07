@@ -136,6 +136,7 @@ filter(chr == wins.c$chr[k]) %>%
 filter(pos > wins.c$start[k] & pos < wins.c$end[k]) -> 
 data_win
 
+data_win <- data_win[1:2,]
 # ================================================================================== #
 
 glm.model.output =
@@ -151,25 +152,25 @@ glm.model.output =
     # Calculate allele frequency for SNP i in window k in chunk c
     seqSetFilter(genofile, variant.id=data_win$variant.id[i], verbose = T)
 
-      # Extract allele depth ('ad') of alternate allele for SNP i
-      ad_i <- seqGetData(genofile, "annotation/format/AD") %>% .$data %>% .[,2]
-      # Extract total depth ('dp') for SNP i
-      dp_i <- seqGetData(genofile, "annotation/format/DP")[,1]
+    # Extract allele depth ('ad') of alternate allele for SNP i
+    ad_i <- seqGetData(genofile, "annotation/format/AD") %>% .$data %>% .[,2]
+    # Extract total depth ('dp') for SNP i
+    dp_i <- seqGetData(genofile, "annotation/format/DP")[,1]
 
-      # Create allele freq (af) data table with ad, dp, af, sample ID and variant id for SNP i
-      af_i <- data.table(ad=ad_i, dp=dp_i, af=ad_i/dp_i,
-      sampleId=seqGetData(genofile, "sample.id"),
-      variant.id=rep(seqGetData(genofile, "variant.id"), each=length(ad_i)))
+    # Create allele freq (af) data table with ad, dp, af, sample ID and variant id for SNP i
+    af_i <- data.table(ad=ad_i, dp=dp_i, af=ad_i/dp_i,
+    sampleId=seqGetData(genofile, "sample.id"),
+    variant.id=rep(seqGetData(genofile, "variant.id"), each=length(ad_i)))
 
-      # Merge allele freq table af_i and snp.dt
-      af_i_snp <- merge(af_i, snp.dt, by="variant.id")
+    # Merge allele freq table af_i and snp.dt
+    af_i_snp <- merge(af_i, snp.dt, by="variant.id")
 
-      # Sample size of each pool
-      nSnail=20
-      # Calculate the mean effective coverage ('nEff') (note: each pool consists of 20 dogwhelks)
-      af_i_snp[,nEff:=round((dp*2*nSnail)/(2*nSnail+dp-1))]
-      # Calculate the effective allele freq
-      af_i_snp[,af_nEff:=round(af*nEff)/nEff]
+    # Sample size of each pool
+    nSnail=20
+    # Calculate the mean effective coverage ('nEff') (note: each pool consists of 20 dogwhelks)
+    af_i_snp[,nEff:=round((dp*2*nSnail)/(2*nSnail+dp-1))]
+    # Calculate the effective allele freq
+    af_i_snp[,af_nEff:=round(af*nEff)/nEff]
 
     ###############################################################
 
@@ -181,9 +182,9 @@ glm.model.output =
     
     # Get names of environmental variables
     unique(gathered_data$enviro_var) -> enviro_vars_names
-    
+      
     ###############################################################
-
+  
     # Run model for each variable
     real_estimates =
       foreach(j=enviro_vars_names, .combine = "rbind", .errorhandling = "remove")%do%{
@@ -207,38 +208,40 @@ glm.model.output =
           pos = unique(inner.tmp$pos),
           variable = j,
           missing=seqMissing(genofile),
+          perm = NA,
           data = "real",
           AIC=c(AIC(t1.dem.env)),
           b_enviro=last(t1.dem.env$coef),
           se_enviro=last(t1.dem.env$se),
           p_lrt=anovaFun(t1.dem, t1.dem.env))
-          
-      } # End run for all j enviro var
+      } # End for enviro var
 
-    ###############################################################
-
+      ###############################################################
+      
     # Permutations to generate null expectation of association between af and enviro var
-    permutation_estimates = 
+    permutation_estimates =
       foreach(j=enviro_vars_names, .combine = "rbind", .errorhandling = "remove")%do%{
                 
         # Extract data for 'j' environmental variable
-        gathered_data %>% filter(enviro_var == j) -> inner.tmp
-                
-          # Do 100 permutations; 
+        gathered_data %>% filter(enviro_var == j) -> inner.tmp.shuffle
+
+          # Do 100 permutations
           foreach(l=1:100, .combine = "rbind")%do%{
-                  
+            set.seed(l)
+            
             # Shuffle enviro data for 'j' enviro variable
-            inner.tmp %>% mutate(suffle_value = sample(value)) -> inner.tmp.shuffle
-                  
+            #inner.tmp.perm %>% mutate(shuffle_value = sample(value)) -> inner.tmp.shuffle
+            inner.tmp.shuffle$shuffle_value <- sample(inner.tmp.shuffle$value)
+
             # Model allele freq
             # Generate 3 models - a null model (t0), a model with just demography (t1.dem) and a model with demography and "j" enviro var (t1.dem.env)
-            y <- inner.tmp.shuffle$af_nEff
-            X.null <- model.matrix(~1, inner.tmp.shuffle)
-            X.dem <- model.matrix(~as.factor(demography), inner.tmp.shuffle)
-            X.dem.env <- model.matrix(~as.factor(demography)+value, inner.tmp.shuffle)
-            t0 <- fastglm(x=X.null, y=y, family=binomial(), weights=inner.tmp.shuffle$nEff, method=0)
-            t1.dem <- fastglm(x=X.dem, y=y, family=binomial(), weights=inner.tmp.shuffle$nEff, method=0)
-            t1.dem.env <- fastglm(x=X.dem.env, y=y, family=binomial(), weights=inner.tmp.shuffle$nEff, method=0)
+            y.perm <- inner.tmp.shuffle$af_nEff
+            X.null.perm <- model.matrix(~1, inner.tmp.shuffle)
+            X.dem.perm <- model.matrix(~as.factor(demography), inner.tmp.shuffle)
+            X.dem.env.perm <- model.matrix(~as.factor(demography)+shuffle_value, inner.tmp.shuffle)
+            t0.perm <- fastglm(x=X.null.perm, y=y.perm, family=binomial(), weights=inner.tmp.shuffle$nEff, method=0)
+            t1.dem.perm <- fastglm(x=X.dem.perm, y=y.perm, family=binomial(), weights=inner.tmp.shuffle$nEff, method=0)
+            t1.dem.env.perm <- fastglm(x=X.dem.env.perm, y=y.perm, family=binomial(), weights=inner.tmp.shuffle$nEff, method=0)
                   
                 # Generate output table with t1.dem.env model information and model comparison info for each variable
                 data.frame(
@@ -246,17 +249,18 @@ glm.model.output =
                   pos = unique(inner.tmp.shuffle$pos),
                   variable = j,
                   missing=seqMissing(genofile),
+                  perm = l,
                   data = "permutation",
-                  AIC=c(AIC(t1.dem.env)),
-                  b_enviro=last(t1.dem.env$coef),
-                  se_enviro=last(t1.dem.env$se),
-                  p_lrt=anovaFun(t1.dem, t1.dem.env))
-                  
-                } # End for i permutation
-              } # End run for j enviro var
+                  AIC=c(AIC(t1.dem.env.perm)),
+                  b_enviro=last(t1.dem.env.perm$coef),
+                  se_enviro=last(t1.dem.env.perm$se),
+                  p_lrt=anovaFun(t1.dem.perm, t1.dem.env.perm))
 
+              } # End for perm
+            } # End for enviro var
+   
     # Combine real estimates and permutations
-    rbind(real_estimates, permutation_estimates) -> all_data
+    all_data <- rbind(real_estimates, permutation_estimates)
     return(all_data)
   }
 
