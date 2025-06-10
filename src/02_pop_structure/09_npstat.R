@@ -97,6 +97,8 @@ npstat$pop <- factor(npstat$pop, levels=c("FC", "SLR", "SH", "ARA", "CBL", "PSG"
 nb.cols <- 19
 mycolors <- rev(colorRampPalette(brewer.pal(11, "RdBu"))(nb.cols))
 
+# Graph statistics and express as log(pi), log(wattersons), and tajima's D 
+
 # Graph Pi
 pdf("output/figures/pop_structure/diversity_stats/npstat/Npstat_boxplot_logPi.pdf", width = 8, height = 5)
 ggplot(data = npstat, aes(x = pop, y = log(Pi), fill=pop)) + 
@@ -110,7 +112,7 @@ dev.off()
 pdf("output/figures/pop_structure/diversity_stats/npstat/Npstat_density_Pi.pdf", width = 8, height = 5)
 ggplot(data = npstat, aes(log(Pi), color=pop)) + 
   geom_density(size=2) + 
-  scale_color_manual(values=mycolors) +
+  scale_color_manual(values=mycolors) + ylim(NA,0.955) +
   xlab("log(Pi)") + ylab("Density") + theme_classic(base_size=20) +
   theme(legend.position="none")
 dev.off()
@@ -128,7 +130,7 @@ dev.off()
 pdf("output/figures/pop_structure/diversity_stats/npstat/Npstat_density_Watterson.pdf", width = 8, height = 5)
 ggplot(data = npstat, aes(log(Watterson), color=pop)) + 
   geom_density(size=2) + 
-  scale_color_manual(values=mycolors) +
+  scale_color_manual(values=mycolors) + ylim(NA,0.955) +
   xlab("log(Watterson)") + ylab("Density") + theme_classic(base_size=20) +
   theme(legend.position="none")
 dev.off()
@@ -150,6 +152,8 @@ ggplot(data = npstat, aes(Tajima_D, color=pop)) +
   xlab("Tajima's D") + ylab("Density") + theme_classic(base_size=20) +
   geom_vline(xintercept=0, linetype="dashed") + theme(legend.position="none")
 dev.off()
+
+# Note: data table has NAs and inf values - these will generate a warning due to taking the log
 
 # ================================================================================== #
 
