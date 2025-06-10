@@ -48,8 +48,13 @@ NC.omega_reorder <- as.matrix(read.table("output/tables/NC.omega_reorder.txt", h
 # Create a correlation matrix of the omega values -- assess genomic differentiation between pools
 cor.mat <- cov2cor(NC.omega_reorder)
 
-pdf("output/figures/outlier_analyses/Baypass_omega_cor_matrix.pdf", width = 5, height = 5)
+# Graph correlation matrix
+pdf("output/figures/outlier_analyses/Omega/Baypass_omega_cor_matrix_title.pdf", width = 5, height = 5)
 corrplot(cor.mat, method = "color", mar=c(2,1,2,2)+0.1, main=expression("Correlation map based on"~hat(Omega)))
+dev.off()
+# Graph correlation matrix (no title)
+pdf("output/figures/outlier_analyses/Omega/Baypass_omega_cor_matrix.pdf", width = 5, height = 5)
+corrplot(cor.mat, method = "color", mar=c(2,1,2,2)+0.1)
 dev.off()
 
 # ================================================================================== #
@@ -57,9 +62,15 @@ dev.off()
 # Assess population differentiation with hierarchical clustering
 NC.tree=as.phylo(hclust(as.dist(1-cor.mat**2)))
 
-pdf("output/figures/outlier_analyses/Baypass_hier_clustering.pdf", width = 5, height = 5)
+# Graph tree 
+pdf("output/figures/outlier_analyses/Omega/Baypass_hier_clustering_title.pdf", width = 5, height = 5)
 plot(NC.tree,type="p",
      main=expression("Hier. clust. tree based on"~hat(Omega)~"("*d[ij]*"=1-"*rho[ij]*")"))
+dev.off()
+
+# Graph tree (no title)
+pdf("output/figures/outlier_analyses/Omega/Baypass_hier_clustering.pdf", width = 5, height = 5)
+plot(NC.tree,type="p")
 dev.off()
 
 # ================================================================================== #
@@ -68,18 +79,18 @@ dev.off()
 # Graph estimates of the XtX differentation measure
 
 # Check the behavior of the p-values associated to the XtXst estimator
-pdf("output/figures/outlier_analyses/Baypass_xtx_hist_omega.pdf", width = 5, height = 5)
+pdf("output/figures/outlier_analyses/Omega/Baypass_xtx_hist_omega.pdf", width = 5, height = 5)
 hist(10**(-1*XtX$log10.1.pval.), freq=F, breaks=50)
 abline(h=1, col="red")
 dev.off()
 
 # Graph xtx
-pdf("output/figures/outlier_analyses/Baypass_xtx_omega.pdf", width = 5, height = 5)
+pdf("output/figures/outlier_analyses/Omega/Baypass_xtx_omega.pdf", width = 5, height = 5)
 plot(XtX$XtXst)
 dev.off()
 
 # Graph outliers
-pdf("output/figures/outlier_analyses/Baypass_xtx_outliers_omega.pdf", width = 5, height = 5)
+pdf("output/figures/outlier_analyses/Omega/Baypass_xtx_outliers_omega.pdf", width = 5, height = 5)
 plot(XtX$log10.1.pval., ylab="-log10(XtX P-value)")
 abline(h=3, lty=2, col="red") #0.001 p-value threshold
 dev.off()

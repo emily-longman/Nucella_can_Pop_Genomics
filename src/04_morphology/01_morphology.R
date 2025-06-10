@@ -103,7 +103,7 @@ summary(Nucella_pca)
 # Graph Eigenvectors
 pdf("output/figures/morphology/PCA_scree_plot.pdf", width = 6, height = 6)
 par(mar=c(5,5,4,1)+.1) # Adjust margins
-plot(Nucella_pca$d, xlab="Principal Component", ylab="Eigenvalue", col="black", bg="black" , pch=21, cex=1.5, cex.lab=1.75)
+plot(Nucella_pca$d, xlab="Principal Component", ylab="Eigenvalue", col="black", bg="black" , pch=21, cex=1.5, cex.lab=1.4)
 dev.off()
 
 # Graph PCA

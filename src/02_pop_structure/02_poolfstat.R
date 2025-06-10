@@ -448,9 +448,9 @@ levels=c("STR", "OCT", "HZD", "PB", "PSN", "SBR", "PL", "PGP", "BMR", "FR", "VD"
 
 # Graph heterozyogisities with ggplot
 pdf("output/figures/pop_structure/poolfstat/heterozygosities_mean_se_plot.pdf", width = 8, height = 10)
-ggplot(data = het.object, aes(x=bjack_mean, y=Site)) + geom_point() + 
-geom_errorbar(aes(xmin=bjack_mean-bjack_s.e., xmax=bjack_mean+bjack_s.e.), width=.2) + xlab("Heterozygosity") +
-theme_classic(base_size = 24) 
+ggplot(data = het.object, aes(x=bjack_mean, y=Site)) + geom_point(size=2) + 
+geom_errorbar(aes(xmin=bjack_mean-bjack_s.e., xmax=bjack_mean+bjack_s.e.), width=0.3) + xlab("Heterozygosity") +
+theme_classic(base_size = 30) 
 dev.off()
 
 # ================================================================================== #
