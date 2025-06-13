@@ -136,7 +136,6 @@ filter(chr == wins.c$chr[k]) %>%
 filter(pos > wins.c$start[k] & pos < wins.c$end[k]) -> 
 data_win
 
-data_win <- data_win[1:2,]
 # ================================================================================== #
 
 glm.model.output =
