@@ -52,17 +52,17 @@ then echo "Working flye_2000 folder exist"; echo "Let's move on"; date
 else echo "Working flye_2000 folder doesnt exist. Let's fix that"; mkdir $WORKING_FOLDER/flye_2000; date
 fi
 
+# out folder
+out=$WORKING_FOLDER/flye_2000
+
 #--------------------------------------------------------------------------------
 
 # Move to the directory where the output files will be saved
 cd $WORKING_FOLDER/flye_2000
 
-#input
+# ONT input
 ont=$WORKING_FOLDER/Nuc.2000.fltlong.fastq
 echo $ont
-
-## out folder
-out=$WORKING_FOLDER/flye_2000
 
 ###
 #size=2.5g
@@ -70,11 +70,12 @@ cpu=40
 
 #--------------------------------------------------------------------------------
 
-###run flye
+# Run flye
 python $flye --nano-raw $ont \
 --out-dir $out \
 --threads $cpu \
 --no-alt-contigs 
 
+#--------------------------------------------------------------------------------
 
 echo "done"
