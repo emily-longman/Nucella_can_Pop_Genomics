@@ -8,19 +8,19 @@
 #SBATCH --job-name=flye_Nucella_2000
 
 # Specify partition
-#SBATCH --partition=week
+#SBATCH --partition=general
 
 # Request nodes
 #SBATCH --cpus-per-task=1 
 #SBATCH --nodes=1 
 
-#SBATCH -c 5 #number of cores
+#SBATCH -c 10 #number of cores
 
 # Reserve walltime --time=<dd-hh:mm:ss>
-#SBATCH --time=03-00:00:00 
+#SBATCH --time=30:00:00 
 
 # Request memory for the entire job -- you can request --mem OR --mem-per-cpu
-#SBATCH --mem=200G 
+#SBATCH --mem=100G 
 
 # Name output of this job using %x=job-name and %j=job-id
 #SBATCH --output=./slurmOutput/%x.%j.out # Standard output
@@ -66,7 +66,7 @@ echo $ont
 
 ###
 #size=2.5g
-cpu=40
+cpu=10
 
 #--------------------------------------------------------------------------------
 
