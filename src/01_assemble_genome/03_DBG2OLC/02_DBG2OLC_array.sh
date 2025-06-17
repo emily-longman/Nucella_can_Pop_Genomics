@@ -8,10 +8,10 @@
 #SBATCH --job-name=DBG2OLC_array
 
 # Specify partition
-#SBATCH --partition=bigmemwk
+#SBATCH --partition=week
 
 # Request nodes
-#SBATCH --nodes=1 # on one node
+#SBATCH --nodes=1 #
 #SBATCH --ntasks-per-node=1  
 
 # Request CPUs per task
@@ -27,47 +27,46 @@
 #SBATCH --array=1-12
 
 # Name output of this job using %x=job-name and %j=job-id
-#SBATCH --output=./slurmOutput/DBG2OLC_array.%A_%a.out # Standard output
+#SBATCH --output=./slurmOutput/%x.%A_%a.out 
 
 # Receive emails when job begins and ends or fails
-#SBATCH --mail-type=ALL # indicates if you want an email when the job starts, ends, or both
-#SBATCH --mail-user=emily.longman@uvm.edu # where to email updates to
+#SBATCH --mail-type=ALL 
+#SBATCH --mail-user=emily.longman@uvm.edu 
 
 #--------------------------------------------------------------------------------
 
-# DBG2OLC executable
+# This script will use the best assembly from SparseAssembler as well as the 2000 filt ONT data as the inputs to DBG20LC (https://github.com/yechengxi/DBG2OLC). 
+# It will then assess the assemblies with quast.
+# NOTE: This script will run in an array structure and will produce multiple assemblies based on the parameters specified in the guide file.
+
+# Load modules  
 DBG2OLC=/gpfs1/home/e/l/elongman/software/DBG2OLC
-# Quast executable
 quast=/netfiles/nunezlab/Shared_Resources/Software/quast-5.2.0/quast.py
 
 #--------------------------------------------------------------------------------
 
-#Working folder is core folder where this pipeline is being run.
-OUTPUT_FOLDER=/gpfs2/scratch/elongman/Nucella_can_drilling_genomics/data/processed/short_read_assembly
-WORKING_FOLDER=/netfiles/pespenilab_share/Nucella/processed/Base_Genome/short_read_assembly
+# WORKING_FOLDER is the core folder where this pipeline is being run.
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
 
 #--------------------------------------------------------------------------------
 
-# Filtered long reads
-ONT=/netfiles/pespenilab_share/Nucella/processed/Base_Genome/ONT_fltlong/Nuc.2000.fltlong.fastq
+# Input files 
+
+# Filtered long reads (note: must unzip the filt length prior to using)
+ONT=$WORKING_FOLDER/data/processed/genome_assembly/ONT_fltlong/Nuc.2000.fltlong.fastq
 
 # Contigs from Sparse Assembler (using the SparseAssembler with the largest N50 (SparseAssembler_101_2_1))
-Contigs=$WORKING_FOLDER/SparseAssembler/SparseAssembler_101_2_1/Contigs.txt
-
-# Extract base files from previous DBG2OLC run
-compressed_ONT=$WORKING_FOLDER/DBG2OLC/DBG2OLC_2_20_0.015/ReadsInfoFrom_Nuc.2000.fltlong.fastq
+Contigs=$WORKING_FOLDER/data/processed/genome_assembly/SparseAssembler/SparseAssembler_101_2_1/Contigs.txt
 
 #--------------------------------------------------------------------------------
 
-### Read guide files (split up into two guide files becuase so many assembly outputs) 
-#NOTE: as switch guide files will need to update the array
+# Read guide files (split up into two guide files becuase so many assembly outputs) 
+GUIDE_FILE=$WORKING_FOLDER/guide_files/DBG2OLC_GuideFile.txt
 
 # This is a guide file with all of the parameter combinations
 # kmerCovTh = 2, 4, 6, 8, 10
 # MinOverlap = 30, 50, 100, 150
-# AdaptiveTh = 0.001, 0.01, 0.02
-
-GUIDE_FILE=/netfiles/pespenilab_share/Nucella/processed/Base_Genome/short_read_assembly/DBG2OLC/DBG2OLC_GuideFile_4.txt
+# AdaptiveTh = 0.001, 0.01
 
 #Example: -- the headers are just for descriptive purposes. The actual file has no headers.
 ##   kmerCovTh   MinOverlap       AdaptiveTh   
@@ -88,46 +87,71 @@ A=$( cat $GUIDE_FILE  | sed "${SLURM_ARRAY_TASK_ID}q;d" | awk '{ print $3 }' )
 
 label=DBG2OLC_KmC_${K}_MinOv_${M}_Adth_${A}
 
-echo $label $K $M $A
+echo "label:" ${label} 
+echo "K:" ${K} "M:" ${M} "A:" ${A}
 
 #--------------------------------------------------------------------------------
+
 # Generate Folders and files
+
+# Move to working directory
+cd $WORKING_FOLDER/data/processed/genome_assembly
 
 # This part of the script will check and generate, if necessary, all of the output folders used in the script
 
-# Make directory for each DBG2OLC parameter combination
-cd $OUTPUT_FOLDER/DBG2OLC
-if [ -d "${label}" ]
-then echo "Working ${label} folder exist"; echo "Let's move on."; date
-else echo "Working ${label} folder doesnt exist. Let's fix that."; mkdir $OUTPUT_FOLDER/DBG2OLC/${label}; date
+# Make SparseAssembler directory
+if [ -d "DBG2OLC" ]
+then echo "Working DBG2OLC folder exist"; echo "Let's move on."; date
+else echo "Working DBG2OLC folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/genome_assembly/DBG2OLC; date
 fi
 
-# Make Quast directory for each parameter combination
-cd $OUTPUT_FOLDER/DBG2OLC/Quast
+# Change directory
+cd $WORKING_FOLDER/data/processed/genome_assembly/DBG2OLC
+
+# Make directory for each DBG2OLC parameter combination
+
 if [ -d "${label}" ]
 then echo "Working ${label} folder exist"; echo "Let's move on."; date
-else echo "Working ${label} folder doesnt exist. Let's fix that."; mkdir $OUTPUT_FOLDER/DBG2OLC/Quast/${label}; date
+else echo "Working ${label} folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/genome_assembly/DBG2OLC/${label}; date
 fi
 
 #--------------------------------------------------------------------------------
 
-# Use DBG2OLC to construct short but accurate contigs  
+# Generate folders for Quast output
+
+# Change directory
+cd $WORKING_FOLDER/data/processed/genome_assembly/Quast
+
+# Make sparse_assembler directory 
+if [ -d "DBG2OLC" ]
+then echo "Working DBG2OLC folder exist"; echo "Let's move on."; date
+else echo "Working DBG2OLC folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/genome_assembly/Quast/DBG2OLC; date
+fi
+
+# Change directory
+cd $WORKING_FOLDER/data/processed/genome_assembly/Quast/DBG2OLC
+
+# Make Quast directory for each parameter combination
+if [ -d "${label}" ]
+then echo "Working ${label} folder exist"; echo "Let's move on."; date
+else echo "Working ${label} folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/genome_assembly/Quast/DBG2OLC/${label}; date
+fi
+
+#--------------------------------------------------------------------------------
+
+# Use DBG2OLC to construct assembly.  
 
 # Move to the directory where the output files will be saved
-cd $OUTPUT_FOLDER/DBG2OLC/${label}
-
-# Copy read information from previous run
-cp $compressed_ONT ./
+cd $WORKING_FOLDER/data/processed/genome_assembly/DBG2OLC/${label}
 
 # Run DBG2OLC
 $DBG2OLC \
-LD 1 \
-KmerCovTh $K \
-AdaptiveTh $A \
-MinOverlap $M \
+k 17 \
+KmerCovTh ${K} \
+AdaptiveTh ${A} \
+MinOverlap ${M} \
 RemoveChimera 1 \
 Contigs $Contigs \
-k 17 \
 f $ONT
 
 #--------------------------------------------------------------------------------
@@ -141,9 +165,11 @@ mv backbone_raw.fasta ${label}.backbone_raw.fasta
 #--------------------------------------------------------------------------------
 
 # Run quast
-$quast $OUTPUT_FOLDER/DBG2OLC/${label}/${label}.backbone_raw.fasta \
--o $OUTPUT_FOLDER/DBG2OLC/Quast/${label}
+$quast $WORKING_FOLDER/data/processed/genome_assembly/DBG2OLC/${label}/${label}.backbone_raw.fasta \
+-o $WORKING_FOLDER/data/processed/genome_assembly/Quast/DBG2OLC/${label}
 
 #--------------------------------------------------------------------------------
+
+# Inform that DBG2OLC is done
 
 echo "done"

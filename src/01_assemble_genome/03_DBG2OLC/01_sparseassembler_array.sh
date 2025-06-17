@@ -27,12 +27,14 @@
 #SBATCH --output=./slurmOutput/%x.%A_%a.out 
 
 # Receive emails when job begins and ends or fails
-#SBATCH --mail-type=ALL # indicates if you want an email when the job starts, ends, or both
-#SBATCH --mail-user=emily.longman@uvm.edu # where to email updates to
+#SBATCH --mail-type=ALL 
+#SBATCH --mail-user=emily.longman@uvm.edu 
 
 #--------------------------------------------------------------------------------
 
-# This script will use the AVITI short reads to assemble contigs with SparseAssembler, then it will assess the assemblies with quast.
+# This script will use the AVITI short reads to assemble contigs with SparseAssembler (https://github.com/yechengxi/SparseAssembler).
+# Then it will assess the assemblies with quast.
+# NOTE: This script will run in an array structure and will produce multiple assemblies based on the parameters specified in the guide file.
 
 # Load modules  
 SparseAssembler=/gpfs1/home/e/l/elongman/software/SparseAssembler
@@ -103,6 +105,9 @@ fi
 #--------------------------------------------------------------------------------
 
 # Generate folders for Quast output
+
+# Move to working directory
+cd $WORKING_FOLDER/data/processed/genome_assembly
 
 # Make Quast directory 
 if [ -d "Quast" ]
