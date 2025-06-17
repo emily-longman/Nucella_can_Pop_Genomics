@@ -8,6 +8,7 @@
 
 # Other files to ignore
 ncbi*
+src/scratch/*
 
 # Directories with large data files
 scratch/*
