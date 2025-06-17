@@ -8,7 +8,7 @@
 #SBATCH --job-name=index_genome
 
 # Specify partition
-#SBATCH --partition=bluemoon
+#SBATCH --partition=general
 
 # Request nodes
 #SBATCH --nodes=1 
@@ -31,23 +31,24 @@
 
 # This script with index the reference genome.
 
-# Note: this step only needs to be done once
+#--------------------------------------------------------------------------------
 
-#Load modules 
-spack load samtools@1.10
+# Load modules 
+module load gcc/13.3.0-xp3epyt
+module load samtools/1.19.2-pfmpoam
 bwa=/netfiles/nunezlab/Shared_Resources/Software/bwa-mem2-2.2.1_x64-linux/bwa-mem2.avx2
 PICARD=/netfiles/nunezlab/Shared_Resources/Software/picard/build/libs/picard.jar
 
 #--------------------------------------------------------------------------------
 
-#Define important file locations
+# Define important file locations
 
-# Working folder is core folder where this pipeline is being run.
-WORKING_FOLDER_SCRATCH=/gpfs2/scratch/elongman/Nucella_can_drilling_genomics/data/processed/short_read_assembly
+# WORKING_FOLDER is the core folder where this pipeline is being run.
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
 
 # Genome from scaffolding
-ASSEMBLY=$WORKING_FOLDER_SCRATCH/ntlink/final/final_assembly.ntLink.scaffolds.gap_fill.fa
-# Note: I renamed the assembly to a shorter name without all of the ntLinks, and moved it to a directory called final
+ASSEMBLY=$WORKING_FOLDER/data/processed/genome_assembly/ntlink/final/final_assembly.ntLink.scaffolds.gap_fill.fa
+# Note: I renamed the assembly to a shorter name without all of the 'ntLinks', and moved it to a directory called final
 # The final assembly was: ntlink, k=30, w=200, rounds=6, contigs=19014, total length=1593151670
 
 #--------------------------------------------------------------------------------
