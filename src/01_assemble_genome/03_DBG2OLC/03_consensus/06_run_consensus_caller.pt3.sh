@@ -8,7 +8,7 @@
 #SBATCH --job-name=consensus_pt3
 
 # Specify partition
-#SBATCH --partition=bluemoon
+#SBATCH --partition=general
 
 # Request nodes
 #SBATCH --nodes=1 
@@ -17,27 +17,33 @@
 # Reserve walltime -- hh:mm:ss 
 #SBATCH --time=28:00:00 
 
-# Request memory for the entire job -- you can request --mem OR --mem-per-cpu
+# Request memory for the entire job
 #SBATCH --mem=60G
 
 # Name output of this job using %x=job-name and %j=job-id
-#SBATCH --output=./slurmOutput/%x_%j.out # Standard output
+#SBATCH --output=./slurmOutput/%x_%j.out 
 
 # Receive emails when job begins and ends or fails
-#SBATCH --mail-type=ALL # indicates if you want an email when the job starts, ends, or both
-#SBATCH --mail-user=emily.longman@uvm.edu # where to email updates to
+#SBATCH --mail-type=ALL 
+#SBATCH --mail-user=emily.longman@uvm.edu 
 
 #--------------------------------------------------------------------------------
 
-# Working folder is core folder where this pipeline is being run.
-WORKING_FOLDER_SCRATCH=/gpfs2/scratch/elongman/Nucella_can_drilling_genomics/data/processed/short_read_assembly
+# This script will run the third step in the consensus script.
 
 #--------------------------------------------------------------------------------
 
-final_dir=$WORKING_FOLDER_SCRATCH/consensus/final_assembly_array
+# Define important file locations
+
+# WORKING_FOLDER is the core folder where this pipeline is being run.
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
+
+#--------------------------------------------------------------------------------
+
+final_dir=$WORKING_FOLDER/data/processed/genome_assembly/consensus/final_assembly_array
 
 # Cat files together to produce a final consensus
 for file in $(find ${final_dir} -name "*.consensus.fasta"); do
 cmd="cat ${file};"
 eval $cmd
-done > /gpfs2/scratch/elongman/Nucella_can_drilling_genomics/data/processed/short_read_assembly/consensus/final_assembly.fasta
+done > $WORKING_FOLDER/data/processed/genome_assembly/consensus/final_assembly.fasta

@@ -8,10 +8,10 @@
 #SBATCH --job-name=busco_ntlink
 
 # Specify partition
-#SBATCH --partition=bluemoon
+#SBATCH --partition=general
 
 # Request nodes
-#SBATCH --nodes=1 # on one node
+#SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1  
 
 # Request CPUs per task
@@ -35,12 +35,12 @@
 
 #--------------------------------------------------------------------------------
 
-# This script runs on BUSCO on an assembly in the current directory. Thus must cd to that directory before running.
+# This script runs on BUSCO on the best ntlink assembly. You must cd to that directory before running.
 
 #--------------------------------------------------------------------------------
 
 # Call package (installed with conda)
-module load python3.11-anaconda/2023.09-0
+module load python3.11-anaconda/2024.02-1
 source ${ANACONDA_ROOT}/etc/profile.d/conda.sh
 #conda create --name busco_env #create and name the environment
 conda activate busco_env #activate the environment
@@ -48,18 +48,38 @@ conda activate busco_env #activate the environment
 
 #--------------------------------------------------------------------------------
 
-#Working folder is core folder where this pipeline is being run.
-WORKING_FOLDER_SCRATCH=/gpfs2/scratch/elongman/Nucella_can_drilling_genomics/data/processed/short_read_assembly
+# Define important file locations
+
+# WORKING_FOLDER is the core folder where this pipeline is being run.
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
 
 #--------------------------------------------------------------------------------
 
 # Run BUSCO in directory where given assembly is.
 
-INPUT=$WORKING_FOLDER_SCRATCH/ntlink/ntlink_k.30_w.150_r.10/final_assembly.fasta.k30.w150.z1000.ntLink.ntLink.ntLink.ntLink.ntLink.ntLink.ntLink.ntLink.ntLink.gap_fill.fa.k30.w150.z1000.ntLink.scaffolds.gap_fill.fa
+INPUT=$WORKING_FOLDER/data/processed/genome_assembly/ntlink/ntlink_k.24_w.150/final_assembly.fasta.k24.w150.z1000.ntLink.ntLink.ntLink.ntLink.ntLink.gap_fill.fa.k24.w150.z1000.ntLink.scaffolds.gap_fill.fa
 
 echo $INPUT
 
 #--------------------------------------------------------------------------------
+
+# Move to working directory
+cd $WORKING_FOLDER/data/processed/genome_assembly/ntlink
+
+# Generate Folders and files
+
+# This part of the script will check and generate, if necessary, all of the output folders used in the script
+
+# Make Quast directory 
+if [ -d "BUSCO" ]
+then echo "Working BUSCO folder exist"; echo "Let's move on."; date
+else echo "Working BUSCO folder doesnt exist. Let's fix that."; mkdir cd $WORKING_FOLDER/data/processed/genome_assembly/ntlink/BUSCO; date
+fi
+
+#--------------------------------------------------------------------------------
+
+# Change directory
+cd $WORKING_FOLDER/data/processed/genome_assembly/ntlink/BUSCO
 
 # Run BUSCO for both the eukaryota and mollusca lineages
 
@@ -76,7 +96,6 @@ LINEAGE=/netfiles/nunezlab/BUSCO_Lineages/busco_downloads/lineages/mollusca_odb1
 fi
 
 busco -m genome -i $INPUT -o $OUTPUT -l $LINEAGE
-
 
 #--------------------------------------------------------------------------------
 

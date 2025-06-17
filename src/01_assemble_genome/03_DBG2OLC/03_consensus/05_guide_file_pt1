@@ -1,0 +1,32 @@
+# Interactive session 
+
+#--------------------------------------------------------------------------------
+
+# This script will create a file with the backbone names.
+
+#--------------------------------------------------------------------------------
+
+# Define important file locations
+
+# WORKING_FOLDER is the core folder where this pipeline is being run.
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
+
+#backbone_raw.fasta by DBG2OLC
+backbone=$WORKING_FOLDER/data/processed/genome_assembly/DBG2OLC/DBG2OLC_KmC_2_MinOv_100_Adth_0.01/DBG2OLC_KmC_2_MinOv_100_Adth_0.01.backbone_raw.fasta
+
+#--------------------------------------------------------------------------------
+
+# Change directory
+cd $WORKING_FOLDER/data/processed/genome_assembly/consensus
+
+# Get all of the contig names 
+grep ">" $backbone > backbone_names.txt
+
+# Get rid of the ">" in front of the backbone name
+sed -i 's/>//g' backbone_names.txt
+
+# Change "B" to "b"
+sed -i 's/B/b/g' backbone_names.txt
+
+# Change "_" to "-"
+sed -i 's/_/-/g' backbone_names.txt

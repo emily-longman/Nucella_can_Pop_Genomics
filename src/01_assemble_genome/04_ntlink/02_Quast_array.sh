@@ -8,7 +8,7 @@
 #SBATCH --job-name=Quast_ntlink_array
 
 # Specify partition
-#SBATCH --partition=bluemoon
+#SBATCH --partition=general
 
 # Request nodes
 #SBATCH --nodes=1 
@@ -21,7 +21,7 @@
 #SBATCH --mem=50G
 
 # Submit job array
-#SBATCH --array=1-4
+#SBATCH --array=1-12
 
 # Name output of this job using %x=job-name and %j=job-id
 #SBATCH --output=./slurmOutput/%x_%j.out # Standard output
@@ -32,33 +32,36 @@
 
 #--------------------------------------------------------------------------------
 
-# This script will run Quast on the final consensus assembly 
+# This script will run Quast on the assembly generated from ntlink in the previous script.
 
-# Quast executable
+#--------------------------------------------------------------------------------
+
+# Load modules  
 quast=/netfiles/nunezlab/Shared_Resources/Software/quast-5.2.0/quast.py
 
 #--------------------------------------------------------------------------------
 
-#Working folder is core folder where this pipeline is being run.
-WORKING_FOLDER_SCRATCH=/gpfs2/scratch/elongman/Nucella_can_drilling_genomics/data/processed/short_read_assembly
+# Define important file locations
+
+# WORKING_FOLDER is the core folder where this pipeline is being run.
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
 
 #--------------------------------------------------------------------------------
 
-## Read guide files
-# This is a guide file with all of the parameter combinations
+# Read guide files
+GUIDE_FILE=$WORKING_FOLDER_SCRATCH/ntlink/ntlink_guide_file_2.txt
+
+# Parameters:
 # k = 20, 24, 30
 # w = 60, 75, 100, 150
-# r = 6, 8, 10
-
-GUIDE_FILE=$WORKING_FOLDER_SCRATCH/ntlink/ntlink_guide_file_2_subset.txt
 
 #Example: -- the headers are just for descriptive purposes. The actual file has no headers.
-##   k            w        r
-##   20          60        6    
-##   20          75        6   
-##   20          100       6   
-##   20          150       6  
-##   24          60        6  
+##   k            w        
+##   20          60            
+##   20          75           
+##   20          100        
+##   20          150         
+##   24          60          
 ##   ...
 
 #--------------------------------------------------------------------------------
@@ -66,27 +69,33 @@ GUIDE_FILE=$WORKING_FOLDER_SCRATCH/ntlink/ntlink_guide_file_2_subset.txt
 # Determine parameter combination to process
 k=$( cat $GUIDE_FILE  | sed "${SLURM_ARRAY_TASK_ID}q;d" | awk '{ print $1 }' )
 w=$( cat $GUIDE_FILE  | sed "${SLURM_ARRAY_TASK_ID}q;d" | awk '{ print $2 }' )
-r=$( cat $GUIDE_FILE  | sed "${SLURM_ARRAY_TASK_ID}q;d" | awk '{ print $3 }' )
 
-label=k.${k}_w.${w}_r.${r}
+label=k.${k}_w.${w}
 
-echo ${k} ${w} ${r} ${label}
+echo ${k} ${w} ${label}
 
 #--------------------------------------------------------------------------------
 
-cd $WORKING_FOLDER_SCRATCH/ntlink
+# Generate Folders and files
+
+# Change directory
+cd $WORKING_FOLDER/data/processed/genome_assembly/ntlink
+
+# This part of the script will check and generate, if necessary, all of the output folders used in the script
 
 # Make Quast directory 
 if [ -d "Quast" ]
 then echo "Working Quast folder exist"; echo "Let's move on."; date
-else echo "Working Quast folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER_SCRATCH/ntlink/Quast; date
+else echo "Working Quast folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/genome_assembly/ntlink/Quast; date
 fi
 
-cd $WORKING_FOLDER_SCRATCH/ntlink/Quast
+# Change directory
+cd $WORKING_FOLDER/data/processed/genome_assembly/ntlink/Quast
+
 # Make Quast directory for each parameter combination
 if [ -d "ntlink_${label}" ]
 then echo "Working Quast_ntlink_${label} folder exist"; echo "Let's move on."; date
-else echo "Working Quast_ntlink_${label} folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER_SCRATCH/ntlink/Quast/Quast_ntlink_${label}; date
+else echo "Working Quast_ntlink_${label} folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/genome_assembly/ntlink/Quast/Quast_ntlink_${label}; date
 fi
 
 #--------------------------------------------------------------------------------
@@ -96,4 +105,4 @@ ASSEMBLY=$WORKING_FOLDER_SCRATCH/ntlink/ntlink_${label}/final_assembly.fasta.k${
 
 # Run quast
 $quast $ASSEMBLY \
--o $WORKING_FOLDER_SCRATCH/ntlink/Quast/Quast_ntlink_${label}
+-o $WORKING_FOLDER/data/processed/genome_assembly/ntlink/Quast/Quast_ntlink_${label}

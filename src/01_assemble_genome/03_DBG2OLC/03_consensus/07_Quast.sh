@@ -5,7 +5,7 @@
 # Request cluster resources ----------------------------------------------------
 
 # Name this job
-#SBATCH --job-name=Quast_ntlink
+#SBATCH --job-name=Quast_consensus
 
 # Specify partition
 #SBATCH --partition=bluemoon
@@ -29,28 +29,37 @@
 
 #--------------------------------------------------------------------------------
 
-# This script will run Quast on the final consensus assembly 
+# This script will run Quast on the final consensus assembly.
 
-# Quast executable
+#--------------------------------------------------------------------------------
+
+# Load modules  
 quast=/netfiles/nunezlab/Shared_Resources/Software/quast-5.2.0/quast.py
 
 #--------------------------------------------------------------------------------
 
-#Working folder is core folder where this pipeline is being run.
-WORKING_FOLDER_SCRATCH=/gpfs2/scratch/elongman/Nucella_can_drilling_genomics/data/processed/short_read_assembly
+# Define important file locations
+
+# WORKING_FOLDER is the core folder where this pipeline is being run.
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
 
 #--------------------------------------------------------------------------------
 
-cd $WORKING_FOLDER_SCRATCH/ntlink
+# Move to working directory
+cd $WORKING_FOLDER/data/processed/genome_assembly/consensus
+
+# Generate Folders and files
+
+# This part of the script will check and generate, if necessary, all of the output folders used in the script
 
 # Make Quast directory 
 if [ -d "Quast" ]
 then echo "Working Quast folder exist"; echo "Let's move on."; date
-else echo "Working Quast folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER_SCRATCH/ntlink/Quast; date
+else echo "Working Quast folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/genome_assembly/consensus/Quast; date
 fi
 
 #--------------------------------------------------------------------------------
 
 # Run quast
-$quast $WORKING_FOLDER_SCRATCH/ntlink_test/final_assembly.fasta.k24.w150.z1000.ntLink.ntLink.ntLink.ntLink.ntLink.ntLink.ntLink.gap_fill.fa.k24.w150.z1000.ntLink.scaffolds.gap_fill.fa \
--o $WORKING_FOLDER_SCRATCH/ntlink/Quast/final_assembly
+$quast $WORKING_FOLDER/data/processed/genome_assembly/consensus/final_assembly.fasta \
+-o $WORKING_FOLDER/data/processed/genome_assembly/consensus/Quast/final_assembly

@@ -8,11 +8,11 @@
 #SBATCH --job-name=ntLink_array
 
 # Specify partition
-#SBATCH --partition=bluemoon
+#SBATCH --partition=general
 
 # Request nodes
 #SBATCH --cpus-per-task=1 
-#SBATCH --nodes=1 # on one node
+#SBATCH --nodes=1 
 
 # Reserve walltime -- hh:mm:ss --30 hrs max
 #SBATCH --time=25:00:00 
@@ -21,7 +21,7 @@
 #SBATCH --mem=60G 
 
 # Submit job array
-#SBATCH --array=1-6
+#SBATCH --array=1-12
 
 # Name output of this job using %x=job-name and %j=job-id
 #SBATCH --output=./slurmOutput/ntLink_array.%A_%a.out # Standard output
@@ -32,8 +32,12 @@
 
 #--------------------------------------------------------------------------------
 
+# This script will use ntLink (https://github.com/bcgsc/ntLink) to scaffold the assembly.
+
+#--------------------------------------------------------------------------------
+
 # Load ntlink
-module load python3.11-anaconda/2023.09-0
+module load python3.11-anaconda/2024.02-1
 source ${ANACONDA_ROOT}/etc/profile.d/conda.sh
 #conda create --name ntlink #create and name the environment
 source activate ntlink #activate the environment
@@ -42,32 +46,37 @@ conda activate ntlink
 
 #--------------------------------------------------------------------------------
 
-# Working folder is core folder where this pipeline is being run.
-WORKING_FOLDER_SCRATCH=/gpfs2/scratch/elongman/Nucella_can_drilling_genomics/data/processed/short_read_assembly
+# Define important file locations
 
-# Raw ONT material
-ONT=/netfiles/pespenilab_share/Nucella/raw/ONT/FC_all.ONT.nuc.fastq.gz
-
-# Genome from consensus
-assembly=$WORKING_FOLDER_SCRATCH/consensus/final_assembly.fasta
+# WORKING_FOLDER is the core folder where this pipeline is being run.
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
 
 #--------------------------------------------------------------------------------
 
-## Read guide files
-# This is a guide file with all of the parameter combinations
-# k = 20, 24, 30
-# w = 60, 75, 100, 150
-# r = 6, 8, 10
+# Input files
 
+# Raw ONT material
+ONT=$WORKING_FOLDER/data/raw/ONT/FC_all.ONT.nuc.fastq.gz
+
+# Genome from consensus
+assembly=$WORKING_FOLDER/data/processed/genome_assembly/consensus/final_assembly.fasta
+
+#--------------------------------------------------------------------------------
+
+# Read guide files
 GUIDE_FILE=$WORKING_FOLDER_SCRATCH/ntlink/ntlink_guide_file_2.txt
 
+# Parameters:
+# k = 20, 24, 30
+# w = 60, 75, 100, 150
+
 #Example: -- the headers are just for descriptive purposes. The actual file has no headers.
-##   k            w        r
-##   20          60        6    
-##   20          75        6   
-##   20          100       6   
-##   20          150       6  
-##   24          60        6  
+##   k            w        
+##   20          60            
+##   20          75           
+##   20          100        
+##   20          150         
+##   24          60          
 ##   ...
 
 #--------------------------------------------------------------------------------
@@ -75,32 +84,45 @@ GUIDE_FILE=$WORKING_FOLDER_SCRATCH/ntlink/ntlink_guide_file_2.txt
 # Determine parameter combination to process
 k=$( cat $GUIDE_FILE  | sed "${SLURM_ARRAY_TASK_ID}q;d" | awk '{ print $1 }' )
 w=$( cat $GUIDE_FILE  | sed "${SLURM_ARRAY_TASK_ID}q;d" | awk '{ print $2 }' )
-r=$( cat $GUIDE_FILE  | sed "${SLURM_ARRAY_TASK_ID}q;d" | awk '{ print $3 }' )
 
-label=k.${k}_w.${w}_r.${r}
+label=k.${k}_w.${w}
 
-echo ${k} ${w} ${r} ${label}
+echo ${k} ${w} ${label}
 
 #--------------------------------------------------------------------------------
 
 # Generate Folders and files
 
-cd $WORKING_FOLDER_SCRATCH/ntlink
+# Move to working directory
+cd $WORKING_FOLDER/data/processed/genome_assembly
 
 # This part of the script will check and generate, if necessary, all of the output folders used in the script
 
-if [ -d "ntlink_${label}" ]
-then echo "Working ntlink_${label} folder exist"; echo "Let's move on."; date
-else echo "Working ntlink_${label} folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER_SCRATCH/ntlink/ntlink_${label}; date
+# Make ntlink directory
+if [ -d "ntlink" ]
+then echo "Working ntlink folder exist"; echo "Let's move on."; date
+else echo "Working ntlink folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/genome_assembly/ntlink; date
 fi
 
-#Output folder
-OUTPUT=$WORKING_FOLDER_SCRATCH/ntlink/ntlink_${label}
+# Change directory
+cd $WORKING_FOLDER/data/processed/genome_assembly/ntlink
+
+if [ -d "ntlink_${label}" ]
+then echo "Working ntlink_${label} folder exist"; echo "Let's move on."; date
+else echo "Working ntlink_${label} folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/genome_assembly/ntlink/ntlink_${label}; date
+fi
+
+#--------------------------------------------------------------------------------
+
+# Specify output folder 
+
+# Output folder
+OUTPUT=$WORKING_FOLDER/data/processed/genome_assembly/ntlink/ntlink_${label}
 
 # Move to the directory where the output files will be saved
 cd ${OUTPUT}
 
-##--------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------
 
 # Move the assembly to the Base_genome file before scafolding
 cp $assembly ${OUTPUT}
@@ -108,9 +130,10 @@ cp $assembly ${OUTPUT}
 # Run ntLink_rounds
 ntLink_rounds run_rounds_gaps \
 target=final_assembly.fasta \
-reads=$ONT k=${k} w=${w} t=10 rounds=${r}
+reads=$ONT k=${k} w=${w} t=10 rounds=6
 
-##--------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------
+
 # Deactivate conda
 conda deactivate
 echo "done"
