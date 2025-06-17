@@ -6,6 +6,9 @@
 .DS_store
 .here
 
+# Other files to ignore
+ncbi*
+
 # Directories with large data files
 scratch/*
 data/raw/*

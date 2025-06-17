@@ -51,7 +51,6 @@ cd Nucella_canaliculata_genome
 # Note: for 'put' you can only upload one file at a time, such that you would have to "put" in every file individually, e.g.:
 put FC1_ONT_NC3.fastq.gz
 
-
 # Note: 'mput' allows you to put in multiple files; however, after each file finishes, you have to say yes to the next file
 # "prompt" command to take ftp goes out of interactive mode 
 prompt 
