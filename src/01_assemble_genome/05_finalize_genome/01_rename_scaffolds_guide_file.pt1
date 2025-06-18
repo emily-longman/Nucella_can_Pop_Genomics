@@ -1,0 +1,26 @@
+# Interactive session 
+
+#--------------------------------------------------------------------------------
+
+# This script will create a file with the names of the contigs/scaffolds.
+
+#--------------------------------------------------------------------------------
+
+# Define important file locations
+
+# WORKING_FOLDER is the core folder where this pipeline is being run.
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
+
+# This is the location where the reference genome from the first round of pilon and all its indexes are stored.
+REFERENCE=$WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_5/polished_assembly.fasta
+
+#--------------------------------------------------------------------------------
+
+# Change directory
+cd $WORKING_FOLDER/data/processed/genome_assembly/pilon
+
+# Get all of the scaffold names 
+grep ">" $REFERENCE > scaffold_names_pilon_final.txt
+
+# Get rid of the ">"
+sed -i 's/>//g' scaffold_names_pilon_final.txt

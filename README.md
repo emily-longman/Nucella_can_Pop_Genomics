@@ -86,9 +86,45 @@ These scripts will use a ntLink (https://github.com/bcgsc/ntLink) to scaffold th
 03_BUSCO.sh - This script runs on BUSCO on the best ntlink assembly.
 
 #### 04 - Polish with Pilon
+
+These scripts will use Pilon [v1.24] (https://github.com/broadinstitute/pilon) to polish the genome 5 times with the AVITI reads. To be computationally efficient, the genome and bam files were broken into individual scaffolds and then polished individually using an array and loop structure. Each round, it will index the genome, map the short reads to the genome from the previous iteration, clean the bam files, generate a guide file with the scaffold names for the array, polish each scaffold, then concatenate the genome back together. The same 6 steps are peformed each round of polishing, thus they are only listed below once, rather than iterated 6 times.
+
+01_index_genome.sh - Index the genome that was assembled by ntlink or the previous round of polishing.
+
+02_map_reads.sh - Map the AVITI short reads to the genome.
+
+03_clean_bams.sh - Clean the bam file.
+
+04_create_guide_file.pt1 - (Interactive session) This code will extract the scaffold names from the genome.
+
+04_create_guide_file.pt2 - Create a guide file of the scaffold names and group them into 30 scaffold chunks.
+
+05_pilon_polish_chunks.sh - Polish the genome with Pilon using a combination of an array and while loop.
+
+06_cat_scaffolds.sh - The polished scaffolds are concatenated together to create a final assembly.
+
 #### 05 - Finalize the Genome
+
+These sets of scripts will rename the scaffolds so that they are shorter and more meaningful and then will run Quast and BUSCO on the final assembly.
+
+01_rename_scaffolds_guide_file_pt1 - (Interactive session) This code will extract the scaffold names from the genome.
+
+01_rename_scaffolds_guide_file_pt2.R - Create a guide file of the scaffold names and group them into 30 scaffold chunks.
+
+02_rename_scaffolds.sh - Use an array and loop to rename the individual scaffolds
+
+03_cat_scaffolds.sh - Concatenate the scaffolds together to produce a final assembly.
+
+04_Quast.sh - Run Quast on the final assembly.
+
+05_BUSCO.sh - Run BUSCO on the final assembly.
+
 #### 06 - Mask Repeats
+
+01_repeat_softmask_C.gigas.sh - Use repeat masker (https://github.com/Dfam-consortium/RepeatMasker) to softmask the genome. 
+
 #### 07 - Annotate the Genome
+
 
 ## Part 2 - Fastq to VCF
 

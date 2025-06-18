@@ -8,7 +8,7 @@
 #SBATCH --job-name=rename_scaffolds
 
 # Specify partition
-#SBATCH --partition=bluemoon
+#SBATCH --partition=general
 
 # Request nodes
 #SBATCH --nodes=1 # on one node
@@ -32,44 +32,49 @@
 
 #--------------------------------------------------------------------------------
 
-# Call packages
+# This script will rename the scaffolds. 
+# This step is occuring becuase each time the genome was polished, "_pilon" gets added to each scaffold name so the names get quite long.
+
+#--------------------------------------------------------------------------------
+
+# Load modules
 seqkit=/gpfs1/home/e/l/elongman/software/seqkit
 seqtk=/gpfs1/home/e/l/elongman/software/seqtk/seqtk
 
 #--------------------------------------------------------------------------------
 
-#Define important file locations
+# Define important file locations
 
-# Working folder is core folder where this pipeline is being run.
-WORKING_FOLDER_SCRATCH=/gpfs2/scratch/elongman/Nucella_can_drilling_genomics/data/processed/short_read_assembly
+# WORKING_FOLDER is the core folder where this pipeline is being run.
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
 
-#This is the location where the reference genome.
-REFERENCE=$WORKING_FOLDER_SCRATCH/pilon/polished_genome_round_5/polished_assembly.fasta
+# This is the location where the reference genome from the first round of pilon and all its indexes are stored.
+REFERENCE=$WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_5/polished_assembly.fasta
 
 #--------------------------------------------------------------------------------
 
 # Generate Folders and files
 
 # Move to working directory
-cd $WORKING_FOLDER_SCRATCH
+cd $WORKING_FOLDER/data/processed/genome_assembly
 
 if [ -d "rename_scaffolds" ]
 then echo "Working rename_scaffolds folder exist"; echo "Let's move on."; date
-else echo "Working rename_scaffolds folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER_SCRATCH/rename_scaffolds; date
+else echo "Working rename_scaffolds folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/genome_assembly/rename_scaffolds; date
 fi
 
 # Move to working directory
-cd $WORKING_FOLDER_SCRATCH/rename_scaffolds
+cd $WORKING_FOLDER/data/processed/genome_assembly/rename_scaffolds
 
 if [ -d "scaffolds" ]
 then echo "Working scaffolds folder exist"; echo "Let's move on."; date
-else echo "Working scaffolds folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER_SCRATCH/rename_scaffolds/scaffolds; date
+else echo "Working scaffolds folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/genome_assembly/rename_scaffolds/scaffolds; date
 fi
 
 #--------------------------------------------------------------------------------
 
 ## Import master partition file 
-guide_file=$WORKING_FOLDER_SCRATCH/rename_scaffolds/guide_file_array.txt
+guide_file=$WORKING_FOLDER/data/processed/genome_assembly/pilon/guide_file_array_pilon.txt
 
 #Example: -- the headers are just for descriptive purposes. The actual file has no headers. (dimensions: 2, 19014; 634 partitions)
 # Scaffold name                                        # Partition
@@ -101,7 +106,7 @@ grep -EA 1 "^>${scaffold}$" ${REFERENCE} > ${scaffold}.fasta
 
 # Modify the scaffold name to remove "pilon"
 cat ${scaffold}.fasta | $seqkit replace -p "\_pilon_pilon_pilon_pilon_pilon" -r '' | $seqtk seq \
-> $WORKING_FOLDER_SCRATCH/rename_scaffolds/scaffolds/${scaffold}.fasta
+> $WORKING_FOLDER/data/processed/genome_assembly/rename_scaffolds/scaffolds/${scaffold}.fasta
 
 # Housekeeping - remove intermediate files
 rm ${scaffold}.fasta

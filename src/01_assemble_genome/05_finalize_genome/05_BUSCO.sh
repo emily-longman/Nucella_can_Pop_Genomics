@@ -48,16 +48,13 @@ conda activate busco_env #activate the environment
 
 #--------------------------------------------------------------------------------
 
-# Working folder is core folder where this pipeline is being run.
-WORKING_FOLDER_SCRATCH=/gpfs2/scratch/elongman/Nucella_can_drilling_genomics/data/processed/short_read_assembly
+# Define important file locations
 
-#--------------------------------------------------------------------------------
+# WORKING_FOLDER is the core folder where this pipeline is being run.
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
 
-# Run BUSCO in directory where given assembly is.
-
-REFERENCE=$WORKING_FOLDER_SCRATCH/rename_scaffolds/N.canaliculata_assembly.fasta
-
-echo $REFERENCE
+# Reference
+REFERENCE=$WORKING_FOLDER/data/processed/genome_assembly/rename_scaffolds/N.canaliculata_assembly.fasta
 
 #--------------------------------------------------------------------------------
 
@@ -76,7 +73,6 @@ LINEAGE=/netfiles/nunezlab/BUSCO_Lineages/busco_downloads/lineages/mollusca_odb1
 fi
 
 busco -m genome -i $REFERENCE -o $OUTPUT -l $LINEAGE
-
 
 #--------------------------------------------------------------------------------
 
