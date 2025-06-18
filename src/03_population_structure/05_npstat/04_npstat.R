@@ -30,15 +30,23 @@ library(car)
 
 # ================================================================================== #
 
+# Generate Folders and files
+
+# Make output directory
+output_dir_npstat="output/figures/pop_structure/npstat"
+if (!dir.exists(output_dir_npstat)) {dir.create(output_dir_npstat)}
+
+# ================================================================================== #
+
 # Load data
-meta <- read.csv("data/processed/pop_gen/guide_files/Populations_metadata_alphabetical.csv", header=T)
+meta <- read.csv("guide_files/Populations_metadata_alphabetical.csv", header=T)
 pops <- meta$Site
 
 # Load data for each population
 for (i in pops){
     print(i)
     filename <- paste0("npstat.", i)
-    wd <- paste0("data/processed/pop_gen/npstat/npstat.", i, ".txt")
+    wd <- paste0("data/processed/pop_structure/npstat/npstat.", i, ".txt")
     assign(filename, read.table(wd, header=F))
 }
 
@@ -85,7 +93,6 @@ colnames(npstat.chr.names) <- c("chr", "pop")
 # Join data frames
 npstat <- cbind(npstat, npstat.chr.names)
 
-
 # ================================================================================== #
 
 # Graph Statistics
@@ -100,7 +107,7 @@ mycolors <- rev(colorRampPalette(brewer.pal(11, "RdBu"))(nb.cols))
 # Graph statistics and express as log(pi), log(wattersons), and tajima's D 
 
 # Graph Pi
-pdf("output/figures/pop_structure/diversity_stats/npstat/Npstat_boxplot_logPi.pdf", width = 8, height = 5)
+pdf("output/figures/pop_structure/npstat/Npstat_boxplot_logPi.pdf", width = 8, height = 5)
 ggplot(data = npstat, aes(x = pop, y = log(Pi), fill=pop)) + 
   geom_boxplot() + 
   scale_color_manual(values=mycolors) +
@@ -109,7 +116,7 @@ ggplot(data = npstat, aes(x = pop, y = log(Pi), fill=pop)) +
 dev.off()
 
 # Graph Pi - density
-pdf("output/figures/pop_structure/diversity_stats/npstat/Npstat_density_Pi.pdf", width = 8, height = 5)
+pdf("output/figures/pop_structure/npstat/Npstat_density_Pi.pdf", width = 8, height = 5)
 ggplot(data = npstat, aes(log(Pi), color=pop)) + 
   geom_density(size=2) + 
   scale_color_manual(values=mycolors) + ylim(NA,0.955) +
@@ -118,7 +125,7 @@ ggplot(data = npstat, aes(log(Pi), color=pop)) +
 dev.off()
 
 # Graph Watterson Theta
-pdf("output/figures/pop_structure/diversity_stats/npstat/Npstat_boxplot_Watterson.pdf", width = 8, height = 5)
+pdf("output/figures/pop_structure/npstat/Npstat_boxplot_Watterson.pdf", width = 8, height = 5)
 ggplot(data = npstat, aes(x = pop, y = log(Watterson), fill=pop)) + 
   geom_boxplot() + 
   scale_color_manual(values=mycolors) +
@@ -127,7 +134,7 @@ ggplot(data = npstat, aes(x = pop, y = log(Watterson), fill=pop)) +
 dev.off()
 
 # Graph Watterson Theta - density
-pdf("output/figures/pop_structure/diversity_stats/npstat/Npstat_density_Watterson.pdf", width = 8, height = 5)
+pdf("output/figures/pop_structure/npstat/Npstat_density_Watterson.pdf", width = 8, height = 5)
 ggplot(data = npstat, aes(log(Watterson), color=pop)) + 
   geom_density(size=2) + 
   scale_color_manual(values=mycolors) + ylim(NA,0.955) +
@@ -136,7 +143,7 @@ ggplot(data = npstat, aes(log(Watterson), color=pop)) +
 dev.off()
 
 # Graph Tajima's D - boxplot
-pdf("output/figures/pop_structure/diversity_stats/npstat/Npstat_boxplot_TajimaD.pdf", width = 8, height = 5)
+pdf("output/figures/pop_structure/npstat/Npstat_boxplot_TajimaD.pdf", width = 8, height = 5)
 ggplot(data = npstat, aes(x = pop, y = Tajima_D, fill=pop)) + 
   geom_boxplot() + 
   scale_color_manual(values=mycolors) +
@@ -145,7 +152,7 @@ ggplot(data = npstat, aes(x = pop, y = Tajima_D, fill=pop)) +
 dev.off()
 
 # Graph Tajima's D - density
-pdf("output/figures/pop_structure/diversity_stats/npstat/Npstat_density_TajimaD.pdf", width = 8, height = 5)
+pdf("output/figures/pop_structure/npstat/Npstat_density_TajimaD.pdf", width = 8, height = 5)
 ggplot(data = npstat, aes(Tajima_D, color=pop)) + 
   geom_density(size=2) + 
   scale_color_manual(values=mycolors) +
@@ -168,76 +175,3 @@ npstat.summary <- npstat %>%
 # Write table
 write.table(npstat.summary, "output/tables/npstat.summary.txt", sep='\t')
 
-# ================================================================================== #
-
-# Model statistics
-
-# Add region column to dataframe
-npstat$region <- ifelse(npstat$pop == "FC"| npstat$pop == "SLR" | npstat$pop == "SH" | npstat$pop == "ARA" | npstat$pop == "CBL" | 
-npstat$pop == "PSG" | npstat$pop == "STC" | npstat$pop == "KH" | npstat$pop == "VD" | npstat$pop == "FR" | npstat$pop == "BMR" | 
-npstat$pop == "PGP", "N", "S")
-
-# Model 
-npstat.mod <- lmer(Tajima_D ~ region + (1|pop), npstat)
-
-# Check assumptions
-# qq plot ---- DOESN"T FIT ASSUMPTIONS
-pdf("output/figures/pop_structure/diversity_stats/npstat/Tajima_D_npstat_qqplot.pdf", width = 5, height = 5)
-qqPlot(resid(npstat.mod))
-dev.off()
-# approximate S/L plot
-#pdf("output/figures/pop_structure/diversity_stats/npstat/Tajima_D_npstat_SL.pdf", width = 5, height = 5)
-#plot(sqrt(abs(resid(npstat.mod, scaled=T)))~fitted(npstat.mod))
-#lines(fitted(loess(sqrt(abs(resid(npstat.mod, scaled=T)))~fitted(npstat.mod))))
-#dev.off()
-# qqplot of random effects
-#qqPlot(ranef(npstat.mod)$Region[,1])
-shapiro.test(resid(npstat.mod))
-
-# Anova 
-anova(npstat.mod)
-#Type III Analysis of Variance Table with Satterthwaite's method
-#       Sum Sq Mean Sq NumDF  DenDF F value    Pr(>F)    
-#region 14.342  14.342     1 17.002  27.023 7.248e-05 ***
-
-
-# ================================================================================== #
-# ================================================================================== #
-
-# Analyze just one population at a time (e.g., PB)
-
-# Rename columns
-colnames(npstat.PB) <- c("window", "length", "length_outgroup", "read_depth", "S", "Watterson", "Pi", "Tajima_D", "var_S", 
-"var_Watterson", "unnorm_FayWu_H", "FayWu_H", "div", "nonsyn_pol", "syn_pol", "nonsyn_div", "syn_div", "alpha", "chr_name")
-
-# Split chr_name column into multiple columns (the first column contains the scaffold name)
-npstat.PB.chr.names <- data.frame(do.call('rbind', strsplit(as.character(npstat.PB$chr_name),'.',fixed=TRUE)))
-# Remove last 2 columns (they just say "pileup" "stats")
-npstat.PB.chr.names <- npstat.PB.chr.names[,1:2]
-# Rename columsn
-colnames(npstat.PB.chr.names) <- c("chr", "pop")
-# Join data frames
-npstat.PB.chr <- cbind(npstat.PB, npstat.PB.chr.names)
-
-# ================================================================================== #
-
-# Plot sliding window of Pi for PB
-pdf("output/figures/pop_structure/Pi_window_npstat_PB.pdf", width = 5, height = 5)
-ggplot(data = npstat.PB.chr, aes(x = chr, y = Pi)) + 
-  geom_point(shape = 21, size = 1) + 
-  xlab("Chr") + ylab("Pi") + theme_classic() 
-dev.off()
-
-# Plot sliding window of Watterson for PB
-pdf("output/figures/pop_structure/Watterson_window_npstat_PB.pdf", width = 5, height = 5)
-ggplot(data = npstat.PB.chr, aes(x = chr, y = Watterson)) + 
-  geom_point(shape = 21, size = 1) + 
-  xlab("Chr") + ylab("Watterson") + theme_classic() 
-dev.off()
-
-# Plot sliding window of Tajima D for PB
-pdf("output/figures/pop_structure/Tajimas_d_window_npstat_PB.pdf", width = 5, height = 5)
-ggplot(data = npstat.PB.chr, aes(x = chr, y = Tajima_D)) + 
-  geom_point(shape = 21, size = 1) + 
-  xlab("Chr") + ylab("Tajima's d") + theme_classic() 
-dev.off()

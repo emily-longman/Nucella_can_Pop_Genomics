@@ -35,10 +35,10 @@
 # Define important file locations
 
 # WORKING_FOLDER is the core folder where this pipeline is being run.
-WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
 
 # Guide file with list of populations
-POPS=$WORKING_FOLDER/pop_gen/guide_files/Populations.txt
+POPS=$WORKING_FOLDER/guide_files/Populations.txt
 
 # Number of partitions
 Partitions=379
@@ -49,7 +49,7 @@ Partitions=379
 
 
 # Change directory
-cd $WORKING_FOLDER/pop_gen/npstat
+cd $WORKING_FOLDER/data/processed/pop_structure/npstat
 
 # Cat file of pop names and start while loop - loop over populations
 cat $POPS | \
@@ -62,7 +62,7 @@ do
 echo ${i}
 
 # Merge stats for each scaffold together
-cat $WORKING_FOLDER/pop_gen/npstat/Partition_${i}/npstat.${pop}.${i}.clean.txt >> $WORKING_FOLDER/pop_gen/npstat/npstat.${pop}.txt
+cat $WORKING_FOLDER/data/processed/pop_structure/npstat/Partition_${i}/npstat.${pop}.${i}.clean.txt >> $WORKING_FOLDER/data/processed/pop_structure/npstat/npstat.${pop}.txt
 
 # End loop over partitions
 done 

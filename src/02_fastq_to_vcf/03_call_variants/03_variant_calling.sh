@@ -36,9 +36,10 @@
 
 # This script will use freebayes to call variants.
 
-# Note:
-# Since the N. canaliculata genome consistent of many scaffolds, I chunked the genome into 50 scaffolds partitions to utilize an array structure.
+# Note: Since the N. canaliculata genome consistent of many scaffolds, I chunked the genome into 50 scaffolds partitions to utilize an array structure.
 # For each slurm array ID, freebayes is running over the 50 scaffolds using a loop then the vcf files are combined together.  
+
+#--------------------------------------------------------------------------------
 
 # Load modules 
 module load gcc/13.3.0-xp3epyt
@@ -50,7 +51,7 @@ module load bcftools/1.19-iq5mwek
 # Define important file locations
 
 # WORKING_FOLDER is the core folder where this pipeline is being run.
-WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
 
 # This is the location where the reference genome is stored.
 REFERENCE_FOLDER=/netfiles/pespenilab_share/Nucella/processed/Base_Genome/Base_Genome_Oct2024/Crassostrea_softmask
@@ -61,7 +62,7 @@ REFERENCE=$REFERENCE_FOLDER/N.canaliculata_assembly.fasta.softmasked.fa
 #--------------------------------------------------------------------------------
 
 ## Import master partition file 
-GUIDE_FILE=$WORKING_FOLDER/fastq_to_vcf/guide_files/Scaffold_names_array.txt
+GUIDE_FILE=$WORKING_FOLDER/guide_files/Scaffold_names_array.txt
 
 #Example: -- the headers are just for descriptive purposes. The actual file has no headers. (dimensions: 2, 18919; 631 partitions)
 # Scaffold name       # Partition
@@ -78,7 +79,7 @@ GUIDE_FILE=$WORKING_FOLDER/fastq_to_vcf/guide_files/Scaffold_names_array.txt
 echo ${SLURM_ARRAY_TASK_ID}
 
 # Change directory 
-cd $WORKING_FOLDER/fastq_to_vcf
+cd $WORKING_FOLDER/data/processed/fastq_to_vcf
 
 # Using the guide file, extract the scaffold names associated based on the Slurm array task ID for a given partition
 awk '$2=='${SLURM_ARRAY_TASK_ID}'' $GUIDE_FILE | awk '{print $1}' > genome.scaffold.names.${SLURM_ARRAY_TASK_ID}.txt
@@ -88,27 +89,27 @@ awk '$2=='${SLURM_ARRAY_TASK_ID}'' $GUIDE_FILE | awk '{print $1}' > genome.scaff
 # Generate Folders and files
 
 # Move to working directory
-cd $WORKING_FOLDER/fastq_to_vcf
+cd $WORKING_FOLDER/data/processed/fastq_to_vcf
 
 # This part of the script will check and generate, if necessary, all of the output folders used in the script
 
 if [ -d "vcf_freebayes" ]
 then echo "Working vcf_freebayes folder exist"; echo "Let's move on."; date
-else echo "Working vcf_freebayes folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/fastq_to_vcf/vcf_freebayes; date
+else echo "Working vcf_freebayes folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/fastq_to_vcf/vcf_freebayes; date
 fi
 
-cd $WORKING_FOLDER/fastq_to_vcf/vcf_freebayes
+cd $WORKING_FOLDER/data/processed/fastq_to_vcf/vcf_freebayes
 
 if [ -d "partitions" ]
 then echo "Working partitions folder exist"; echo "Let's move on."; date
-else echo "Working partitions folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/fastq_to_vcf/vcf_freebayes/partitions; date
+else echo "Working partitions folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/fastq_to_vcf/vcf_freebayes/partitions; date
 fi
 
-cd $WORKING_FOLDER/fastq_to_vcf/vcf_freebayes/partitions
+cd $WORKING_FOLDER/data/processed/fastq_to_vcf/vcf_freebayes/partitions
 
 if [ -d "genome.scaffold.names.${SLURM_ARRAY_TASK_ID}" ]
 then echo "Working genome.scaffold.names.${SLURM_ARRAY_TASK_ID} folder exist"; echo "Let's move on."; date
-else echo "Working genome.scaffold.names.${SLURM_ARRAY_TASK_ID} folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/fastq_to_vcf/vcf_freebayes/partitions/genome.scaffold.names.${SLURM_ARRAY_TASK_ID}; date
+else echo "Working genome.scaffold.names.${SLURM_ARRAY_TASK_ID} folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/fastq_to_vcf/vcf_freebayes/partitions/genome.scaffold.names.${SLURM_ARRAY_TASK_ID}; date
 fi
 
 #--------------------------------------------------------------------------------
@@ -117,12 +118,12 @@ fi
 # This is a file with the name and full path of all the bam files to be processed.
 
 # Move to bams folder
-cd $WORKING_FOLDER/fastq_to_vcf/RGSM_final_bams
+cd $WORKING_FOLDER/data/processed/fastq_to_vcf/RGSM_final_bams
 
 # Create bamlist for all Nucella samples
-ls *.bam > $WORKING_FOLDER/fastq_to_vcf/guide_files/Nucella_pops_bam_names.list
+ls *.bam > $WORKING_FOLDER/data/processed/fastq_to_vcf/guide_files/Nucella_pops_bam_names.list
 
-BAMLIST=$WORKING_FOLDER/fastq_to_vcf/guide_files/Nucella_pops_bam_names.list
+BAMLIST=$WORKING_FOLDER/data/processed/fastq_to_vcf/guide_files/Nucella_pops_bam_names.list
 
 #--------------------------------------------------------------------------------
 
@@ -136,11 +137,11 @@ BAMLIST=$WORKING_FOLDER/fastq_to_vcf/guide_files/Nucella_pops_bam_names.list
 # For the scaffolds in a given partition, generate a vcf file for each scaffold then cat them together. 
 
 # Cat file of scaffold names and start while loop
-cat $WORKING_FOLDER/fastq_to_vcf/genome.scaffold.names.${SLURM_ARRAY_TASK_ID}.txt | \
+cat $WORKING_FOLDER/data/processed/fastq_to_vcf/genome.scaffold.names.${SLURM_ARRAY_TASK_ID}.txt | \
 while read SCAFFOLD 
 do echo ${SCAFFOLD}
 
-freebayes -f $REFERENCE -L $BAMLIST -r ${SCAFFOLD} -K -F 0.01 -C 1 -G 5 --limit-coverage 500 -n 4 -m 30 -q 20 | gzip -c > $WORKING_FOLDER/fastq_to_vcf/vcf_freebayes/partitions/genome.scaffold.names.${SLURM_ARRAY_TASK_ID}/Nucella.freebayes.${SCAFFOLD}.vcf.gz
+freebayes -f $REFERENCE -L $BAMLIST -r ${SCAFFOLD} -K -F 0.01 -C 1 -G 5 --limit-coverage 500 -n 4 -m 30 -q 20 | gzip -c > $WORKING_FOLDER/data/processed/fastq_to_vcf/vcf_freebayes/partitions/genome.scaffold.names.${SLURM_ARRAY_TASK_ID}/Nucella.freebayes.${SCAFFOLD}.vcf.gz
 
 done 
 
@@ -176,17 +177,17 @@ done
 # Combine the vcf files from all of the scaffolds in a given partition
 
 bcftools concat \
-$WORKING_FOLDER/fastq_to_vcf/vcf_freebayes/partitions/genome.scaffold.names.${SLURM_ARRAY_TASK_ID}/*.vcf.gz \
--Oz -o $WORKING_FOLDER/fastq_to_vcf/vcf_freebayes/partitions/genome.scaffold.names.${SLURM_ARRAY_TASK_ID}.vcf.gz
+$WORKING_FOLDER/data/processed/fastq_to_vcf/vcf_freebayes/partitions/genome.scaffold.names.${SLURM_ARRAY_TASK_ID}/*.vcf.gz \
+-Oz -o $WORKING_FOLDER/data/processed/fastq_to_vcf/vcf_freebayes/partitions/genome.scaffold.names.${SLURM_ARRAY_TASK_ID}.vcf.gz
 
 #--------------------------------------------------------------------------------
 
 # Change directory
-cd $WORKING_FOLDER/fastq_to_vcf
+cd $WORKING_FOLDER/data/processed/fastq_to_vcf
 
 # Housekeeping
 rm genome.scaffold.names.${SLURM_ARRAY_TASK_ID}.txt
-rm -R $WORKING_FOLDER/fastq_to_vcf/vcf_freebayes/partitions/genome.scaffold.names.${SLURM_ARRAY_TASK_ID}
+rm -R $WORKING_FOLDER/data/processed/fastq_to_vcf/vcf_freebayes/partitions/genome.scaffold.names.${SLURM_ARRAY_TASK_ID}
 
 #--------------------------------------------------------------------------------
 

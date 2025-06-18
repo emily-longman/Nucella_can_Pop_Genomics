@@ -146,13 +146,13 @@ These scripts will check the quality of the pool-seq raw reads.
 
 ### 02 - Trim and Map Reads
 
-These scripts will trim the raw reads, map them to the genome then call variants.
+These scripts will trim the raw reads using [fastp] (https://github.com/OpenGene/fastp), then map them to the genome using [bwa-mem2] (https://github.com/bwa-mem2/bwa-mem2).
 
 01_trim_read.sh - Use the program [fastp] (https://github.com/OpenGene/fastp) to trim adapters as well as trim the reads based on quality.
 
-02_index_reference.sh - Index the masked reference genome using the program bwa mem2. 
+02_index_reference.sh - Index the masked reference genome using the program [bwa-mem2] (https://github.com/bwa-mem2/bwa-mem2). 
 
-03_map_reads.sh - Map the reads to the masked reference genome using the program bwa mem2.
+03_map_reads.sh - Map the reads to the masked reference genome using the program [bwa-mem2] (https://github.com/bwa-mem2/bwa-mem2).
 
 04_clean_bams.sh - Clean the bam files by filtering, sorting, and removing duplicates using the programs Picard and samtools. Then index the bams with samtools. Additionally, produce quality reports for each bam file using the program qualimap. 
 
@@ -164,19 +164,21 @@ These scripts will trim the raw reads, map them to the genome then call variants
 
 ### 03 - Call Variants
 
-08_prep_bams.sh - This script will prep the bam files. More specifically, it will add read group information and index the final bam files. 
+01_prep_bams.sh - This script will prep the bam files. More specifically, it will add read group information and index the final bam files. 
 
-09_make_chunks - Create guide file for array.
+02_create_guide_file.pt1 - (Interactive session) This code will extract the scaffold names from the genome.
 
-10_variant_calling.sh - This script will use [freebayes] (https://github.com/freebayes/freebayes) to call variants.
+02_create_guide_file.pt2.R - Create a guide file of the scaffold names and group them into 30 scaffold chunks.
 
-11_cat_vcf.sh - This script will cat together the chunked vcf files generated in the previous step from freebayes.
+03_variant_calling.sh - This script will use [freebayes] (https://github.com/freebayes/freebayes) to call variants. Note, chunk 617 required more than the allotted 30 hours and thus needed to be run again on a different partition on the VACC.
 
-12_pop_names.sh - This script will generate a guide file with the population names in the same order as the vcf.
+04_cat_vcf.sh - This script will cat together the chunked vcf files generated in the previous step from freebayes.
 
-13_filter_vcf.sh - This script will filter the vcf file created in the previous script. 
+05_pop_names.sh - This script will generate a guide file with the population names in the same order as the vcf.
 
-14_create_GDS.R - Create GDS object from the vcf.
+06_filter_vcf.sh - This script will filter the vcf file created in the previous script. 
+
+07_create_GDS.R - Create GDS object from the vcf.
 
 ## Part 3 - Population structure and genomic diversity
 
@@ -184,23 +186,25 @@ These scripts will trim the raw reads, map them to the genome then call variants
 
 02_poolfstat.R - Use [poolfstat] (https://cran.r-project.org/web/packages/poolfstat/index.html) to filter the SNP list and calculate Fst statistics and generate PCA of all SNPs. 
 
-03_baypass - Use [BayPass] (https://forge.inrae.fr/mathieu.gautier/baypass_public) to characterize population dmoegraphy by analyzing the omega matrix.
-- 01_format_baypass.R
-- 02_generate_omega.sh
-- 03_analyze_omega.R
+03_baypass - Use [BayPass] (https://forge.inrae.fr/mathieu.gautier/baypass_public) to characterize population demography by analyzing the omega matrix.
+- 01_format_baypass.R - Convert pooldata object to BayPass format. 
+- 02_generate_omega.sh - Generate an omega matrix using BayPass.
+- 03_analyze_omega.R - Analyze the omega matrix and graph as a hierarchical clustering tree.
 
-04_IBD.R - Test for isolation by distance (IBD). 
+04_IBD.R - Test for isolation by distance (IBD) using Mantel tests.
 
 05_npstat - Use [npstat] (https://github.com/lucaferretti/npstat) to calculate nucleotide diversity, Watterson's estimator, and Tajima's D for each *N. canaliculata* population on a sliding window.  
-- 01_create_guide_file
-- 02_npstat.sh
-- 03_npstat_merge.sh
-- 04_npstat.R
-
+- 01_create_guide_file.pt1 - (Interactive session) This code will extract the scaffold names from the genome.
+- 01_create_guide_file.pt2.R -  Create a guide file of the scaffold names and group them into 50 scaffold chunks.
+- 02_npstat.sh - Calculate diversity statistics (nucleotide diversity, Watterson's estimator, and Tajima's D) using npstat on a sliding window (length 25kb)
+- 03_npstat_merge.sh - Merge the npstat diversity statistics txt files together.
+- 04_npstat.R - Analyze and graph the diversity statistics.
 
 ## Part 4 - Shell morphology
+
+Intraspecific variation in shell morphology was analyzed using landmark analysis based on photographs of the ventral surface of the dogwhelks. 15 landmarks were placed on the images using [tpsUtil] (https://www.sbmorphometrics.org/soft-utility.html) and [tpsDig] (https://www.sbmorphometrics.org/soft-dataacq.html). Some of the subsequent analyses were performed using the program [MorphoJ] (https://morphometrics.uk/MorphoJ_page.html). All remaining geometric morphometric analyses and graphing were performed below in R. Additionally, we used BayPass to identify outliers associated with variation in shell morphology.
 
 01_geometric_morphometrics
 - 01_morphology.R
 
-02_baypass
+02_baypass - Use [BayPass] (https://forge.inrae.fr/mathieu.gautier/baypass_public)

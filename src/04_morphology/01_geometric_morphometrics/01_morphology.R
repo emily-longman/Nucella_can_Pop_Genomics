@@ -29,6 +29,14 @@ library(ggbiplot)
 
 # ================================================================================== #
 
+# Generate Folders and files
+
+# Make output directory
+output_dir_morph="output/figures/morphology"
+if (!dir.exists(output_dir_morph)) {dir.create(output_dir_morph)}
+
+# ================================================================================== #
+
 # Read in datasets
 
 # Read in landmark file
@@ -313,36 +321,3 @@ scale_fill_manual(values=mycolors) + geom_vline(xintercept=36.8007, linetype="da
 xlab("Latitude") + ylab("PC2 (19.65%)") + 
 theme_classic(base_size = 25) + guides(fill="none")
 dev.off()
-
-# ================================================================================== #
-# ================================================================================== #
-
-# Load pooldata object 
-load("data/processed/pop_structure/pooldata.RData")
-
-#PCA on the read count data (the object)
-pooldata.pca = randomallele.pca(pooldata, main="Read Count data")
-
-# Read in metadata 
-metadata <- read.csv("data/processed/pop_structure/guide_files/Populations_metadata.csv", header=T)
-metadata$Population <- metadata$Site_full
-
-# Extract PC1 
-metadata$PC1_gen <- round(pooldata.pca$pop.loadings[,1],3)
-
-# Join
-pc_meta <- left_join(pc_scores_metadata, metadata, by="Population")
-
-# Order
-pc_meta$Site <- factor(pc_meta$Site, levels=c("FC", "SLR", "SH", "ARA", "CBL", "PSG", "STC", "KH", "VD", "FR", "BMR", "PGP", "PL", "SBR", "PSN", "PB", "HZD", "OCT", "STR"))
-
-
-# Graph Genetic PC1 against morphology PC1
-pdf("output/figures/morphology/Genetic_morph_PC.pdf", width = 8, height = 8)
-ggplot(pc_meta, aes(x=PC1_gen, y=Comp1)) + geom_point(aes(fill=Site), size=3, shape = 21) + 
-scale_fill_manual(values=mycolors) +
-xlab("PC1 Genetic") + ylab("PC1 Morphology")  +
-theme_classic(base_size = 25) + theme(legend.position="none") 
-dev.off()
-
-

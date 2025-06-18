@@ -31,7 +31,9 @@
 
 #--------------------------------------------------------------------------------
 
-# This script will calculate diversity statistics on each scaffold
+# This script will calculate diversity statistics on each scaffold using npstat (https://github.com/lucaferretti/npstat).
+
+#--------------------------------------------------------------------------------
 
 # Load modules 
 module load gcc/13.3.0-xp3epyt
@@ -44,40 +46,40 @@ npstat=/gpfs1/home/e/l/elongman/software/npstat/npstat_latest.sif
 # Define important file locations
 
 # WORKING_FOLDER is the core folder where this pipeline is being run.
-WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
 
 # BAM_FOLDER is the folder where the cleaned bam files are.
-BAM_FOLDER=$WORKING_FOLDER/fastq_to_vcf/RGSM_final_bams
+BAM_FOLDER=$WORKING_FOLDER/data/processed/fastq_to_vcf/RGSM_final_bams
 
 # Guide file with list of populations
-POPS=$WORKING_FOLDER/pop_gen/guide_files/Populations.txt
+POPS=$WORKING_FOLDER/guide_files/Populations.txt
 
 #--------------------------------------------------------------------------------
 
 # Change directory
-cd $WORKING_FOLDER/pop_gen
+cd $WORKING_FOLDER/data/processed/pop_structure
 
 # This part of the script will check and generate, if necessary, all of the output folders used in the script
 
 if [ -d "npstat" ]
 then echo "Working npstat folder exist"; echo "Let's move on."; date
-else echo "Working npstat folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/pop_gen/npstat; date
+else echo "Working npstat folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/pop_structure/npstat; date
 fi
 
 # Change directory
-cd $WORKING_FOLDER/pop_gen/npstat
+cd $WORKING_FOLDER/data/processed/pop_structure/npstat
 
 # This part of the script will check and generate, if necessary, all of the output folders used in the script
 
 if [ -d "Partition_${SLURM_ARRAY_TASK_ID}" ]
 then echo "Working Partition_${SLURM_ARRAY_TASK_ID} folder exist"; echo "Let's move on."; date
-else echo "Working Partition_${SLURM_ARRAY_TASK_ID} folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/pop_gen/npstat/Partition_${SLURM_ARRAY_TASK_ID}; date
+else echo "Working Partition_${SLURM_ARRAY_TASK_ID} folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/pop_structure/npstat/Partition_${SLURM_ARRAY_TASK_ID}; date
 fi
 
 #--------------------------------------------------------------------------------
 
 ## Import master partition file 
-guide_file=$WORKING_FOLDER/pop_gen/guide_files/npstat_scaffold_guide_file_array.txt
+guide_file=$WORKING_FOLDER/guide_files/npstat_scaffold_guide_file_array.txt
 
 #Example: -- the headers are just for descriptive purposes. The actual file has no headers. (dimensions: 18919, 2; 379 partitions)
 # Scaffold name         # Partition
@@ -92,7 +94,7 @@ guide_file=$WORKING_FOLDER/pop_gen/guide_files/npstat_scaffold_guide_file_array.
 # Determine partition to process 
 
 # Change directory
-cd $WORKING_FOLDER/pop_gen/npstat/Partition_${SLURM_ARRAY_TASK_ID}
+cd $WORKING_FOLDER/data/processed/pop_structure/npstat/Partition_${SLURM_ARRAY_TASK_ID}
 
 # Echo slurm array task ID
 echo ${SLURM_ARRAY_TASK_ID}

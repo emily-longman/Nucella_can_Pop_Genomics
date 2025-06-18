@@ -131,8 +131,3 @@ plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
 legend("topleft", legend = sites$site.abrev, pch=19, cex=2, bty='n', col = mycolors)
 mtext(expression(bold("Sites")), at=0.2, cex=3)
 dev.off()
-
-# ================================================================================== #
-
-# Export csv for qgis layer
-write.csv(west_coast, "/Users/emilylongman/Documents/GitHub/Nucella_can_Pop_Genomics/data/raw/enviro/west_coast.csv")

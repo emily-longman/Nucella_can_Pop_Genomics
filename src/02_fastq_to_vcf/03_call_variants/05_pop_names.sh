@@ -30,6 +30,8 @@
 
 # This script will generate a guide file with the population names in the same order as the vcf.
 
+#--------------------------------------------------------------------------------
+
 # Load modules 
 module load gcc/13.3.0-xp3epyt
 module load bcftools/1.19-iq5mwek
@@ -39,9 +41,9 @@ module load bcftools/1.19-iq5mwek
 # Define important file locations
 
 # WORKING_FOLDER is the core folder where this pipeline is being run.
-WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
 
 #--------------------------------------------------------------------------------
 
 # Make file with population names
-bcftools query -l $WORKING_FOLDER/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf.gz > $WORKING_FOLDER/fastq_to_vcf/guide_files/N.canaliculata_pops.vcf_pop_names.txt
+bcftools query -l $WORKING_FOLDER/data/processed/fastq_to_vcf/vcf_freebayes/N.canaliculata_pops.vcf.gz > $WORKING_FOLDER/guide_files/N.canaliculata_pops.vcf_pop_names.txt

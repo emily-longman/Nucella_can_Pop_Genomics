@@ -33,6 +33,14 @@ fsts <- read.csv("data/processed/pop_structure/Fst/pooldata.pairwisefst.csv", he
 
 # ================================================================================== #
 
+# Generate Folders and files
+
+# Make data directory
+output_dir="output/figures/pop_structure/IBD"
+if (!dir.exists(output_dir)) {dir.create(output_dir)}
+
+# ================================================================================== #
+
 # Make geographic distance a matrix
 geo_mat <- data.matrix(geo_dist, rownames.force=NA)
 # Log transform the geographic distance matrix

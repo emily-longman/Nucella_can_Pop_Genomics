@@ -1,0 +1,29 @@
+# Interactive session 
+
+#--------------------------------------------------------------------------------
+
+# Create guide file for array with names of scaffolds/contigs.
+
+#--------------------------------------------------------------------------------
+
+# Define important file locations
+
+# WORKING_FOLDER is the core folder where this pipeline is being run.
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
+
+# This is the location where the reference genome is stored.
+REFERENCE_FOLDER=/netfiles/pespenilab_share/Nucella/processed/Base_Genome/Base_Genome_Oct2024/Crassostrea_softmask
+
+# This is the path to the reference genome.
+REFERENCE=$REFERENCE_FOLDER/N.canaliculata_assembly.fasta.softmasked.fa
+
+#--------------------------------------------------------------------------------
+
+# Change directory
+cd $WORKING_FOLDER/guide_files
+
+# Get all of the contig names 
+grep ">" $REFERENCE > $WORKING_FOLDER/guide_files/Scaffold_names.txt
+
+# Get rid of the ">"
+sed -i 's/>//g' Scaffold_names.txt

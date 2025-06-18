@@ -32,7 +32,7 @@ library(pheatmap)
 # ================================================================================== #
 
 # Read in population names
-pops <- read.table("data/processed/fastq_to_vcf/guide_files/N.canaliculata_pops.vcf_pop_names.txt", header=F)
+pops <- read.table("guide_files/N.canaliculata_pops.vcf_pop_names.txt", header=F)
 
 # ================================================================================== #
 
@@ -61,6 +61,28 @@ min.cov.per.pool = 20, min.rc = 5, max.cov.per.pool = 120, min.maf = 0.01, nline
 # max.cov.per.pool = the maximum read count per pool for SNP to be called 
 # min.maf = the minimum allele frequency (over all pools) for a SNP to be called (note this is obtained from dividing the read counts for the minor allele over the total read coverage) 
 # nlines.per.readblock = number of lines in sync file to be read simultaneously 
+
+# ================================================================================== #
+
+# Generate Folders and files
+
+# Make data directory
+data_dir="data/processed/pop_structure"
+if (!dir.exists(data_dir)) {dir.create(data_dir)}
+
+# Make data directory for fst
+data_dir_fst="data/processed/pop_structure/Fst"
+if (!dir.exists(data_dir_fst)) {dir.create(data_dir_fst)}
+
+# Make output directory
+output_dir="output/figures/pop_structure"
+if (!dir.exists(output_dir)) {dir.create(output_dir)}
+
+# Make output directory for poolfstat
+output_dir_poolfstat="output/figures/pop_structure/poolfstat"
+if (!dir.exists(output_dir_poolfstat)) {dir.create(output_dir_poolfstat)}
+
+# ================================================================================== #
 
 # Save pooldata
 save(pooldata, file="data/processed/pop_structure/pooldata.RData")
@@ -198,7 +220,7 @@ dev.off()
 
 
 # Read in metadata 
-metadata <- read.csv("data/processed/pop_structure/guide_files/Populations_metadata.csv", header=T)
+metadata <- read.csv("guide_files/Populations_metadata.csv", header=T)
 
 # Get state data
 states <- map_data("state")
