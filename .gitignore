@@ -7,8 +7,8 @@
 .here
 
 # Other files to ignore
-ncbi*
 src/scratch/*
+src/00_download_data
 
 # Directories with large data files
 scratch/*

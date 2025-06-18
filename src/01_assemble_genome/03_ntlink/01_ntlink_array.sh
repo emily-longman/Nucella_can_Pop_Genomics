@@ -64,11 +64,11 @@ assembly=$WORKING_FOLDER/data/processed/genome_assembly/consensus/final_assembly
 #--------------------------------------------------------------------------------
 
 # Read guide files
-GUIDE_FILE=$WORKING_FOLDER_SCRATCH/ntlink/ntlink_guide_file_2.txt
+GUIDE_FILE=$WORKING_FOLDER/guide_files/ntlink_GuideFile.txt
 
 # Parameters:
 # k = 20, 24, 30
-# w = 60, 75, 100, 150
+# w = 60, 75, 100, 150, 200
 
 #Example: -- the headers are just for descriptive purposes. The actual file has no headers.
 ##   k            w        
@@ -76,6 +76,7 @@ GUIDE_FILE=$WORKING_FOLDER_SCRATCH/ntlink/ntlink_guide_file_2.txt
 ##   20          75           
 ##   20          100        
 ##   20          150         
+##   20          200  
 ##   24          60          
 ##   ...
 

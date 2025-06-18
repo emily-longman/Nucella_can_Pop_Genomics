@@ -28,7 +28,7 @@
 
 #--------------------------------------------------------------------------------
 
-# This script will cat together the chunked vcf files generated in step 08 from freebayes.
+# This script will cat together the chunked vcf files generated in the previous step from freebayes.
 
 # Load modules 
 module load gcc/13.3.0-xp3epyt

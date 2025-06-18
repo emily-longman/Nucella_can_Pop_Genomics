@@ -52,7 +52,7 @@ WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
 
 # Script for split_and_run_sparc.pt2_array.sh
 # NOTE: need to change permissions on supplementary consensus scripts prior to running.
-sprun_pt2=$WORKING_FOLDER/src/01_assemble_genome/03_DBG2OLC/03_consensus/consensus_scripts/split_and_run_sparc.pt2_array.sh
+sprun_pt2=$WORKING_FOLDER/src/01_assemble_genome/02_DBG2OLC/03_consensus/consensus_scripts/split_and_run_sparc.pt2_array.sh
 
 #--------------------------------------------------------------------------------
 
