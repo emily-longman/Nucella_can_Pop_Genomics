@@ -4,7 +4,7 @@
 
 Assembled the draft genome for the channeled dogwhelk, *Nucella canaliculata*, and analyzed the fine scale demography using pooled-sequencing of 19 populations distributed along ~1,500 km of the west coast of North America. Additionally, we performed geometric morphometrics of shell morphology to determine if spatial patterns of morphology are concordant with the phylogeographic patterns.
 
-All sequencing was performed at DNA Technologies and Expression Analysis Core at the UC Davis Genome Center and the bioinformatics pipeline was completed on the Vermont Advanced Computing Center (VACC; https://www.uvm.edu/vacc).
+All sequencing was performed at DNA Technologies and Expression Analysis Core at the UC Davis Genome Center and the bioinformatics pipeline was completed on the Vermont Advanced Computing Center ([VACC](https://www.uvm.edu/vacc)).
 
 ### Research Questions
 
