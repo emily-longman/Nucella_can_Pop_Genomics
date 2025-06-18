@@ -28,7 +28,6 @@ The files in this project are organized in the following structure. All files fo
  - output/
      - figures/
      - tables/
- - scratch/
 
 ## Part 1 - Assemble the Draft Genome
 
