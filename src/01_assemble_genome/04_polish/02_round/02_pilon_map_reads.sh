@@ -5,10 +5,10 @@
 # Request cluster resources ----------------------------------------------------
 
 # Name this job
-#SBATCH --job-name=Map_reads
+#SBATCH --job-name=Map_reads_round_2
 
 # Specify partition
-#SBATCH --partition=bigmemwk
+#SBATCH --partition=week
 
 # Request nodes
 #SBATCH --nodes=1 
@@ -34,21 +34,22 @@
 
 # This script will map the reads with bwa mem.
 
-# Load modules  
-spack load gcc@9.3.0
-spack load samtools@1.10
+#--------------------------------------------------------------------------------
 
+# Load modules  
+module load gcc/13.3.0-xp3epyt
+module load samtools/1.19.2-pfmpoam
 bwa=/netfiles/nunezlab/Shared_Resources/Software/bwa-mem2-2.2.1_x64-linux/bwa-mem2.avx2
 
 #--------------------------------------------------------------------------------
 
-#Define important file locations
+# Define important file locations
 
-# Working folder is core folder where this pipeline is being run.
-WORKING_FOLDER_SCRATCH=/gpfs2/scratch/elongman/Nucella_can_drilling_genomics/data/processed/short_read_assembly
+# WORKING_FOLDER is the core folder where this pipeline is being run.
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
 
-#This is the location where the reference genome and all its indexes are stored.
-REFERENCE=$WORKING_FOLDER_SCRATCH/ntlink/final/final_assembly.ntLink.scaffolds.gap_fill.fa
+# Genome from first round of pilon
+REFERENCE=$WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_1/polished_assembly.fasta
 
 #--------------------------------------------------------------------------------
 
@@ -57,43 +58,42 @@ QUAL=40 # Quality threshold for samtools
 
 #--------------------------------------------------------------------------------
 
-# Generate Folders and files
-
 # Move to working directory
-cd $WORKING_FOLDER_SCRATCH
+cd $WORKING_FOLDER/data/processed/genome_assembly
 
 # This part of the script will check and generate, if necessary, all of the output folders used in the script
 
 if [ -d "pilon" ]
 then echo "Working pilon folder exist"; echo "Let's move on."; date
-else echo "Working pilon folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER_SCRATCH/pilon; date
+else echo "Working pilon folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/genome_assembly/pilon; date
 fi
 
 # Move to polish directory
-cd $WORKING_FOLDER_SCRATCH/pilon
+cd $WORKING_FOLDER/data/processed/genome_assembly/pilon
 
-if [ -d "polished_genome_round_1" ]
-then echo "Working polished_genome_round_1 folder exist"; echo "Let's move on."; date
-else echo "Working polished_genome_round_1 folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER_SCRATCH/pilon/polished_genome_round_1; date
+if [ -d "polished_genome_round_2" ]
+then echo "Working polished_genome_round_2 folder exist"; echo "Let's move on."; date
+else echo "Working polished_genome_round_2 folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_2; date
 fi
 
 # Move to polish directory
-cd $WORKING_FOLDER_SCRATCH/pilon/polished_genome_round_1
+cd $WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_2
 
 if [ -d "sams" ]
 then echo "Working sams folder exist"; echo "Let's move on."; date
-else echo "Working sams folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER_SCRATCH/pilon/polished_genome_round_1/sams; date
+else echo "Working sams folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_2/sams; date
 fi
 
 if [ -d "mapping_stats" ]
 then echo "Working mapping_stats folder exist"; echo "Let's move on."; date
-else echo "Working mapping_stats folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER_SCRATCH/pilon/polished_genome_round_1/mapping_stats; date
+else echo "Working mapping_stats folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_2/mapping_stats; date
 fi
 
 if [ -d "bams" ]
 then echo "Working bams folder exist"; echo "Let's move on."; date
-else echo "Working bams folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER_SCRATCH/pilon/polished_genome_round_1/bams; date
+else echo "Working bams folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_2/bams; date
 fi
+
 
 #--------------------------------------------------------------------------------
 
@@ -106,28 +106,28 @@ fi
 # Start pipeline
 
 # Move to working directory
-cd $WORKING_FOLDER_SCRATCH/pilon/polished_genome_round_1
+cd $WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_2
 
 # Starting mapping
 echo "Begin mapping" 
   
 # I will conduct the mapping with BWA-MEM 2	
 $bwa mem -M -t 16 $REFERENCE \
-$WORKING_FOLDER_SCRATCH/fastp/NC3_R1_clean.fastq.gz \
-$WORKING_FOLDER_SCRATCH/fastp/NC3_R2_clean.fastq.gz \
-> $WORKING_FOLDER_SCRATCH/pilon/polished_genome_round_1/sams/Ncan.sam
+$WORKING_FOLDER/data/processed/genome_assembly/trim_AVITI/NC3_R1_clean.fq.gz \
+$WORKING_FOLDER/data/processed/genome_assembly/trim_AVITI/NC3_R2_clean.fq.gz\
+> $WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_2/sams/Ncan.sam
 
 #--------------------------------------------------------------------------------
 
 # I will now extract some summary stats
 samtools flagstat --threads 16 \
-$WORKING_FOLDER_SCRATCH/pilon/polished_genome_round_1/sams/Ncan.sam \
-> $WORKING_FOLDER_SCRATCH/pilon/polished_genome_round_1/mapping_stats/Ncan.flagstats_raw.sam.txt
+$WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_2/sams/Ncan.sam \
+> $WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_2/mapping_stats/Ncan.flagstats_raw.sam.txt
 
 # Build bam files
 samtools view -b -q $QUAL --threads 16  \
-$WORKING_FOLDER_SCRATCH/pilon/polished_genome_round_1/sams/Ncan.sam \
-> $WORKING_FOLDER_SCRATCH/pilon/polished_genome_round_1/bams/Ncan.bam
+$WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_2/sams/Ncan.samm \
+> $WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_2/bams/Ncan.bam
 
 #--------------------------------------------------------------------------------
 

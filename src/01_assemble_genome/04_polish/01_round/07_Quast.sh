@@ -31,26 +31,33 @@
 
 # This script will run Quast on the final consensus assembly 
 
-# Quast executable
+#--------------------------------------------------------------------------------
+
+# Load modules
 quast=/netfiles/nunezlab/Shared_Resources/Software/quast-5.2.0/quast.py
 
 #--------------------------------------------------------------------------------
 
-#Working folder is core folder where this pipeline is being run.
-WORKING_FOLDER_SCRATCH=/gpfs2/scratch/elongman/Nucella_can_drilling_genomics/data/processed/short_read_assembly
+# Define important file locations
+
+# WORKING_FOLDER is the core folder where this pipeline is being run.
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
 
 #--------------------------------------------------------------------------------
 
-cd $WORKING_FOLDER_SCRATCH/pilon/polished_genome_round_1
+# Generate Folders and files
+
+# Move to working directory
+cd $WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_1
 
 # Make Quast directory 
 if [ -d "Quast" ]
 then echo "Working Quast folder exist"; echo "Let's move on."; date
-else echo "Working Quast folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER_SCRATCH/pilon/polished_genome_round_1/Quast; date
+else echo "Working Quast folder doesnt exist. Let's fix that."; mkdir cd $WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_1/Quast; date
 fi
 
 #--------------------------------------------------------------------------------
 
 # Run quast
-$quast $WORKING_FOLDER_SCRATCH/pilon/polished_genome_round_1/polished_assembly.fasta \
--o $WORKING_FOLDER_SCRATCH/pilon/polished_genome_round_1/Quast/polished_assembly
+$quast $WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_1/polished_assembly.fasta \
+-o $$WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_1/Quast/polished_assembly

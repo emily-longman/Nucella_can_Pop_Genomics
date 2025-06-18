@@ -15,7 +15,7 @@ All sequencing was performed at DNA Technologies and Expression Analysis Core at
 
 ## File Structure
 
-The files in this project are organized in the following structure:
+The files in this project are organized in the following structure. All subsequent directories will be produced therein.
  - data/
      - raw/
      - processed/
@@ -92,7 +92,7 @@ These scripts will use a ntLink (https://github.com/bcgsc/ntLink) to scaffold th
 
 ## Part 2 - Fastq to VCF
 
-Download the raw fastq reads. 
+This set of scripts will take the Pool-seq raw reads, trim them then map them to the genome and then call variants. 
 
 #### 01 - QC reads
 

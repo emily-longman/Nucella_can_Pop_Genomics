@@ -47,21 +47,21 @@ PICARD=/netfiles/nunezlab/Shared_Resources/Software/picard/build/libs/picard.jar
 WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
 
 # Genome from scaffolding
-ASSEMBLY=$WORKING_FOLDER/data/processed/genome_assembly/ntlink/final/final_assembly.ntLink.scaffolds.gap_fill.fa
-# Note: I renamed the assembly to a shorter name without all of the 'ntLinks', and moved it to a directory called final
+REFERENCE=$WORKING_FOLDER/data/processed/genome_assembly/ntlink/final/final_assembly.ntLink.scaffolds.gap_fill.fa
+# Note: I renamed the assembly to a shorter name without all of the 'ntLinks', and moved it to a directory called final within the ntlink directory
 # The final assembly was: ntlink, k=30, w=200, rounds=6, contigs=19014, total length=1593151670
 
 #--------------------------------------------------------------------------------
 
 # Move to the directory that the genome is currently stored
-cd $WORKING_FOLDER_SCRATCH/ntlink/final
+cd $WORKING_FOLDER/data/processed/genome_assembly/ntlink/final
 
 # Index database sequences in the FASTA format 
-$bwa index $ASSEMBLY 
+$bwa index $REFERENCE 
 
 # Generate the FASTA sequence dictionary file
 java -jar $PICARD CreateSequenceDictionary \
-R=$ASSEMBLY
+R=$REFERENCE
 
 # Generate the fasta index file for the reference
-samtools faidx $ASSEMBLY
+samtools faidx $REFERENCE
