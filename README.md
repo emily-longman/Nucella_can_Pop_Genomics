@@ -15,16 +15,16 @@ All sequencing was performed at [DNA Technologies and Expression Analysis Core] 
 
 ## File Structure
 
-The files in this project are organized in the following structure. All subsequent directories will be produced therein.
+The files in this project are organized in the following structure. All files for arrays and metadata are in "guide_files". All subsequent directories will be generated therein.
  - data/
      - raw/
      - processed/
+ - guide_files
  - src/
     - 01_assemble_genome/
     - 02_fastq_to_vcf/
     - 03_population_structure/
     - 04_morphology/
- - guide_files
  - output/
      - figures/
      - tables/
