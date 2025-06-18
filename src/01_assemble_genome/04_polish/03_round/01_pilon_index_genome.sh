@@ -46,13 +46,13 @@ PICARD=/netfiles/nunezlab/Shared_Resources/Software/picard/build/libs/picard.jar
 # WORKING_FOLDER is the core folder where this pipeline is being run.
 WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
 
-# Genome from first round of pilon
+# Genome from second round of pilon
 REFERENCE=$WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_2/polished_assembly.fasta
 
 #--------------------------------------------------------------------------------
 
 # Move to the directory that the genome is currently stored
-cd $WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_2/
+cd $WORKING_FOLDER_SCRATCH/pilon/polished_genome_round_2
 
 # Index database sequences in the FASTA format 
 $bwa index $REFERENCE 

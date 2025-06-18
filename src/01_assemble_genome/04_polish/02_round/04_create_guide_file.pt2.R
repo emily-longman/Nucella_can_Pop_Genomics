@@ -13,7 +13,7 @@ rm(list=ls())
 install.packages(c('rprojroot'))
 library(rprojroot)
 # Create relative path from root
-rel_path_from_root <- find_root_file("data", "processed", "genome_assembly", "consensus", criterion = has_file("README.md"))
+rel_path_from_root <- find_root_file("data", "processed", "genome_assembly", "pilon", criterion = has_file("README.md"))
 # Set working directory as path from root
 setwd(rel_path_from_root)
 

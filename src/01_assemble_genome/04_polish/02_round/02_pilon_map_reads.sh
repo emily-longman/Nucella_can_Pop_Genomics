@@ -48,7 +48,7 @@ bwa=/netfiles/nunezlab/Shared_Resources/Software/bwa-mem2-2.2.1_x64-linux/bwa-me
 # WORKING_FOLDER is the core folder where this pipeline is being run.
 WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
 
-# Genome from first round of pilon
+# This is the location where the reference genome from the first round of pilon and all its indexes are stored.
 REFERENCE=$WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_1/polished_assembly.fasta
 
 #--------------------------------------------------------------------------------

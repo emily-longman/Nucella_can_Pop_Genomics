@@ -12,7 +12,7 @@
 WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
 
 # This is the location where the reference genome from the first round of pilon and all its indexes are stored.
-REFERENCE=$WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_1/polished_assembly.fasta
+REFERENCE=$WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_3/polished_assembly.fasta
 
 #--------------------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ REFERENCE=$WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_r
 cd $WORKING_FOLDER/data/processed/genome_assembly/pilon
 
 # Get all of the contig names 
-grep ">" $REFERENCE > scaffold_names_2.txt
+grep ">" $REFERENCE > scaffold_names_4.txt
 
 # Get rid of the ">"
-sed -i 's/>//g' scaffold_names_2.txt
+sed -i 's/>//g' scaffold_names_4.txt
