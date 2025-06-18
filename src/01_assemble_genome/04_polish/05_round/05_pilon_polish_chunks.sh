@@ -8,7 +8,7 @@
 #SBATCH --job-name=pilon_polish
 
 # Specify partition
-#SBATCH --partition=bluemoon
+#SBATCH --partition=general
 
 # Request nodes
 #SBATCH --nodes=1 # on one node
@@ -41,40 +41,43 @@
 # The previous script produced a guide file that groups scaffolds into 30 scaffold chunks, for a total of 634 partitions.
 # For each partition, this script will loop over each scaffold name, break the genome and bam file into that scaffold then clean that scaffold.
 
-# Call packages
-spack load samtools@1.10
+#--------------------------------------------------------------------------------
+
+# Load packages
+module load gcc/13.3.0-xp3epyt
+module load samtools/1.19.2-pfmpoam
 PILONJAR=/gpfs1/home/e/l/elongman/software/pilon-1.24.jar
 seqtk=/gpfs1/home/e/l/elongman/software/seqtk/seqtk
 
 #--------------------------------------------------------------------------------
 
-#Define important file locations
+# Define important file locations
 
-# Working folder is core folder where this pipeline is being run.
-WORKING_FOLDER_SCRATCH=/gpfs2/scratch/elongman/Nucella_can_drilling_genomics/data/processed/short_read_assembly
+# WORKING_FOLDER is the core folder where this pipeline is being run.
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
 
-#This is the location where the reference genome and all its indexes are stored.
-REFERENCE=$WORKING_FOLDER_SCRATCH/pilon/polished_genome_round_4/polished_assembly.fasta
+# Genome from fourth round of pilon
+REFERENCE=$WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_4/polished_assembly.fasta
 
 # This is the location of the cleaned and indexed bams
-BAM=$WORKING_FOLDER_SCRATCH/pilon/polished_genome_round_5/bams_clean/Ncan.srt.rmdp.bam
+BAM=$WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_5/bams_clean/Ncan.srt.rmdp.bam
 
 #--------------------------------------------------------------------------------
 
 # Generate Folders and files
 
 # Move to working directory
-cd $WORKING_FOLDER_SCRATCH/pilon/polished_genome_round_5
+cd $WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_5
 
 if [ -d "scaffolds" ]
 then echo "Working scaffolds folder exist"; echo "Let's move on."; date
-else echo "Working scaffolds folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER_SCRATCH/pilon/polished_genome_round_5/scaffolds; date
+else echo "Working scaffolds folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_5/scaffolds; date
 fi
 
 #--------------------------------------------------------------------------------
 
 ## Import master partition file 
-guide_file=$WORKING_FOLDER_SCRATCH/pilon/guide_file_array_5.txt
+guide_file=$WORKING_FOLDER/data/processed/genome_assembly/pilon/guide_file_array_5.txt
 
 #Example: -- the headers are just for descriptive purposes. The actual file has no headers. (dimensions: 2, 19014; 634 partitions)
 # Scaffold name       # Partition
@@ -118,13 +121,13 @@ java -Xmx49G -jar $PILONJAR \
 --frags ${scaffold}.bam \
 --diploid \
 --output ${scaffold}.polished \
---outdir $WORKING_FOLDER_SCRATCH/pilon/polished_genome_round_5
+--outdir $WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_5
 # --frags for paired-end sequencing of DNA fragments, such as Illumina paired-end reads of fragment size <1000bp.
 
 # Note: the output of pilon is interleaved (i.e., the DNA sequence is in chunks of 80bps a line), 
 # you need to switch them to put all of the sequences on one line 
 
-$seqtk seq ${scaffold}.polished.fasta > $WORKING_FOLDER_SCRATCH/pilon/polished_genome_round_5/scaffolds/${scaffold}.polished.fasta
+$seqtk seq ${scaffold}.polished.fasta > $WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_5/scaffolds/${scaffold}.polished.fasta
 
 # Housekeeping - remove intermediate files
 rm ${scaffold}.bam

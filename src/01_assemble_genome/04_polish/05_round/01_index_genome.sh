@@ -8,7 +8,7 @@
 #SBATCH --job-name=index_genome
 
 # Specify partition
-#SBATCH --partition=bluemoon
+#SBATCH --partition=general
 
 # Request nodes
 #SBATCH --nodes=1 
@@ -31,34 +31,35 @@
 
 # This script with index the reference genome.
 
-# Note: this step only needs to be done once
+#--------------------------------------------------------------------------------
 
-#Load modules 
-spack load samtools@1.10
+# Load modules 
+module load gcc/13.3.0-xp3epyt
+module load samtools/1.19.2-pfmpoam
 bwa=/netfiles/nunezlab/Shared_Resources/Software/bwa-mem2-2.2.1_x64-linux/bwa-mem2.avx2
 PICARD=/netfiles/nunezlab/Shared_Resources/Software/picard/build/libs/picard.jar
 
 #--------------------------------------------------------------------------------
 
-#Define important file locations
+# Define important file locations
 
-# Working folder is core folder where this pipeline is being run.
-WORKING_FOLDER_SCRATCH=/gpfs2/scratch/elongman/Nucella_can_drilling_genomics/data/processed/short_read_assembly
+# WORKING_FOLDER is the core folder where this pipeline is being run.
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
 
-# Genome from first round of pilon
-ASSEMBLY=$WORKING_FOLDER_SCRATCH/pilon/polished_genome_round_4/polished_assembly.fasta
+# Genome from fourth round of pilon
+REFERENCE=$WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_4/polished_assembly.fasta
 
 #--------------------------------------------------------------------------------
 
 # Move to the directory that the genome is currently stored
-cd $WORKING_FOLDER_SCRATCH/pilon/polished_genome_round_4
+cd $WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_4
 
 # Index database sequences in the FASTA format 
-$bwa index $ASSEMBLY 
+$bwa index $REFERENCE 
 
 # Generate the FASTA sequence dictionary file
 java -jar $PICARD CreateSequenceDictionary \
-R=$ASSEMBLY
+R=$REFERENCE
 
 # Generate the fasta index file for the reference
-samtools faidx $ASSEMBLY
+samtools faidx $REFERENCE

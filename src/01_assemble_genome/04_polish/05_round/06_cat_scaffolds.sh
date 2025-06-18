@@ -29,18 +29,24 @@
 
 #--------------------------------------------------------------------------------
 
-# Working folder is core folder where this pipeline is being run.
-WORKING_FOLDER_SCRATCH=/gpfs2/scratch/elongman/Nucella_can_drilling_genomics/data/processed/short_read_assembly
+# This script will concatenate all of the cleaned scaffolds. 
 
-scaffolds_dir=$WORKING_FOLDER_SCRATCH/pilon/polished_genome_round_5/scaffolds
+#--------------------------------------------------------------------------------
+
+# Define important file locations
+
+# WORKING_FOLDER is the core folder where this pipeline is being run.
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
+
+scaffolds_dir=$WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_5/scaffolds
 
 #--------------------------------------------------------------------------------
 
 # Move to working directory
-cd $WORKING_FOLDER_SCRATCH/pilon/polished_genome_round_5
+cd $WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_5
 
 # Cat files together to produce a final consensus
 for file in $(find ${scaffolds_dir} -name "*.polished.fasta"); do
 cmd="cat ${file};"
 eval $cmd
-done > $WORKING_FOLDER_SCRATCH/pilon/polished_genome_round_5/polished_assembly.fasta
+done > $WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_5/polished_assembly.fasta
