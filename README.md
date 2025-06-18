@@ -207,4 +207,9 @@ Intraspecific variation in shell morphology was analyzed using landmark analysis
 01_geometric_morphometrics
 - 01_morphology.R
 
-02_baypass - Use [BayPass] (https://forge.inrae.fr/mathieu.gautier/baypass_public)
+02_baypass - Use [BayPass] (https://forge.inrae.fr/mathieu.gautier/baypass_public) to identify outlier SNPs associated with morphological variation.
+- 01_baypass_morphlogy_CV1.sh - Run baypass using the coefficient of variation of the PC1 of the morphology data as phenotypic input.
+- 01_baypass_morphlogy_CV2.sh - Run baypass using the coefficient of variation of the PC2 of the morphology data as phenotypic input.
+- 02_baypass_morphlogy_CV1_and_CV2.R - Graph baypass outputs.
+- 03_snpeff_vcf.sh - Annotate VCF file. 
+- 04_annotate_SNPs.R - Annoate BayPass SNP lists.

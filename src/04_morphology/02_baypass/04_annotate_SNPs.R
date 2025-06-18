@@ -30,16 +30,16 @@ library(SeqArray)
 #--------------------------------------------------------------------------------
 
 # Load the VCF file
-vcf.fn <- "data/processed/outlier_analyses/snpeff/N.canaliculata_pops_SNPs_annotate.vcf"
+vcf.fn <- "data/processed/snpeff/N.canaliculata_pops_SNPs_annotate.vcf"
 # Parse the header
 seqVCF_Header(vcf.fn)
 # Convert VCF to GDS
-seqVCF2GDS(vcf.fn, storage.option="ZIP_RA", "data/processed/outlier_analyses/snpeff/N.canaliculata_SNPs.annotate.gds")
+seqVCF2GDS(vcf.fn, storage.option="ZIP_RA", "data/processed/snpeff/N.canaliculata_SNPs.annotate.gds")
 
 #--------------------------------------------------------------------------------
 
 # Open the GDS file
-genofile <- seqOpen("data/processed/outlier_analyses/snpeff/N.canaliculata_SNPs.annotate.gds")
+genofile <- seqOpen("data/processed/snpeff/N.canaliculata_SNPs.annotate.gds")
 # Display the contents of the GDS file
 genofile
 

@@ -29,9 +29,13 @@
 
 #--------------------------------------------------------------------------------
 
-# Generate SnpEff database
+# Generate SnpEff database.
+# NOTE: prior to running this step the genome was move to netfiles (i.e. long term storage).
+# NOTE: many of these steps were performed interactively and then ultimately commented out to prior to running the script and building the database. 
 
-# Load software  
+#--------------------------------------------------------------------------------
+
+# Load modules  
 module load snpeff/5.2c
 
 #--------------------------------------------------------------------------------
@@ -59,19 +63,19 @@ fi
 # Move a copy of the genome, gff, and config file to directory
 
 # Change directory 
-#cd $NETFILES_DIR/N.canaliculata_snpeff_March_2025
+cd $NETFILES_DIR/N.canaliculata_snpeff_March_2025
 
 # Move a copy of the genome and rename as sequences.fa, then move another copy of the genome
-#scp $REFERENCE $NETFILES_DIR/N.canaliculata_snpeff_March_2025
-#mv N.canaliculata_assembly.fasta.softmasked sequences.fa
-#scp $REFERENCE $NETFILES_DIR/N.canaliculata_snpeff_March_2025
+scp $REFERENCE $NETFILES_DIR/N.canaliculata_snpeff_March_2025
+mv N.canaliculata_assembly.fasta.softmasked sequences.fa
+scp $REFERENCE $NETFILES_DIR/N.canaliculata_snpeff_March_2025
 
 # Move a copy of the gff and rename as genes.gff
-#scp $NETFILES_DIR/Base_Genome/annotation/Augustus/N.canaliculata.genepred.softmask.gff3 $NETFILES_DIR/N.canaliculata_snpeff_March_2025
-#mv N.canaliculata.genepred.softmask.gff3 genes.gff
+scp $NETFILES_DIR/Base_Genome/annotation/Augustus/N.canaliculata.genepred.softmask.gff3 $NETFILES_DIR/N.canaliculata_snpeff_March_2025
+mv N.canaliculata.genepred.softmask.gff3 genes.gff
 
 # Move a copy of the config file 
-#scp $NETFILES_DIR/N.can_genome_Dec2024/snpEff.config $NETFILES_DIR/N.canaliculata_snpeff_March_2025
+scp $NETFILES_DIR/N.can_genome_Dec2024/snpEff.config $NETFILES_DIR/N.canaliculata_snpeff_March_2025
 
 # Note: edit config file to add N.canaliculata_snpeff_March_2025 directory at end: 
 ### N.canaliculata_snpeff_March_2025
@@ -82,15 +86,15 @@ fi
 # Create protein file using AGAT (used RHEL7)
 
 # Load AGAT using singularity
-#module load singularity
-#AGAT=/netfiles/nunezlab/Shared_Resources/Software/AGAT/agat_1.0.0--pl5321hdfd78af_0.sif
+module load singularity
+AGAT=/netfiles/nunezlab/Shared_Resources/Software/AGAT/agat_1.0.0--pl5321hdfd78af_0.sif
 
 # Run AGAT using singularity to make a protein file
-#singularity run $AGAT
+singularity run $AGAT
 
-#agat_sp_extract_sequences.pl --gff /netfiles/pespenilab_share/Nucella/processed/N.canaliculata_snpeff_March_2025/genes.gff \
-#-f /netfiles/pespenilab_share/Nucella/processed/N.canaliculata_snpeff_March_2025/sequences.fa \
-#-p -o /netfiles/pespenilab_share/Nucella/processed/N.canaliculata_snpeff_March_2025/protein.fa
+agat_sp_extract_sequences.pl --gff /netfiles/pespenilab_share/Nucella/processed/N.canaliculata_snpeff_March_2025/genes.gff \
+-f /netfiles/pespenilab_share/Nucella/processed/N.canaliculata_snpeff_March_2025/sequences.fa \
+-p -o /netfiles/pespenilab_share/Nucella/processed/N.canaliculata_snpeff_March_2025/protein.fa
 
 #--------------------------------------------------------------------------------
 
@@ -101,4 +105,5 @@ cd $NETFILES_DIR/N.canaliculata_snpeff_March_2025
 DATA_DIR=$NETFILES_DIR
 PARAM=$NETFILES_DIR/N.canaliculata_snpeff_March_2025/snpEff.config
 
+# Build SnpEff database
 snpeff build -dataDir $DATA_DIR -c $PARAM -gff3 -noCheckCds -v N.canaliculata_snpeff_March_2025

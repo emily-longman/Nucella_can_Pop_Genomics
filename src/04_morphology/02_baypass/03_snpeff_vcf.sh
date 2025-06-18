@@ -30,6 +30,8 @@
 
 # This script will run snpeff on the vcf file. 
 
+#--------------------------------------------------------------------------------
+
 # Load modules
 module load snpeff/5.2c
 
@@ -54,12 +56,12 @@ PARAM=/netfiles/pespenilab_share/Nucella/processed/N.canaliculata_snpeff_March_2
 # Generate Folders and files
 
 # Move to working directory
-cd $WORKING_FOLDER/data/processed/outlier_analyses
+cd $WORKING_FOLDER/data/processed
 
 # This part of the script will check and generate, if necessary, all of the output folders used in the script
 if [ -d "snpeff" ]
 then echo "Working snpeff folder exist"; echo "Let's move on."; date
-else echo "Working snpeff folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/outlier_analyses/snpeff; date
+else echo "Working snpeff folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/snpeff; date
 fi
 
 #--------------------------------------------------------------------------------
@@ -67,7 +69,7 @@ fi
 # Run SNPeff on the vcf file
 
 # Change directory
-cd $WORKING_FOLDER/data/processed/outlier_analyses/snpeff
+cd $WORKING_FOLDER/data/processed/snpeff
 
 # Run SNPeff
-snpeff -c $PARAM -dataDir $DATA_DIR N.canaliculata_snpeff_March_2025 $VCF > $WORKING_FOLDER/data/processed/outlier_analyses/snpeff/N.canaliculata_pops_SNPs_annotate.vcf
+snpeff -c $PARAM -dataDir $DATA_DIR N.canaliculata_snpeff_March_2025 $VCF > $WORKING_FOLDER/data/processed/snpeff/N.canaliculata_pops_SNPs_annotate.vcf
