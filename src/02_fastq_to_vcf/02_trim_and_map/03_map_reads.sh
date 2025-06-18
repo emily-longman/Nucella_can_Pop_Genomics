@@ -38,6 +38,8 @@
 # This script will map reads to the masked reference genome using bwa mem. 
 # After reads have been mapped, they will be compressed into bam files.
 
+#--------------------------------------------------------------------------------
+
 # Load modules  
 module load gcc/13.3.0-xp3epyt
 module load samtools/1.19.2-pfmpoam
@@ -51,7 +53,7 @@ bwa=/netfiles/nunezlab/Shared_Resources/Software/bwa-mem2-2.2.1_x64-linux/bwa-me
 RAW_READS=/netfiles/pespenilab_share/Nucella/raw/Population_genomics/All_shortreads
 
 # WORKING_FOLDER is the core folder where this pipeline is being run.
-WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
 
 # This is the location where the reference genome is stored.
 REFERENCE_FOLDER=/netfiles/pespenilab_share/Nucella/processed/Base_Genome/Base_Genome_Oct2024/Crassostrea_softmask
@@ -74,7 +76,7 @@ JAVAMEM=18G # Java memory
 
 # Read guide files
 # This is a file with the name all the samples to be processed. One sample name per line with all the info.
-GUIDE_FILE=$WORKING_FOLDER/fastq_to_vcf/guide_files/Trim_map.txt
+GUIDE_FILE=$WORKING_FOLDER/guide_files/Trim_map.txt
 
 #Example: -- the headers are just for descriptive purposes. The actual file has no headers.
 ##             Read 1                            Read 2             Population   Sample#   Lane#    Paired_name    
@@ -95,13 +97,13 @@ echo ${i}
 # This part of the pipeline will generate log files to record warnings and completion status
 
 # Move to logs directory
-cd $WORKING_FOLDER/fastq_to_vcf/logs
+cd $WORKING_FOLDER/data/processed/fastq_to_vcf/logs
 
 echo $PIPELINE
 
 if [[ -e "${PIPELINE}.completion.log" ]]
 then echo "Completion log exist"; echo "Let's move on."; date
-else echo "Completion log doesnt exist. Let's fix that."; touch $WORKING_FOLDER/fastq_to_vcf/logs/${PIPELINE}.completion.log; date
+else echo "Completion log doesnt exist. Let's fix that."; touch $WORKING_FOLDER/data/processed/fastq_to_vcf/logs/${PIPELINE}.completion.log; date
 fi
 
 #--------------------------------------------------------------------------------
@@ -109,23 +111,23 @@ fi
 # Generate Folders and files
 
 # Move to working directory
-cd $WORKING_FOLDER/fastq_to_vcf
+cd $WORKING_FOLDER/data/processed/fastq_to_vcf
 
 # This part of the script will check and generate, if necessary, all of the output folders used in the script
 
 if [ -d "sams" ]
 then echo "Working sams folder exist"; echo "Let's move on."; date
-else echo "Working sams folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/fastq_to_vcf/sams; date
+else echo "Working sams folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/fastq_to_vcf/sams; date
 fi
 
 if [ -d "mapping_stats" ]
 then echo "Working mapping_stats folder exist"; echo "Let's move on."; date
-else echo "Working mapping_stats folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/fastq_to_vcf/mapping_stats; date
+else echo "Working mapping_stats folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/fastq_to_vcf/mapping_stats; date
 fi
 
 if [ -d "bams" ]
 then echo "Working bams folder exist"; echo "Let's move on."; date
-else echo "Working bams folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/fastq_to_vcf/bams; date
+else echo "Working bams folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/fastq_to_vcf/bams; date
 fi
 
 #--------------------------------------------------------------------------------
@@ -133,31 +135,31 @@ fi
 # Map reads to a reference
 
 # Move to working directory
-cd $WORKING_FOLDER/fastq_to_vcf
+cd $WORKING_FOLDER/data/processed/fastq_to_vcf
 
 # Starting mapping
 echo "Begin mapping" ${i}
   
 # I will conduct the mapping with BWA-MEM 2	
 $bwa mem -M -t $CPU $REFERENCE \
-$WORKING_FOLDER/fastq_to_vcf/trimmed_reads/${i}_R1_clean.fq.gz \
-$WORKING_FOLDER/fastq_to_vcf/trimmed_reads/${i}_R2_clean.fq.gz \
-> $WORKING_FOLDER/fastq_to_vcf/sams/${i}.sam
+$WORKING_FOLDER/data/processed/fastq_to_vcf/trimmed_reads/${i}_R1_clean.fq.gz \
+$WORKING_FOLDER/data/processed/fastq_to_vcf/trimmed_reads/${i}_R2_clean.fq.gz \
+> $WORKING_FOLDER/data/processed/fastq_to_vcf/sams/${i}.sam
 
 #--------------------------------------------------------------------------------
 
 # Extract sam summary stats
 samtools flagstat --threads $CPU \
-$WORKING_FOLDER/fastq_to_vcf/sams/${i}.sam \
-> $WORKING_FOLDER/fastq_to_vcf/mapping_stats/${i}.flagstats_raw.sam.txt
+$WORKING_FOLDER/data/processed/fastq_to_vcf/sams/${i}.sam \
+> $WORKING_FOLDER/data/processed/fastq_to_vcf/mapping_stats/${i}.flagstats_raw.sam.txt
 # Take a look at the flagstat outputs to check for inconsistencies.
 
 #--------------------------------------------------------------------------------
 
 # Build bam files
 samtools view -b -q $QUAL --threads $CPU  \
-$WORKING_FOLDER/fastq_to_vcf/sams/${i}.sam \
-> $WORKING_FOLDER/fastq_to_vcf/bams/${i}.bam
+$WORKING_FOLDER/data/processed/fastq_to_vcf/sams/${i}.sam \
+> $WORKING_FOLDER/data/processed/fastq_to_vcf/bams/${i}.bam
 
 #--------------------------------------------------------------------------------
 
@@ -165,6 +167,6 @@ $WORKING_FOLDER/fastq_to_vcf/sams/${i}.sam \
 
 # This part of the pipeline will notify the completion of run i. 
 
-echo ${i} "completed" >> $WORKING_FOLDER/fastq_to_vcf/logs/${PIPELINE}.completion.log
+echo ${i} "completed" >> $WORKING_FOLDER/data/processed/fastq_to_vcf/logs/${PIPELINE}.completion.log
 
 echo "pipeline completed" $(date)

@@ -34,6 +34,8 @@
 
 # This script will initiate a pipeline which will do some quality QC on the reads. 
 
+#--------------------------------------------------------------------------------
+
 # Load modules 
 module load gcc/13.3.0-xp3epyt
 module load fastqc/0.12.1-qxseug5
@@ -46,7 +48,7 @@ module load fastqc/0.12.1-qxseug5
 RAW_READS=/netfiles/pespenilab_share/Nucella/raw/Population_genomics/All_shortreads
 
 # WORKING_FOLDER is the core folder where this pipeline is being run.
-WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
 
 # Name of pipeline
 PIPELINE=fastqc
@@ -55,7 +57,7 @@ PIPELINE=fastqc
 
 # Read guide files
 # This is a file with the name all the samples to be processed. One sample name per line with all the info.
-GUIDE_FILE=$WORKING_FOLDER/fastq_to_vcf/guide_files/QC_reads.txt
+GUIDE_FILE=$WORKING_FOLDER/guide_files/QC_reads.txt
 
 #Example: -- the headers are just for descriptive purposes. The actual file has no headers.
 ##               Read            Population  Sample#  Lane#  Forward/Reverse
@@ -80,21 +82,21 @@ echo ${i}
 # This part of the script will check and generate, if necessary, all of the output folders used in the script
 
 # Move to working directory
-cd $WORKING_FOLDER/fastq_to_vcf
+cd $WORKING_FOLDER/data/processed/fastq_to_vcf
 
 # Generating new folder
 if [ -d "qc_reads" ]
 then echo "Working qc_reads folder exist"; echo "Let's move on"; date
-else echo "Working qc_reads folder doesnt exist. Let's fix that"; mkdir $WORKING_FOLDER/fastq_to_vcf/qc_reads; date
+else echo "Working qc_reads folder doesnt exist. Let's fix that"; mkdir $WORKING_FOLDER/data/processed/fastq_to_vcf/qc_reads; date
 fi
 
 # Change directory
-cd $WORKING_FOLDER/fastq_to_vcf/qc_reads
+cd $WORKING_FOLDER/data/processed/fastq_to_vcf/qc_reads
 
 # Generating new folders 
 if [ -d "fastqc" ]
 then echo "Working fastqc folder exist"; echo "Let's move on"; date
-else echo "Working fastqc folder doesnt exist. Let's fix that"; mkdir $WORKING_FOLDER/fastq_to_vcf/qc_reads/fastqc; date
+else echo "Working fastqc folder doesnt exist. Let's fix that"; mkdir $WORKING_FOLDER/data/processed/fastq_to_vcf/qc_reads/fastqc; date
 fi
 
 #--------------------------------------------------------------------------------
@@ -102,13 +104,13 @@ fi
 # Do QC on raw reads with fastqc
 
 # Move to working directory
-cd $WORKING_FOLDER
+cd $WORKING_FOLDER/data/processed
 
 echo -e $i "is now processing"; date
 
 # Lets do some QC on the reads
 fastqc $RAW_READS/${i} \
---outdir $WORKING_FOLDER/fastq_to_vcf/qc_reads/fastqc
+--outdir $WORKING_FOLDER/data/processed/fastq_to_vcf/qc_reads/fastqc
 
 #--------------------------------------------------------------------------------
 

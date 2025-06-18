@@ -162,6 +162,8 @@ These scripts will trim the raw reads, map them to the genome then call variants
 
 07_coverage.sh - Generate a summary report using qualimap that shows the coverage for each bam file.
 
+### 03 - Call Variants
+
 08_prep_bams.sh - This script will prep the bam files. More specifically, it will add read group information and index the final bam files. 
 
 09_make_chunks - Create guide file for array.

@@ -31,6 +31,8 @@
 
 # This script will calculate average coverage across the lane merged bams. 
 
+#--------------------------------------------------------------------------------
+
 # Load modules 
 qualimap=/netfiles/nunezlab/Shared_Resources/Software/qualimap_v2.2.1/qualimap
 
@@ -39,7 +41,7 @@ qualimap=/netfiles/nunezlab/Shared_Resources/Software/qualimap_v2.2.1/qualimap
 # Define important file locations
 
 # WORKING_FOLDER is the core folder where this pipeline is being run.
-WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
 
 #--------------------------------------------------------------------------------
 
@@ -64,13 +66,13 @@ GUIDE_FILE=$WORKING_FOLDER/fastq_to_vcf/guide_files/Qualimap_bam_list.txt
 # Generate Folders and files
 
 # Move to working directory
-cd $WORKING_FOLDER/fastq_to_vcf
+cd $WORKING_FOLDER/data/processed/fastq_to_vcf
 
 # This part of the script will check and generate, if necessary, all of the output folders used in the script
 
 if [ -d "bams_merged_qualimap_multi" ]
 then echo "Working bams_merged_qualimap_multi folder exist"; echo "Let's move on."; date
-else echo "Working bams_merged_qualimap_multi folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/fastq_to_vcf/bams_merged_qualimap_multi; date
+else echo "Working bams_merged_qualimap_multi folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/fastq_to_vcf/bams_merged_qualimap_multi; date
 fi
 
 #--------------------------------------------------------------------------------
@@ -78,5 +80,5 @@ fi
 # Assess quality of all bam files
 $qualimap multi-bamqc \
 -d $GUIDE_FILE \
--outdir $WORKING_FOLDER/fastq_to_vcf/bams_merged_qualimap_multi \
+-outdir $WORKING_FOLDER/data/processed/fastq_to_vcf/bams_merged_qualimap_multi \
 --java-mem-size=$JAVAMEM

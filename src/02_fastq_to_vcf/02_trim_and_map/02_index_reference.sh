@@ -30,7 +30,8 @@
 #--------------------------------------------------------------------------------
 
 # This script with index the reference genome.
-# Note: this step only needs to be done once
+
+#--------------------------------------------------------------------------------
 
 # Load modules 
 module load gcc/13.3.0-xp3epyt

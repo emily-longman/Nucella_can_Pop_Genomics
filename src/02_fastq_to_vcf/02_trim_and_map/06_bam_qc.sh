@@ -33,6 +33,8 @@
 
 # This script do qc on the final bams.
 
+#--------------------------------------------------------------------------------
+
 # Load modules  
 module load openjdk/1.8.0
 qualimap=/netfiles/nunezlab/Shared_Resources/Software/qualimap_v2.2.1/qualimap
@@ -42,7 +44,7 @@ qualimap=/netfiles/nunezlab/Shared_Resources/Software/qualimap_v2.2.1/qualimap
 # Define important file locations
 
 # WORKING_FOLDER is the core folder where this pipeline is being run.
-WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
 
 #--------------------------------------------------------------------------------
 
@@ -74,21 +76,21 @@ echo $i
 # Generate Folders and files
 
 # Move to working directory
-cd $WORKING_FOLDER/fastq_to_vcf
+cd $WORKING_FOLDER/data/processed/fastq_to_vcf
 
 # This part of the script will check and generate, if necessary, all of the output folders used in the script
 
 if [ -d "bams_merged_qualimap" ]
 then echo "Working bams_merged_qualimap folder exist"; echo "Let's move on."; date
-else echo "Working bams_merged_qualimap folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/fastq_to_vcf/bams_merged_qualimap; date
+else echo "Working bams_merged_qualimap folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/fastq_to_vcf/bams_merged_qualimap; date
 fi
 
 #--------------------------------------------------------------------------------
 
 # Assess quality of the final file
 $qualimap bamqc \
--bam $WORKING_FOLDER/fastq_to_vcf/bams_merged/${i}.lanes_merged.bam \
--outdir $WORKING_FOLDER/fastq_to_vcf/bams_merged_qualimap/Qualimap_LaneMerged_${i} \
+-bam $WORKING_FOLDER/data/processed/fastq_to_vcf/bams_merged/${i}.lanes_merged.bam \
+-outdir $WORKING_FOLDER/data/processed/fastq_to_vcf/bams_merged_qualimap/Qualimap_LaneMerged_${i} \
 --java-mem-size=$JAVAMEM
 #--------------------------------------------------------------------------------
 

@@ -34,6 +34,8 @@
 # This script will clean the bam files. More specifically it will filter, sort, remove duplicates and index the bams. 
 # It will also conduct an intermediary QC step with Qualimap. 
 
+#--------------------------------------------------------------------------------
+
 # Load modules  
 module load gcc/13.3.0-xp3epyt
 module load samtools/1.19.2-pfmpoam
@@ -45,7 +47,7 @@ qualimap=/netfiles/nunezlab/Shared_Resources/Software/qualimap_v2.2.1/qualimap
 # Define important file locations
 
 # WORKING_FOLDER is the core folder where this pipeline is being run.
-WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics/data/processed
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
 
 # Name of pipeline
 PIPELINE=Clean_bams
@@ -62,7 +64,7 @@ JAVAMEM=18G # Java memory
 
 # Read guide files
 # This is a file with the name all the samples to be processed. One sample name per line with all the info.
-GUIDE_FILE=$WORKING_FOLDER/fastq_to_vcf/guide_files/Trim_map.txt
+GUIDE_FILE=$WORKING_FOLDER/guide_files/Trim_map.txt
 
 #Example: -- the headers are just for descriptive purposes. The actual file has no headers.
 ##             Read 1                            Read 2             Population   Sample#   Lane#    Paired_name    
@@ -83,13 +85,13 @@ echo ${i}
 # This part of the pipeline will generate log files to record warnings and completion status
 
 # Move to logs directory
-cd $WORKING_FOLDER/fastq_to_vcf/logs
+cd $WORKING_FOLDER/data/processed/fastq_to_vcf/logs
 
 echo $PIPELINE
 
 if [[ -e "${PIPELINE}.completion.log" ]]
 then echo "Completion log exist"; echo "Let's move on."; date
-else echo "Completion log doesnt exist. Let's fix that."; touch $WORKING_FOLDER/fastq_to_vcf/logs/${PIPELINE}.completion.log; date
+else echo "Completion log doesnt exist. Let's fix that."; touch $WORKING_FOLDER/data/processed/fastq_to_vcf/logs/${PIPELINE}.completion.log; date
 fi
 
 #--------------------------------------------------------------------------------
@@ -97,18 +99,18 @@ fi
 # Generate Folders and files
 
 # Move to working directory
-cd $WORKING_FOLDER/fastq_to_vcf
+cd $WORKING_FOLDER/data/processed/fastq_to_vcf
 
 # This part of the script will check and generate, if necessary, all of the output folders used in the script
 
 if [ -d "bams_clean" ]
 then echo "Working bams_clean folder exist"; echo "Let's move on."; date
-else echo "Working bams_clean folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/fastq_to_vcf/bams_clean; date
+else echo "Working bams_clean folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/fastq_to_vcf/bams_clean; date
 fi
 
 if [ -d "bams_qualimap" ]
 then echo "Working bams_qualimap folder exist"; echo "Let's move on."; date
-else echo "Working bams_qualimap folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/fastq_to_vcf/bams_qualimap; date
+else echo "Working bams_qualimap folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/fastq_to_vcf/bams_qualimap; date
 fi
 
 #--------------------------------------------------------------------------------
@@ -119,7 +121,7 @@ fi
 # Take a look at the qualimap and the flagstat outputs to check for inconsistencies.
 
 # Move to working directory
-cd $WORKING_FOLDER/fastq_to_vcf
+cd $WORKING_FOLDER/data/processed/fastq_to_vcf
 
 # Filter merged bam files with samtools view and add flags
 samtools view \
@@ -127,8 +129,8 @@ samtools view \
 -q $QUAL \
 -f 0x0002 -F 0x0004 -F 0x0008 \
 --threads $CPU  \
-$WORKING_FOLDER/fastq_to_vcf/bams/${i}.bam \
-> $WORKING_FOLDER/fastq_to_vcf/bams_clean/${i}.bam
+$WORKING_FOLDER/data/processed/fastq_to_vcf/bams/${i}.bam \
+> $WORKING_FOLDER/data/processed/fastq_to_vcf/bams_clean/${i}.bam
 # -q = Skip alignments with MAPQ smaller than $QUAL (40)
 # 0x0002 = read mapped in proper pair (0x2)*
 # 0x0004 = read unmapped (0x4)
@@ -137,21 +139,21 @@ $WORKING_FOLDER/fastq_to_vcf/bams/${i}.bam \
 # Sort with picard
 # Once a file has been sorted, "srt" suffix is added
 java -Xmx$JAVAMEM -jar $PICARD SortSam \
-I=$WORKING_FOLDER/fastq_to_vcf/bams_clean/${i}.bam \
-O=$WORKING_FOLDER/fastq_to_vcf/bams_clean/${i}.srt.bam \
+I=$WORKING_FOLDER/data/processed/fastq_to_vcf/bams_clean/${i}.bam \
+O=$WORKING_FOLDER/data/processed/fastq_to_vcf/bams_clean/${i}.srt.bam \
 SO=coordinate \
 VALIDATION_STRINGENCY=SILENT
 
 # Remove duplicates with picard
 # Once a file has duplicates removed, "rmdp" suffix is added
 java -Xmx$JAVAMEM -jar $PICARD MarkDuplicates \
-I=$WORKING_FOLDER/fastq_to_vcf/bams_clean/${i}.srt.bam \
-O=$WORKING_FOLDER/fastq_to_vcf/bams_clean/${i}.srt.rmdp.bam \
-M=$WORKING_FOLDER/fastq_to_vcf/mapping_stats/${i}.dupstat.txt \
+I=$WORKING_FOLDER/data/processed/fastq_to_vcf/bams_clean/${i}.srt.bam \
+O=$WORKING_FOLDER/data/processed/fastq_to_vcf/bams_clean/${i}.srt.rmdp.bam \
+M=$WORKING_FOLDER/data/processed/fastq_to_vcf/mapping_stats/${i}.dupstat.txt \
 VALIDATION_STRINGENCY=SILENT REMOVE_DUPLICATES=true
 
 # Index with samtools
-samtools index $WORKING_FOLDER/fastq_to_vcf/bams_clean/${i}.srt.rmdp.bam
+samtools index $WORKING_FOLDER/data/processed/fastq_to_vcf/bams_clean/${i}.srt.rmdp.bam
 
 #--------------------------------------------------------------------------------
 
@@ -159,8 +161,8 @@ samtools index $WORKING_FOLDER/fastq_to_vcf/bams_clean/${i}.srt.rmdp.bam
 
 # Lets do QC on the bam file
 $qualimap bamqc \
--bam $WORKING_FOLDER/fastq_to_vcf/bams_clean/${i}.srt.rmdp.bam \
--outdir $WORKING_FOLDER/fastq_to_vcf/bams_qualimap/Qualimap_${i} \
+-bam $WORKING_FOLDER/data/processed/fastq_to_vcf/bams_clean/${i}.srt.rmdp.bam \
+-outdir $WORKING_FOLDER/data/processed/fastq_to_vcf/bams_qualimap/Qualimap_${i} \
 --java-mem-size=$JAVAMEM
 
 #--------------------------------------------------------------------------------
@@ -168,8 +170,8 @@ $qualimap bamqc \
 # Housekeeping
 
 # Clean intermediate files
-rm $WORKING_FOLDER/fastq_to_vcf/bams_clean/${i}.bam
-rm $WORKING_FOLDER/fastq_to_vcf/bams_clean/${i}.srt.bam
+rm $WORKING_FOLDER/data/processedfastq_to_vcf/bams_clean/${i}.bam
+rm $WORKING_FOLDER/data/processed/fastq_to_vcf/bams_clean/${i}.srt.bam
 
 #--------------------------------------------------------------------------------
 
@@ -177,6 +179,6 @@ rm $WORKING_FOLDER/fastq_to_vcf/bams_clean/${i}.srt.bam
 
 # This part of the pipeline will notify the completion of run i. 
 
-echo ${i} " completed" >> $WORKING_FOLDER/fastq_to_vcf/logs/${PIPELINE}.completion.log
+echo ${i} " completed" >> $WORKING_FOLDER/data/processed/fastq_to_vcf/logs/${PIPELINE}.completion.log
 
 echo "pipeline completed" $(date)
