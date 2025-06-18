@@ -1,4 +1,4 @@
-# Calculate Fst statistics and gnerate PCA of all SNPs
+# Calculate Fst statistics and generate PCA of all SNPs
 
 # Clear memory
 rm(list=ls()) 

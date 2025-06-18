@@ -134,21 +134,27 @@ These scripts will check the quality of the pool-seq raw reads.
 
 ## Part 3 - Population structure and genomic diversity
 
-01_site_map.R
-02_poolfstat.R
-03_IBD.R
-04_npstat
-- 01_create_guide_file
-- 02_npstat.sh
-- 03_npstat_merge.sh
-- 04_npstat.R
-05_baypass
+01_site_map.R - Generate site map. 
+
+02_poolfstat.R - Use poolfstat (https://cran.r-project.org/web/packages/poolfstat/index.html) to calculate Fst statistics and generate PCA of all SNPs. 
+
+03_baypass - Use BayPass (https://forge.inrae.fr/mathieu.gautier/baypass_public) to characterize population dmoegraphy by analyzing the omega matrix.
 - 01_format_baypass.R
 - 02_generate_omega.sh
 - 03_analyze_omega.R
 
+04_IBD.R - Test for isolation by distance (IBD). 
+
+05_npstat - Use npstat (https://github.com/lucaferretti/npstat) to calculate nucleotide diversity, Watterson's estimator, and Tajima's D for each *N. canaliculata* population on a sliding window.  
+- 01_create_guide_file
+- 02_npstat.sh
+- 03_npstat_merge.sh
+- 04_npstat.R
+
+
 ## Part 4 - Shell morphology
 
 01_geometric_morphometrics
+- 01_morphology.R
 
 02_baypass
