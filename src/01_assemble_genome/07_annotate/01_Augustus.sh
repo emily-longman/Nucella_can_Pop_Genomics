@@ -32,6 +32,7 @@
 #--------------------------------------------------------------------------------
 
 # Run Augustus (https://github.com/Gaius-Augustus/Augustus) using apptainer to annotate the genome.
+# NOTE: prior to running this step the genome was move to netfiles (i.e. long term storage).
 
 #--------------------------------------------------------------------------------
 
@@ -43,11 +44,11 @@ AUGUSTUS=/gpfs1/cont/augustus/augustus-3.5.0.sif
 
 # Define important file locations
 
-# WORKING_FOLDER is the core folder where this pipeline is being run.
-WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
+# NETFILES_FOLDER is the folder where the genome assembly is located.
+NETFILES_FOLDER=/netfiles/pespenilab_share/Nucella/processed/Base_Genome
 
 # This is the location of the reference genome.
-REFERENCE_FULL_ADDRESS=$WORKING_FOLDER/data/processed/genome_assembly/Crassostrea_softmask/N.canaliculata_assembly.fasta.softmasked.fa
+REFERENCE_FULL_ADDRESS=/netfiles/pespenilab_share/Nucella/processed/Base_Genome/Base_Genome_Oct2024/Crassostrea_softmask/N.canaliculata_assembly.fasta.softmasked.fa
 REFERENCE=N.canaliculata_assembly.fasta.softmasked.fa
 
 #--------------------------------------------------------------------------------
@@ -55,11 +56,18 @@ REFERENCE=N.canaliculata_assembly.fasta.softmasked.fa
 # Generate Folders and files
 
 # Change directory
-cd $WORKING_FOLDER/data/processed/genome_assembly
+cd $NETFILES_FOLDER
+
+if [ -d "annotation" ]
+then echo "Working annotation folder exist"; echo "Let's move on."; date
+else echo "Working annotation folder doesnt exist. Let's fix that."; mkdir $NETFILES_FOLDER/annotation; date
+fi
+
+cd $NETFILES_FOLDER/annotation
 
 if [ -d "Augustus" ]
 then echo "Working Augustus folder exist"; echo "Let's move on."; date
-else echo "Working Augustus folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/genome_assembly/Augustus; date
+else echo "Working Augustus folder doesnt exist. Let's fix that."; mkdir $NETFILES_FOLDER/annotation/Augustus; date
 fi
 
 #--------------------------------------------------------------------------------
@@ -72,14 +80,14 @@ PROJECT=N.canaliculata
 #--------------------------------------------------------------------------------
 
 # Change directory
-cd $WORKING_FOLDER/data/processed/genome_assembly/Augustus
+cd $NETFILES_FOLDER/annotation/Augustus
 
 # Move copy of Reference to Augustus directory
-cp $REFERENCE_FULL_ADDRESS $WORKING_FOLDER/data/processed/genome_assembly/Augustus
+cp $REFERENCE_FULL_ADDRESS $NETFILES_FOLDER/annotation/Augustus
 
 # Run Augustus on genome using apptainer
 apptainer run \
---home $WORKING_FOLDER/data/processed/genome_assembly/Augustus \
+--home $NETFILES_FOLDER/annotation/Augustus \
 $AUGUSTUS augustus \
 --strand=both \
 --gff3=on \

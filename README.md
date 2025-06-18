@@ -34,7 +34,7 @@ The files in this project are organized in the following structure. All subseque
 
 The *N. canaliculata* draft genome was based on DNA extracted from one adult female *N. canaliculata* collected in June 2022 from Bodega Marine Reserve, California, USA. We used a hybrid assembly approach to assemble the genome, utilizing the continuinty of the Oxford Nanopore Technologies (ONT) long reads and the quality of the AVITI short reads. In many of the steps, we generate multiple assemblies and vary some of the parameters to optimize the assembly. We determine the assembly quality and completeness using [Quast] (https://github.com/ablab/quast) and [BUSCO] (https://www.expasy.org/resources/busco). 
 
-#### 01 - Prepare the Raw Data 
+### 01 - Prepare the Raw Data 
 
 These scripts will format and filter the raw Oxford Nanopore Technologies (ONT) data and will trim the AVITI short reads. 
 
@@ -44,7 +44,7 @@ These scripts will format and filter the raw Oxford Nanopore Technologies (ONT) 
 
 03_trim_reads.sh - Clean the AVITI short reads using [fastp] (https://github.com/OpenGene/fastp).   
 
-#### 02 - DBG2OLC
+### 02 - DBG2OLC
 
 These scripts will use a hybrid assembly approach using DBG2OLC taking advantage of the continuity of the ONT reads and the quality of the AVITI short reads.
 
@@ -76,7 +76,7 @@ These scripts will use a hybrid assembly approach using DBG2OLC taking advantage
 
 - 08_BUSCO.sh - This script runs on BUSCO on an assembly.
 
-#### 03 - Scaffold with ntlink
+### 03 - Scaffold with ntlink
 
 These scripts will use [ntLink] (https://github.com/bcgsc/ntLink) to scaffold the hybrid assembly then assess the quality and completeness using Quast and BUSCO.
 
@@ -86,7 +86,7 @@ These scripts will use [ntLink] (https://github.com/bcgsc/ntLink) to scaffold th
 
 03_BUSCO.sh - This script runs on BUSCO on the best ntlink assembly.
 
-#### 04 - Polish with Pilon
+### 04 - Polish with Pilon
 
 These scripts will use [Pilon] (https://github.com/broadinstitute/pilon) to polish the genome 5 times with the AVITI reads. To be computationally efficient, the genome and bam files were broken into individual scaffolds and then polished individually using an array and loop structure. Each round, it will index the genome, map the short reads to the genome from the previous iteration, clean the bam files, generate a guide file with the scaffold names for the array, polish each scaffold, then concatenate the genome back together. The same 6 steps are peformed each round of polishing, thus they are only listed below once, rather than iterated 6 times.
 
@@ -104,7 +104,7 @@ These scripts will use [Pilon] (https://github.com/broadinstitute/pilon) to poli
 
 06_cat_scaffolds.sh - The polished scaffolds are concatenated together to create a final assembly.
 
-#### 05 - Finalize the Genome
+### 05 - Finalize the Genome
 
 These sets of scripts will rename the scaffolds so that they are shorter and more meaningful and then will run Quast and BUSCO on the final assembly.
 
@@ -120,31 +120,35 @@ These sets of scripts will rename the scaffolds so that they are shorter and mor
 
 05_BUSCO.sh - Run BUSCO on the final assembly.
 
-#### 06 - Mask Repeats
+### 06 - Mask Repeats
 
 01_repeat_softmask_C.gigas.sh - Use [RepeatMasker] (https://github.com/Dfam-consortium/RepeatMasker) to softmask the genome. 
 
-#### 07 - Annotate the Genome
+### 07 - Annotate the Genome
 
-01_Augustus.sh - Use [Augustus] (https://github.com/Gaius-Augustus/Augustus) to annotate the softmasked genome.
+Annotate the softmasked genome with Augustus and generate a SnpEff database. Note: prior to these steps, the genome was moved to netfiles (long term storage).
 
-02_snpeff.sh - 
+01_Augustus.sh - Use [Augustus] (https://github.com/Gaius-Augustus/Augustus) to annotate the softmasked genome (note model is trained on Drosophila melanogaster).
+
+02_snpeff.sh - Use [SnpEff] (https://pcingola.github.io/SnpEff/) to generate a SnpEff database that can be used to annotate subsequent VCF files.
 
 ## Part 2 - Fastq to VCF
 
-This set of scripts will take the Pool-seq raw reads, trim them then map them to the genome and then call variants. Note: The genome and accompanying annotation were moved to the long term file storage prior to running these scripts.
+This set of scripts will take the Pool-seq raw reads (PE150 on two lanes of NovaSeqX 25B), trim them, map them to the genome, and then call variants. Note: Prior to these steps the genome was moved to long term file storage (netfiles).
 
-### 01 - QC reads
+### 01 - QC Reads
 
 These scripts will check the quality of the pool-seq raw reads.
 
-01_fastqc.sh - Run the program fastQC to produce quality reports on each individual raw read.  
+01_fastqc.sh - Run the program [fastQC] (https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) to produce quality reports on each individual raw read.  
 
-02_multiqc.sh - Run the program multiQC on the fastQC outputs to produce one quality report for all raw reads.
+02_multiqc.sh - Run the program [multiQC] (https://seqera.io/multiqc/) on the fastQC outputs to produce one quality report for all raw reads.
 
 ### 02 - Trim and Map Reads
 
-01_trim_read.sh - Use the program fastp to trim adapters as well as trim the reads based on quality.
+These scripts will trim the raw reads, map them to the genome then call variants.
+
+01_trim_read.sh - Use the program [fastp] (https://github.com/OpenGene/fastp) to trim adapters as well as trim the reads based on quality.
 
 02_index_reference.sh - Index the masked reference genome using the program bwa mem2. 
 
@@ -174,9 +178,9 @@ These scripts will check the quality of the pool-seq raw reads.
 
 ## Part 3 - Population structure and genomic diversity
 
-01_site_map.R - Generate site map. 
+01_site_map.R - Generate site map for the 19 study sites.
 
-02_poolfstat.R - Use [poolfstat] (https://cran.r-project.org/web/packages/poolfstat/index.html) to calculate Fst statistics and generate PCA of all SNPs. 
+02_poolfstat.R - Use [poolfstat] (https://cran.r-project.org/web/packages/poolfstat/index.html) to filter the SNP list and calculate Fst statistics and generate PCA of all SNPs. 
 
 03_baypass - Use [BayPass] (https://forge.inrae.fr/mathieu.gautier/baypass_public) to characterize population dmoegraphy by analyzing the omega matrix.
 - 01_format_baypass.R

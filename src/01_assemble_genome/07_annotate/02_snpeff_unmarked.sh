@@ -29,9 +29,12 @@
 
 #--------------------------------------------------------------------------------
 
-# Generate SnpEff database
+# Generate SnpEff database.
+# NOTE: prior to running this step the genome was move to netfiles (i.e. long term storage).
 
-# Load software  
+#--------------------------------------------------------------------------------
+
+# Load modules  
 module load snpeff/5.2c
 
 #--------------------------------------------------------------------------------
