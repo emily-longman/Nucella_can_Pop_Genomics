@@ -2,9 +2,9 @@
 
 ## Project Summary
 
-Assembled the draft genome for the channeled dogwhelk, *Nucella canaliculata*, and analyzed the fine scale demography using pooled-sequencing of 19 populations distributed along ~1,500 km of the west coast of North America. Additionally, we performed geometric morphometrics of shell morphology to determine if spatial patterns of morphology are concordant with the phylogeographic patterns.
+We assembled the draft genome for the channeled dogwhelk, *Nucella canaliculata*, using both Oxford Nanopore Technologies (ONT) long reads and AVITI PE300 short reads, and analyzed the fine scale demography of the species using pooled-sequencing of 19 populations distributed along ~1,500 km of the west coast of North America. Additionally, we performed geometric morphometrics of shell morphology to determine if spatial patterns of morphology are concordant with the phylogeographic patterns.
 
-All sequencing was performed at DNA Technologies and Expression Analysis Core at the UC Davis Genome Center and the bioinformatics pipeline was completed on the Vermont Advanced Computing Center ([VACC](https://www.uvm.edu/vacc)).
+All sequencing was performed at [DNA Technologies and Expression Analysis Core] (https://dnatech.ucdavis.edu/) at the UC Davis Genome Center and the bioinformatics pipeline was completed on the Vermont Advanced Computing Center ([VACC](https://www.uvm.edu/vacc)).
 
 ### Research Questions
 
@@ -32,7 +32,7 @@ The files in this project are organized in the following structure. All subseque
 
 ## Part 1 - Assemble the Draft Genome
 
-The *N. canaliculata* draft genome was based on DNA extracted from one adult female *N. canaliculata* collected in June 2022 from Bodega Marine Reserve, California, USA.
+The *N. canaliculata* draft genome was based on DNA extracted from one adult female *N. canaliculata* collected in June 2022 from Bodega Marine Reserve, California, USA. We used a hybrid assembly approach to assemble the genome, utilizing the continuinty of the Oxford Nanopore Technologies (ONT) long reads and the quality of the AVITI short reads. In many of the steps, we generate multiple assemblies and vary some of the parameters to optimize the assembly. We determine the assembly quality and completeness using [Quast] (https://github.com/ablab/quast) and [BUSCO] (https://www.expasy.org/resources/busco). 
 
 #### 01 - Prepare the Raw Data 
 
@@ -40,34 +40,35 @@ These scripts will format and filter the raw Oxford Nanopore Technologies (ONT) 
 
 01_cat_reads.sh - Concatenate Oxford Nanopore Technologies (ONT) reads from 5 PromethION flow cells.   
 
-02_filter_ONT_array.sh - Use the program Filtong (https://github.com/rrwick/Filtlong) to filter the ONT data by length. 
+02_filter_ONT_array.sh - Use the program [FiltLong] (https://github.com/rrwick/Filtlong) to filter the ONT data by length. 
 
-03_trim_reads.sh - Clean the AVITI short reads using fastp (https://github.com/OpenGene/fastp).   
+03_trim_reads.sh - Clean the AVITI short reads using [fastp] (https://github.com/OpenGene/fastp).   
 
 #### 02 - DBG2OLC
 
 These scripts will use a hybrid assembly approach using DBG2OLC taking advantage of the continuity of the ONT reads and the quality of the AVITI short reads.
 
-01_sparseassembler_array.sh - This script will use the AVITI short reads to assemble contigs with SparseAssembler (https://github.com/yechengxi/SparseAssembler).
+01_sparseassembler_array.sh - Use the AVITI short reads to assemble contigs with [SparseAssembler] (https://github.com/yechengxi/SparseAssembler).
 
-02_DBG2OLC_array.sh - This script will use the best assembly from SparseAssembler as well as the 2000 filt ONT data as the inputs to DBG20LC (https://github.com/yechengxi/DBG2OLC).
+02_DBG2OLC_array.sh - Use the best assembly from SparseAssembler as well as the 2000 filt ONT data as the inputs to [DBG20LC] (https://github.com/yechengxi/DBG2OLC).
 
-03_consensus: These steps will perform the consensus steps of DBG2OLC. In order to run effectively on the VACC, it will perform these steps on partitions/chunks of the assembly. 
-- 01_convert_ONT_FQtoFA.sh - This script will convert the filtered ONT data from fastq to fasta format. 
+03_consensus: These steps will perform the consensus steps of DBG2OLC. In order to run effectively on the VACC, it will perform these steps on partitions/chunks of the assembly. These steps also require additional consensus scripts that are in the folder "consensus_scripts" that is within 03_consensus. These scripts are modified versions of split_and_run_sparc, split_reads_by_backbone.py and SeqIO.py which are provided by DBG2OLC.
 
-- 02_cat_contigs_ONT.sh - This script will concatenate the SparseAssembler contigs and filtered ONT reads.
+- 01_convert_ONT_FQtoFA.sh - Convert the filtered ONT data from fastq to fasta format. 
+
+- 02_cat_contigs_ONT.sh - Concatenate the SparseAssembler contigs and filtered ONT reads.
 
 - 03_partition_guide_file.R - Create partition file which will be used in the next step to break the contigs file and backbone into 50 contig chunks. 
 
-- 04_partition_genome.sh - This script will partition the contigs file and backbone into 50 contig chunks.
+- 04_partition_genome.sh - Partition the contigs file and backbone into 50 contig chunks.
 
-- 05_guide_file_pt1 - (interactive session) This script will create a file with the backbone names.
+- 05_guide_file_pt1 - (interactive session) Create a file with the backbone names.
 
 - 05_guide_file_pt2.sh - Create array guide file for consensus step. 
 
-- 06_run_consensus_caller.pt.sh - This script will run the first step in the consensus script. Specifically, it will run the consensus script "split_and_run_sparc.pt1".
+- 06_run_consensus_caller.pt.sh - Run the first step in the consensus script (i.e., run the accompanying script "split_and_run_sparc.pt1")
 
-- 06_run_consensus_caller.pt2_array.sh - This script will run the second step in the consensus script. Specifically it will run the consensus script "split_and_run_sparc.pt2_array.sh".
+- 06_run_consensus_caller.pt2_array.sh - Run the second step in the consensus script (i.e., run the accompanying script "split_and_run_sparc.pt2_array.sh")
 
 - 06_run_consensus_caller.pt3.sh - This script will run the third step in the consensus script.
 
@@ -77,9 +78,9 @@ These scripts will use a hybrid assembly approach using DBG2OLC taking advantage
 
 #### 03 - Scaffold with ntlink
 
-These scripts will use a ntLink (https://github.com/bcgsc/ntLink) to scaffold the hybrid assembly then assess the quality and completeness using Quast and BUSCO.
+These scripts will use [ntLink] (https://github.com/bcgsc/ntLink) to scaffold the hybrid assembly then assess the quality and completeness using Quast and BUSCO.
 
-01_ntlink_array.sh - This script will use ntLink (https://github.com/bcgsc/ntLink) to scaffold the assembly
+01_ntlink_array.sh - This script will use [ntLink] (https://github.com/bcgsc/ntLink) to scaffold the assembly
 
 02_Quast_array.sh - This script will run Quast on the assembly generated from ntlink in the previous script.
 
@@ -87,7 +88,7 @@ These scripts will use a ntLink (https://github.com/bcgsc/ntLink) to scaffold th
 
 #### 04 - Polish with Pilon
 
-These scripts will use Pilon [v1.24] (https://github.com/broadinstitute/pilon) to polish the genome 5 times with the AVITI reads. To be computationally efficient, the genome and bam files were broken into individual scaffolds and then polished individually using an array and loop structure. Each round, it will index the genome, map the short reads to the genome from the previous iteration, clean the bam files, generate a guide file with the scaffold names for the array, polish each scaffold, then concatenate the genome back together. The same 6 steps are peformed each round of polishing, thus they are only listed below once, rather than iterated 6 times.
+These scripts will use [Pilon] (https://github.com/broadinstitute/pilon) to polish the genome 5 times with the AVITI reads. To be computationally efficient, the genome and bam files were broken into individual scaffolds and then polished individually using an array and loop structure. Each round, it will index the genome, map the short reads to the genome from the previous iteration, clean the bam files, generate a guide file with the scaffold names for the array, polish each scaffold, then concatenate the genome back together. The same 6 steps are peformed each round of polishing, thus they are only listed below once, rather than iterated 6 times.
 
 01_index_genome.sh - Index the genome that was assembled by ntlink or the previous round of polishing.
 
@@ -121,16 +122,19 @@ These sets of scripts will rename the scaffolds so that they are shorter and mor
 
 #### 06 - Mask Repeats
 
-01_repeat_softmask_C.gigas.sh - Use repeat masker (https://github.com/Dfam-consortium/RepeatMasker) to softmask the genome. 
+01_repeat_softmask_C.gigas.sh - Use [RepeatMasker] (https://github.com/Dfam-consortium/RepeatMasker) to softmask the genome. 
 
 #### 07 - Annotate the Genome
 
+01_Augustus.sh - Use [Augustus] (https://github.com/Gaius-Augustus/Augustus) to annotate the softmasked genome.
+
+02_snpeff.sh - 
 
 ## Part 2 - Fastq to VCF
 
-This set of scripts will take the Pool-seq raw reads, trim them then map them to the genome and then call variants. 
+This set of scripts will take the Pool-seq raw reads, trim them then map them to the genome and then call variants. Note: The genome and accompanying annotation were moved to the long term file storage prior to running these scripts.
 
-#### 01 - QC reads
+### 01 - QC reads
 
 These scripts will check the quality of the pool-seq raw reads.
 
@@ -138,7 +142,7 @@ These scripts will check the quality of the pool-seq raw reads.
 
 02_multiqc.sh - Run the program multiQC on the fastQC outputs to produce one quality report for all raw reads.
 
-#### 02 - Trim and Map Reads
+### 02 - Trim and Map Reads
 
 01_trim_read.sh - Use the program fastp to trim adapters as well as trim the reads based on quality.
 
@@ -158,7 +162,7 @@ These scripts will check the quality of the pool-seq raw reads.
 
 09_make_chunks - Create guide file for array.
 
-10_variant_calling.sh - This script will use freebayes (https://github.com/freebayes/freebayes) to call variants.
+10_variant_calling.sh - This script will use [freebayes] (https://github.com/freebayes/freebayes) to call variants.
 
 11_cat_vcf.sh - This script will cat together the chunked vcf files generated in the previous step from freebayes.
 
@@ -172,16 +176,16 @@ These scripts will check the quality of the pool-seq raw reads.
 
 01_site_map.R - Generate site map. 
 
-02_poolfstat.R - Use poolfstat (https://cran.r-project.org/web/packages/poolfstat/index.html) to calculate Fst statistics and generate PCA of all SNPs. 
+02_poolfstat.R - Use [poolfstat] (https://cran.r-project.org/web/packages/poolfstat/index.html) to calculate Fst statistics and generate PCA of all SNPs. 
 
-03_baypass - Use BayPass (https://forge.inrae.fr/mathieu.gautier/baypass_public) to characterize population dmoegraphy by analyzing the omega matrix.
+03_baypass - Use [BayPass] (https://forge.inrae.fr/mathieu.gautier/baypass_public) to characterize population dmoegraphy by analyzing the omega matrix.
 - 01_format_baypass.R
 - 02_generate_omega.sh
 - 03_analyze_omega.R
 
 04_IBD.R - Test for isolation by distance (IBD). 
 
-05_npstat - Use npstat (https://github.com/lucaferretti/npstat) to calculate nucleotide diversity, Watterson's estimator, and Tajima's D for each *N. canaliculata* population on a sliding window.  
+05_npstat - Use [npstat] (https://github.com/lucaferretti/npstat) to calculate nucleotide diversity, Watterson's estimator, and Tajima's D for each *N. canaliculata* population on a sliding window.  
 - 01_create_guide_file
 - 02_npstat.sh
 - 03_npstat_merge.sh

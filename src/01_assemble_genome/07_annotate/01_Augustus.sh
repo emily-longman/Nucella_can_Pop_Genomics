@@ -5,7 +5,7 @@
 # Request cluster resources ----------------------------------------------------
 
 # Name this job
-#SBATCH --job-name=Augustus_hardmask
+#SBATCH --job-name=Augustus_softmask
 
 # Specify partition
 #SBATCH --partition=week
@@ -31,9 +31,11 @@
 
 #--------------------------------------------------------------------------------
 
-# Run Augustus on apptainer.
+# Run Augustus (https://github.com/Gaius-Augustus/Augustus) using apptainer to annotate the genome.
 
-#Load modules
+#--------------------------------------------------------------------------------
+
+# Load modules
 module load apptainer/1.3.4
 AUGUSTUS=/gpfs1/cont/augustus/augustus-3.5.0.sif 
 
@@ -41,23 +43,23 @@ AUGUSTUS=/gpfs1/cont/augustus/augustus-3.5.0.sif
 
 # Define important file locations
 
-# HOME is core folder where this pipeline is being run.
-HOME=/netfiles/pespenilab_share/Nucella/processed/Base_Genome/annotation
+# WORKING_FOLDER is the core folder where this pipeline is being run.
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
 
 # This is the location of the reference genome.
-REFERENCE_FULL_ADDRESS=/netfiles/pespenilab_share/Nucella/processed/Base_Genome/Base_Genome_Oct2024/Crassostrea_mask/N.canaliculata_assembly.fasta.masked
-REFERENCE=N.canaliculata_assembly.fasta.masked
+REFERENCE_FULL_ADDRESS=$WORKING_FOLDER/data/processed/genome_assembly/Crassostrea_softmask/N.canaliculata_assembly.fasta.softmasked.fa
+REFERENCE=N.canaliculata_assembly.fasta.softmasked.fa
 
 #--------------------------------------------------------------------------------
 
 # Generate Folders and files
 
 # Change directory
-cd $HOME
+cd $WORKING_FOLDER/data/processed/genome_assembly
 
 if [ -d "Augustus" ]
 then echo "Working Augustus folder exist"; echo "Let's move on."; date
-else echo "Working Augustus folder doesnt exist. Let's fix that."; mkdir $HOME/Augustus; date
+else echo "Working Augustus folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/genome_assembly/Augustus; date
 fi
 
 #--------------------------------------------------------------------------------
@@ -70,17 +72,17 @@ PROJECT=N.canaliculata
 #--------------------------------------------------------------------------------
 
 # Change directory
-cd $HOME/Augustus
+cd $WORKING_FOLDER/data/processed/genome_assembly/Augustus
 
 # Move copy of Reference to Augustus directory
-cp $REFERENCE_FULL_ADDRESS $HOME/Augustus
+cp $REFERENCE_FULL_ADDRESS $WORKING_FOLDER/data/processed/genome_assembly/Augustus
 
 # Run Augustus on genome using apptainer
 apptainer run \
---home $HOME/Augustus \
+--home $WORKING_FOLDER/data/processed/genome_assembly/Augustus \
 $AUGUSTUS augustus \
 --strand=both \
 --gff3=on \
 --species=${SPECIES} \
 ${REFERENCE} > \
-${PROJECT}.genepred.hardmask.gff3
+${PROJECT}.genepred.softmask.gff3
