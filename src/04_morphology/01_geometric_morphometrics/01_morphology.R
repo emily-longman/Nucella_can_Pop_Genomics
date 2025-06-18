@@ -293,12 +293,21 @@ dev.off()
 
 # ================================================================================== #
 
-# Extract PC1 and PC2 population data for baypass
+# Extract data 
 
+# Extract and summarize PC1 and PC2 population data for baypass
 pop.data <- pc_scores_metadata %>% 
 group_by(Site.Code) %>% summarise(mean.pc1=mean(Comp1), sd.pc1=sd(Comp1), CV.pc1=sd(Comp1)/mean(Comp1), mean.pc2=mean(Comp2), sd.pc2=sd(Comp2), CV.pc2=sd(Comp2)/mean(Comp2))
 
+# Write table
 write.csv(pop.data, "data/processed/morphometrics/pc.morphology.csv")
+
+# Extract Csize
+gdf_Csize <- gdf$Csize
+pc_scores_metadata$Csize <- gdf_Csize
+
+# Write table
+write.csv(pc_scores_metadata, "data/processed/morphometrics/morphology_geomorph_data.csv")
 
 # ================================================================================== #
 
