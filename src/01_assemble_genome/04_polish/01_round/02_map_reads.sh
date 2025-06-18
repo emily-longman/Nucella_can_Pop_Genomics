@@ -8,14 +8,14 @@
 #SBATCH --job-name=Map_reads
 
 # Specify partition
-#SBATCH --partition=week
+#SBATCH --partition=general
 
 # Request nodes
 #SBATCH --nodes=1 
 #SBATCH --ntasks-per-node=1
 
 # Reserve walltime -- hh:mm:ss 
-#SBATCH --time=7-00:00:00 
+#SBATCH --time=30:00:00 
 
 # Request memory for the entire job -- you can request --mem OR --mem-per-cpu
 #SBATCH --mem=50G 

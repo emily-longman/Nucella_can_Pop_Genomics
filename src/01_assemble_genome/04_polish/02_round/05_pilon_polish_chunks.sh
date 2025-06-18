@@ -60,7 +60,7 @@ WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
 REFERENCE=$WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_1/polished_assembly.fasta
 
 # This is the location of the cleaned and indexed bams
-BAM=$WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_1/bams_clean/Ncan.srt.rmdp.bam
+BAM=$WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_2/bams_clean/Ncan.srt.rmdp.bam
 
 #--------------------------------------------------------------------------------
 

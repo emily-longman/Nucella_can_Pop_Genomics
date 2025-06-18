@@ -28,11 +28,11 @@ library(groupdata2)
 # ================================================================================== #
 
 # Read in data
-data <- fread("scaffold_names_1.txt", header = F)
+data <- fread("scaffold_names_3.txt", header = F)
 
 # Group the backbone names into 30 
 group(data, n=30, method = "greedy") -> guide_file_array
 
 # Write the table
-write.table(guide_file_array, "guide_file_array_1.txt", col.names = F, row.names = F, quote = F)
+write.table(guide_file_array, "guide_file_array_3.txt", col.names = F, row.names = F, quote = F)
 # Note guide_file_array has dimensions:  19014, 2 

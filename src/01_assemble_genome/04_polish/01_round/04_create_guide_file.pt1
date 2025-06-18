@@ -20,7 +20,7 @@ REFERENCE=$WORKING_FOLDER/data/processed/genome_assembly/ntlink/final/final_asse
 cd $WORKING_FOLDER/data/processed/genome_assembly/pilon
 
 # Get all of the contig names 
-grep ">" $REFERENCE > scaffold_names.txt
+grep ">" $REFERENCE > scaffold_names_1.txt
 
 # Get rid of the ">"
-sed -i 's/>//g' scaffold_names.txt
+sed -i 's/>//g' scaffold_names_1.txt

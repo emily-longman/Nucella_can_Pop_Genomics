@@ -8,14 +8,14 @@
 #SBATCH --job-name=Map_reads_round_2
 
 # Specify partition
-#SBATCH --partition=week
+#SBATCH --partition=general
 
 # Request nodes
 #SBATCH --nodes=1 
 #SBATCH --ntasks-per-node=1
 
 # Reserve walltime -- hh:mm:ss 
-#SBATCH --time=7-00:00:00 
+#SBATCH --time=30:00:00 
 
 # Request memory for the entire job -- you can request --mem OR --mem-per-cpu
 #SBATCH --mem=50G 
@@ -58,15 +58,7 @@ QUAL=40 # Quality threshold for samtools
 
 #--------------------------------------------------------------------------------
 
-# Move to working directory
-cd $WORKING_FOLDER/data/processed/genome_assembly
-
-# This part of the script will check and generate, if necessary, all of the output folders used in the script
-
-if [ -d "pilon" ]
-then echo "Working pilon folder exist"; echo "Let's move on."; date
-else echo "Working pilon folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/genome_assembly/pilon; date
-fi
+# Generate Folders and files
 
 # Move to polish directory
 cd $WORKING_FOLDER/data/processed/genome_assembly/pilon
@@ -94,7 +86,6 @@ then echo "Working bams folder exist"; echo "Let's move on."; date
 else echo "Working bams folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_2/bams; date
 fi
 
-
 #--------------------------------------------------------------------------------
 
 # Map reads to a reference
@@ -114,7 +105,7 @@ echo "Begin mapping"
 # I will conduct the mapping with BWA-MEM 2	
 $bwa mem -M -t 16 $REFERENCE \
 $WORKING_FOLDER/data/processed/genome_assembly/trim_AVITI/NC3_R1_clean.fq.gz \
-$WORKING_FOLDER/data/processed/genome_assembly/trim_AVITI/NC3_R2_clean.fq.gz\
+$WORKING_FOLDER/data/processed/genome_assembly/trim_AVITI/NC3_R2_clean.fq.gz \
 > $WORKING_FOLDER/data/processed/genome_assembly/pilon/polished_genome_round_2/sams/Ncan.sam
 
 #--------------------------------------------------------------------------------

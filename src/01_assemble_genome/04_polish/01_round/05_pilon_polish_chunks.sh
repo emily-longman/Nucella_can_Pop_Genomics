@@ -77,7 +77,7 @@ fi
 #--------------------------------------------------------------------------------
 
 ## Import master partition file 
-guide_file=$WORKING_FOLDER/data/processed/genome_assembly/pilon/guide_file_array.txt
+guide_file=$WORKING_FOLDER/data/processed/genome_assembly/pilon/guide_file_array_1.txt
 
 #Example: -- the headers are just for descriptive purposes. The actual file has no headers. (dimensions: 2, 19014; 634 partitions)
 # Scaffold name       # Partition
