@@ -15,7 +15,7 @@ All sequencing was performed at [DNA Technologies and Expression Analysis Core](
 
 ## File Structure
 
-The files in this project are organized in the following structure. All files for arrays and metadata are in "guide_files". All subsequent directories will be generated therein.
+The files in this project are organized in the following structure. All files for arrays and metadata are in "guide_files". All subsequent directories will be generated therein. Raw pool-seq data for the population genomic analyses can be found under the SRA BioProject accession number PRJNA1276871.
  - data/
      - raw/
      - processed/
