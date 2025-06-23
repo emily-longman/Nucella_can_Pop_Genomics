@@ -1,4 +1,4 @@
-# Filter pooldata object for only the chromosome of interest
+# Filter pooldata object for only the SNPs within the protein of interest
 
 # Clear memory
 rm(list=ls()) 
