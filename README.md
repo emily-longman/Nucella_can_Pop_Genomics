@@ -8,7 +8,7 @@ All sequencing was performed at [DNA Technologies and Expression Analysis Core](
 
 ### Research Questions
 
-1) How is genetic diversity in *N. canaliculata* spatially structured along ~1,500km of the west coast of North America? 
+1) How is genetic diversity in *N. canaliculata* spatially structured along ~1,500 km of the west coast of North America? 
 2) Do patterns of genetic diversity appear to be structured more strongly by contemporary or historical processes? 
 3) Does variation in shell morphology suggest a similar biogeographic pattern of divergence as the genomic data? 
 4) Lastly, what are the molecular bases for intraspecific variation in shell morphology? 
