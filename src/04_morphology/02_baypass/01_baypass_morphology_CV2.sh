@@ -78,7 +78,7 @@ $baypass -npop 19 \
 -gfile $WORKING_FOLDER/data/processed/outlier_analyses/baypass/genobaypass \
 -poolsizefile $WORKING_FOLDER/data/processed/outlier_analyses/baypass/poolsize \
 -omegafile $WORKING_FOLDER/data/processed/outlier_analyses/baypass/omega/NC_baypass_mat_omega.out \
--efile $WORKING_FOLDER/data/processed/morphometrics/guide_files/Baypass_morphology_CV_2.txt \
+-efile $WORKING_FOLDER/guide_files/Baypass_morphology_CV_2.txt \
 -d0yij 4 \
 -outprefix NC_baypass_morphology_CV_2 \
 -nthreads 20
