@@ -213,3 +213,4 @@ Intraspecific variation in shell morphology was analyzed using landmark analysis
 - 03_snpeff_vcf.sh - Annotate VCF file. 
 - 04_annotate_SNPs.R - Annoate BayPass SNP lists.
 - 05_filter.R - Filter the pooldata object for only the SNPs within the protein of interest.
+- 06_top_SNPs.R - Analyses of the allele frequencies of the candidate loci.
