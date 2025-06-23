@@ -199,7 +199,7 @@ These scripts will trim the raw reads using [fastp](https://github.com/OpenGene/
 - 03_npstat_merge.sh - Merge the npstat diversity statistics txt files together.
 - 04_npstat.R - Analyze and graph the diversity statistics.
 
-## Part 4 - Shell morphology
+## Part 4 - Analyses of shell morphology
 
 Intraspecific variation in shell morphology was analyzed using landmark analysis based on photographs of the ventral surface of the dogwhelks. 15 landmarks were placed on the images using [tpsUtil](https://www.sbmorphometrics.org/soft-utility.html) and [tpsDig](https://www.sbmorphometrics.org/soft-dataacq.html). Some of the subsequent analyses were performed using the program [MorphoJ](https://morphometrics.uk/MorphoJ_page.html). All remaining geometric morphometric analyses and graphing were performed below in R. Additionally, we used BayPass to identify outliers associated with variation in shell morphology.
 
