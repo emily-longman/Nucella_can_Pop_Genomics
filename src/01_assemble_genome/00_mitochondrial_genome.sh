@@ -57,7 +57,7 @@ genome=/gpfs3/scratch/elongman/NCBI_genome/N.canaliculata_assembly.fasta
 #--------------------------------------------------------------------------------
 
 # Change directory
-cd $WORKING_FOLDER/data/processed/mitochondrial_genome
+cd $WORKING_FOLDER/data/processed/mitochondrial_genome_2
 
 # Align N. lapillus mitogenome to draft N. canaliculata genome
 exonerate --model est2genome $mitogenome $genome
