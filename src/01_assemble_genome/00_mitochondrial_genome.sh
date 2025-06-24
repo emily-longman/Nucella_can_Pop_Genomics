@@ -37,9 +37,9 @@
 # Call package (installed with conda)
 module load python3.11-anaconda/2024.02-1
 source ${ANACONDA_ROOT}/etc/profile.d/conda.sh
-conda create --name exonerate #If you haven't already done so, create and name the environment
+#conda create --name exonerate #If you haven't already done so, create and name the environment
 source activate exonerate #activate the environment
-conda install -c bioconda exonerate # If you haven't already done so, install the program
+#conda install -c bioconda exonerate # If you haven't already done so, install the program
 
 #--------------------------------------------------------------------------------
 
