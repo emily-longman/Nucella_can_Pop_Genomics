@@ -1,0 +1,4 @@
+Parent1	Parent2	Derived
+PB	VD	SBR
+PSN	PSG	PL
+STR	SH	PGP

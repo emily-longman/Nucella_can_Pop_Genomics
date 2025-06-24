@@ -1,0 +1,138 @@
+// Keywords: range expansion, colonization, population spread, migration
+
+initialize() {
+	defineConstant("K", 1000);   // carrying capacity per subpop
+	defineConstant("N", 7);     // number of subpopulations
+	defineConstant("M", 0.005);   // migration probability
+	defineConstant("R", 1.04);   // mean reproduction (as first parent)
+	defineConstant("Z", 99999);
+	
+	initializeSLiMModelType("nonWF");
+	initializeMutationType("m1", 0.5, "f", 0.0);
+	m1.convertToSubstitution = T;
+	initializeGenomicElementType("g1", m1, 1.0);
+	initializeGenomicElement(g1, 0, Z);
+	initializeMutationRate(1e-6);
+	initializeRecombinationRate(1e-8);
+
+//ancestry tracking
+	initializeMutationType("m2", 0.5, "f", 0.0);   // South marker
+	initializeMutationType("m3", 0.5, "f", 0.0);   // North marker
+	c(m2,m3).color = c("red","blue");
+	
+	defineConstant("I", 10000);       // interval between markers
+
+}
+reproduction() {
+	// individuals reproduce locally, without dispersal
+	litterSize = rpois(1, R);
+	
+	for (i in seqLen(litterSize))
+	{
+		// generate each offspring with an independently drawn mate
+		mate = subpop.sampleIndividuals(1, exclude=individual);
+		if (mate.size())
+			subpop.addCrossed(individual, mate);
+	}
+}
+
+/// timed events
+1 early() {
+	// create an initial population of 100 individuals, the rest empty
+	for (i in seqLen(N))
+		sim.addSubpop(i, (i == 0) ? 100 else 0);
+}
+
+4001 late() {
+inds = sim.subpopulations[1:5].individuals;
+sim.killIndividuals(inds);
+// set up markers 
+	positions = seq(from=0, to=Z, by=I);
+	defineConstant("ANC", size(positions));
+	catn("Modeling " + ANC + " ancestry markers.");
+
+	for (subpop in c(p0,p6),
+	     muttype in c(m2,m3),
+	     symbol in c("ANC1","ANC2"))
+	{
+		genomes = subpop.haplosomes;
+		muts = genomes.addNewDrawnMutation(muttype, positions);
+		defineConstant(symbol, muts);
+	}
+
+}
+
+
+6500 late() { 
+
+//root = "/Users/jcnunez/Library/CloudStorage/OneDrive-UniversityofVermont/Desktop/";
+//repId = 1;
+
+	het0= calcHeterozygosity(p0.haplosomes);
+	het1= calcHeterozygosity(p1.haplosomes);
+	het2= calcHeterozygosity(p2.haplosomes);
+	het3= calcHeterozygosity(p3.haplosomes);
+	het4= calcHeterozygosity(p4.haplosomes);
+	het5= calcHeterozygosity(p5.haplosomes);
+	het6= calcHeterozygosity(p6.haplosomes);
+	Mut4Freq = mean(sim.mutationFrequencies(p3,sim.mutationsOfType(m2)));
+	reporter =  het0 + "\t" + het1 + "\t" + het2 + "\t" + het3 + "\t" + + het4 + "\t" + het5 + "\t" + het6 + "\t" + Mut4Freq;
+	writeFile(
+	paste(root, "/", "Glacialsim.",repId,".refugia.", sim.cycle,".txt", sep=""),
+	reporter,
+	append=F);
+
+
+sim.outputFixedMutations(); 
+} // close 7000
+
+///common events
+early() {
+	inds = sim.subpopulations.individuals;
+	
+	// non-overlapping generations; kill off the parental generation
+	ages = inds.age;
+	inds[ages > 0].fitnessScaling = 0.0;
+	inds = inds[ages == 0];
+	
+	// pre-plan migration of individuals to adjacent subpops
+	numMigrants = rbinom(1, inds.size(), M);
+	
+	if(sim.cycle <= 4000 | sim.cycle > 6000 ){
+	if (numMigrants)
+	{
+		migrants = sample(inds, numMigrants);
+		currentSubpopID = migrants.subpopulation.id;
+		displacement = -1 + rbinom(migrants.size(), 1, 0.5) * 2; // -1 or +1
+		newSubpopID = currentSubpopID + displacement;
+		actuallyMoving = (newSubpopID >= 0) & (newSubpopID < N);
+		
+		if (sum(actuallyMoving))
+		{
+			migrants = migrants[actuallyMoving];
+			newSubpopID = newSubpopID[actuallyMoving];
+			
+			// do the pre-planned moves into each subpop in bulk
+			for (subpop in sim.subpopulations)
+				subpop.takeMigrants(migrants[newSubpopID == subpop.id]);
+		}
+	}
+	}//(sim.cycle <= 200 ){
+
+	//if(sim.cycle > 4000 & sim.cycle < 6000 ){
+	//fst = calcFST(p0.genomes, p6.genomes);
+	//reporter = "fst=" + fst;
+	//catn(reporter);
+	//} // sim > 4000
+
+	// post-migration density-dependent fitness for each subpop
+	for (subpop in sim.subpopulations){
+		juvenileCount = sum(subpop.individuals.age == 0);
+
+		if (subpop == sim.subpopulations[6] & sim.cycle > 4000 & sim.cycle < 6000) subpop.fitnessScaling = (K * 0.2) / juvenileCount;
+		else subpop.fitnessScaling = K / juvenileCount;
+	}//for
+	
+}
+
+
