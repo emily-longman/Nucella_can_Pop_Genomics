@@ -203,6 +203,11 @@ These scripts will identify variants for the 19 bam files using [freebayes](http
 - 03_npstat_merge.sh - Merge the npstat diversity statistics txt files together.
 - 04_npstat.R - Analyze and graph the diversity statistics.
 
+06_simulations_and_inference - Perform coalescent demographic inference with [moments](https://github.com/grahamgower/moments) and genetic simulations with [SLiM](https://github.com/MesserLab/SLiM). (Note: these analyses were performed by JCBN)
+- 01_moments - Compare the fit of the pool-seq data to two post-glacial demographic models using [moments](https://github.com/grahamgower/moments). 
+    - 01
+- 02_SLIM_sims - Perform genetic simulations using [SLiM](https://github.com/MesserLab/SLiM) to contextualize the demographic models.
+
 ## Part 4 - Analyses of shell morphology
 
 Intraspecific variation in shell morphology was analyzed using landmark analysis based on photographs of the ventral surface of the dogwhelks. 15 landmarks were placed on the images using [tpsUtil](https://www.sbmorphometrics.org/soft-utility.html) and [tpsDig](https://www.sbmorphometrics.org/soft-dataacq.html). Some of the subsequent analyses were performed using the program [MorphoJ](https://morphometrics.uk/MorphoJ_page.html). All remaining geometric morphometric analyses and graphing were performed below in R. Additionally, we used [BayPass](https://forge.inrae.fr/mathieu.gautier/baypass_public) to identify outlier SNPs associated with variation in shell morphology.
