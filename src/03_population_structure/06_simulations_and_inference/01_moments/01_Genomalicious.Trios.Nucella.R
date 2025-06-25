@@ -120,7 +120,7 @@ L=dim(dadi)[1]
 ####
 ### Write dadi file
 
-fn <- paste("dadi_objects_trios/",
+fn <- paste("data/processed/pop_structure/dadi_objects_trios/dadi_objects_trios/",
             sfs_method, ".",
             pairs[i,]$Parent1, ".",
             pairs[i,]$Parent2, ".",
@@ -139,7 +139,7 @@ neff %>%
 neff %>%
   filter(sampleId == pairs[i,]$Derived) %>% .$ne -> Der_ne
 
-fn2 <- paste("L_meta_objects_trios/",
+fn2 <- paste("data/processed/pop_structure/L_meta_objects_trios/",
             sfs_method, ".",
             pairs[i,]$Parent1, ".",
             pairs[i,]$Parent2, ".",
