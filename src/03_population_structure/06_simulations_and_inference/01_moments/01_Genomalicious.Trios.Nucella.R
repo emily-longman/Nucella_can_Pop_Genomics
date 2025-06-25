@@ -1,6 +1,20 @@
 #### Moments admixture with Nucella -- for trios
 # module load Rgeospatial
 
+# ================================================================================== #
+
+# Set path as main Github repo
+install.packages(c('rprojroot'))
+library(rprojroot)
+
+# List all files and directories below the root
+dir(find_root_file(criterion = has_file("README.md")))
+root_path <- find_root_file(criterion = has_file("README.md"))
+# Set working directory as path from root
+setwd(root_path)
+
+# ================================================================================== #
+
 #library(devtools)
 #install_github('j-a-thia/genomalicious')
 
