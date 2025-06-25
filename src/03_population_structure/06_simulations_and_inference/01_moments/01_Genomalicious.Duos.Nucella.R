@@ -1,4 +1,4 @@
-#### Moments admixture with Nucella -- for trios
+#### Moments admixture with Nucella -- for duos
 # module load Rgeospatial
 library(genomalicious)
 library(SeqArray)
