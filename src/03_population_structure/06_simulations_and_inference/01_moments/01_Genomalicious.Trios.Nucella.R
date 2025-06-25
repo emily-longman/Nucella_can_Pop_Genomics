@@ -1,5 +1,9 @@
 #### Moments admixture with Nucella -- for trios
 # module load Rgeospatial
+
+#library(devtools)
+#install_github('j-a-thia/genomalicious')
+
 library(genomalicious)
 library(SeqArray)
 library(foreach)
