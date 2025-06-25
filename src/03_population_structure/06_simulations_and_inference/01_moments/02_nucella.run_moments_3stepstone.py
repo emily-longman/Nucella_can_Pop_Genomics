@@ -90,8 +90,7 @@ PMmod.close()
 
 print('defining functions')
 ####
-# For modeling DEST data, pop_ids=[Afr, EU, NA], with Afr and EU interchangeable,
-# so that NA is described as the result of an African-European admixture event.
+
 def twosplits_step(params, ns, pop_ids=None):
     nu1, nu_intermediate, nu2, nu3, T1, T2, m12, m23 = params
     sts = moments.LinearSystem_1D.steady_state_1D(ns[0] + ns[1] + ns[2])

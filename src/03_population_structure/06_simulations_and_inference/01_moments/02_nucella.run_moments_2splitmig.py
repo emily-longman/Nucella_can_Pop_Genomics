@@ -92,8 +92,6 @@ PMmod.close()
 
 print('defining functions')
 ####
-# For modeling DEST data, pop_ids=[Afr, EU, NA], with Afr and EU interchangeable,
-# so that NA is described as the result of an African-European admixture event.
 #model with symmetric migration from Moments bitbucket
 def split_mig_moments(params, ns, pop_ids=None):
     if pop_ids is not None and len(pop_ids) != 2:
