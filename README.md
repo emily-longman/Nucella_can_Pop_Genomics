@@ -206,10 +206,9 @@ These scripts will identify variants for the 19 bam files using [freebayes](http
 06_simulations_and_inference - Perform coalescent demographic inference with [moments](https://github.com/grahamgower/moments) and genetic simulations with [SLiM](https://github.com/MesserLab/SLiM). (Note: these analyses were performed by JCBN)
 - 01_moments - Compare the fit of the pool-seq data to two post-glacial demographic models using [moments](https://github.com/grahamgower/moments). 
     - 01_LaunchGenomaTrios.sh and 01_Genomalicious.Trios.Nucella.R - Infer the site frequency spectrum (SFS) using [Genomalicious](https://github.com/j-a-thia/genomalicious). Bash script will execute the R script.
-    - 02_launcher_moments_2Null.sh and 02_nucella.run_moments_2Null.py - Run moments using a null model.
     - 02_launcher_moments_3step.sh and 02_nucella.run_moments_3stepstone.py - Run moments in a stepping stone model (i.e., one ancestral population gives rise to a second population which gives rise to a third population)
     - 02_launcher_moments_admix.sh and 02_nucella.run_moments_admix.py - Run moments in a two-refugia model (i.e., two ancestrally diverged populations that experience a secondary encounter resulting in a third admixed population).
-    - 03_collect_results_AIC.R - 
+    - 03_collect_results_AIC.R - Analyze AIC values and graph results.
 - 02_SLIM_sims - Perform genetic simulations using [SLiM](https://github.com/MesserLab/SLiM) to contextualize the demographic models.
 
 ## Part 4 - Analyses of shell morphology

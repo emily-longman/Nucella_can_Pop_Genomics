@@ -25,6 +25,12 @@ WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
 
 #--------------------------------------------------------------------------------
 
+# Change directory
+cd $WORKING_FOLDER/data/processed/pop_structure
+
+# Move guide file
+scp $WORKING_FOLDER/guide_files/trios_guide.txt .
+
 moment_script="$WORKING_FOLDER/src/03_population_structure/06_simulations_and_inference/01_moments/03_nucella.run_moments_admix.py"
 
   python $moment_script \

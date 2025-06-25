@@ -6,9 +6,22 @@ library(data.table)
 library(reshape2)
 library(foreach)
 
+# ================================================================================== #
 
-SS_3pop <- system("ls o3step/*_output.3step.txt", intern = T)
-Admix_3pop <- system("ls admix/*_output.admix.txt", intern = T)
+# Set path as main Github repo
+install.packages(c('rprojroot'))
+library(rprojroot)
+
+# List all files and directories below the root
+dir(find_root_file(criterion = has_file("README.md")))
+root_path <- find_root_file(criterion = has_file("README.md"))
+# Set working directory as path from root
+setwd(root_path)
+
+# ================================================================================== #
+
+SS_3pop <- system("ls data/procesed/pop_structure/o3step/*_output.3step.txt", intern = T)
+Admix_3pop <- system("ls data/procesed/pop_structure/admix/*_output.admix.txt", intern = T)
 
 pop3models_SS = foreach(i=SS_3pop, .combine = "rbind")%do%{
   tmp <- fread(i)
@@ -57,7 +70,7 @@ AIC_3pop_models %>%
 
 ggsave(plot3pop_models, 
        w=4, h =4,
-       file = "plot3pop_models.pdf")
+       file = "/output/figures/plot3pop_models.pdf")
 
 AIC_3pop_models %>%
   group_by(model,Pair_name) %>%
