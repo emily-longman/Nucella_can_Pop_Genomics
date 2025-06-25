@@ -21,7 +21,7 @@ conda activate moments_jcbn
 # Define important file locations
 
 # WORKING_FOLDER is the core folder where this pipeline is being run.
-WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
+WORKING_FOLDER=.
 
 #--------------------------------------------------------------------------------
 
