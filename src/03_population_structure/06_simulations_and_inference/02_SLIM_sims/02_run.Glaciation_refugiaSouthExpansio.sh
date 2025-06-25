@@ -8,16 +8,32 @@
 #SBATCH -p general
 #SBATCH --array=1-500
 
+#--------------------------------------------------------------------------------
+
+# Load modules 
+module load slim
+
+#--------------------------------------------------------------------------------
+
+# Define important file locations
+
+# WORKING_FOLDER is the core folder where this pipeline is being run.
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
+
+#--------------------------------------------------------------------------------
+
 repid=${SLURM_ARRAY_TASK_ID}
-root=/gpfs2/scratch/jcnunez/Nucella_scra/slim_glacial_refugiaSouthExpansion
+root=$WORKING_FOLDER/data/processed/pop_structure/slim_glacial_refugiaSouthExpansion
+
+cd $WORKING_FOLDER/data/processed/pop_structure
 mkdir slim_glacial_refugiaSouthExpansion
 
-module load slim
+#--------------------------------------------------------------------------------
 
 #####
     
     slim \
 	-d "repId=${repid}" \
 	-d "root='${root}'" \
-     2.Glaciation_refugiaSouthExpansion.slim
+     $WORKING_FOLDER/src/03_population_structure/06_simulations_and_inference/02_SLIM_sims/02_Glaciation_refugiaSouthExpansion.slim
      

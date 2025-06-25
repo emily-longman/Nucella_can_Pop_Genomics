@@ -5,7 +5,7 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --mem=20G
 #SBATCH --time=5:00:00
-#SBATCH -o ./slurmOut/genom.%A_%a.out # Standard output
+#SBATCH -o ./slurmOutput/genom.%A_%a.out # Standard output
 #SBATCH -p general
 #SBATCH --array=1-3
 

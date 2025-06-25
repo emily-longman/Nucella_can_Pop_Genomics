@@ -5,7 +5,7 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --mem=20G
 #SBATCH --time=5:00:00
-#SBATCH -o ./slurmOut/admix.%A_%a.out # Standard output
+#SBATCH -o ./slurmOutput/admix.%A_%a.out # Standard output
 #SBATCH -p general
 #SBATCH --array=0-2
 
