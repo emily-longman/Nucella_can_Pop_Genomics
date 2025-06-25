@@ -211,7 +211,7 @@ These scripts will identify variants for the 19 bam files using [freebayes](http
     - 03_collect_results_AIC.R - Analyze AIC values and graph results.
 - 02_SLIM_sims - Perform genetic simulations using [SLiM](https://github.com/MesserLab/SLiM) to contextualize the demographic models.
     - 01_run.Glaciation_refugiaNorth.sh and 01_Glaciation_refugiaNorth.slim - Run SLiM simulation with a two-refugia model, such that at generation 6,000 the 7 demes contract to two refugia - deme 1 and deme 7 - and then re-populate the habitat.
-    - 02_run.Glaciation_refugiaSouthExpansio.sh and 02_Glaciation_refugiaSouthExpansion.slim - Run SLiM simulation with a one-refugia model, such that at generation 6,000 the 7 demes contract to only one refugia - deme 1 - and then the entire habitat is re-populate via migration.
+    - 02_run.Glaciation_refugiaSouthExpansion.sh and 02_Glaciation_refugiaSouthExpansion.slim - Run SLiM simulation with a one-refugia model, such that at generation 6,000 the 7 demes contract to only one refugia - deme 1 - and then the entire habitat is re-populate via migration.
     - 03_plot_sims.R - Graph SLiM results.
 
 
