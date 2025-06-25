@@ -120,7 +120,7 @@ L=dim(dadi)[1]
 ####
 ### Write dadi file
 
-fn <- paste("data/processed/pop_structure/dadi_objects_trios/dadi_objects_trios/",
+fn <- paste("data/processed/pop_structure/dadi_objects_trios/",
             sfs_method, ".",
             pairs[i,]$Parent1, ".",
             pairs[i,]$Parent2, ".",
