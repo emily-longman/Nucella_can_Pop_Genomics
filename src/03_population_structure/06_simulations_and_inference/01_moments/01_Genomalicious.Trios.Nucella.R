@@ -5,7 +5,7 @@ library(SeqArray)
 library(foreach)
 library(sp)
 library(poolfstat)
-##pairsF="trios_guide.txt"
+
 
 args = commandArgs(trailingOnly=TRUE)
 i=as.numeric(args[1])
@@ -13,15 +13,15 @@ pairsF=args[2]
 
 pairs = fread(pairsF)
 #1.Create output the directory
-system(paste("mkdir", "dadi_objects_trios", sep = " "))
-system(paste("mkdir", "L_meta_objects_trios", sep = " "))
+system(paste("mkdir", "/data/processed/pop_structure/dadi_objects_trios", sep = " "))
+system(paste("mkdir", "/data/processed/pop_structure/L_meta_objects_trios", sep = " "))
 
 #2. Load the pairs data
 SAMPLE_INPUT=c(pairs$Parent1[i],pairs$Parent2[i],pairs$Derived[i])
 #
 
 #### Read in GDS file
-poolobj <- get(load("pooldata.RData"))
+poolobj <- get(load("/data/processed/pop_structure/pooldata.RData"))
 
 sample.names <- poolobj@poolnames
 

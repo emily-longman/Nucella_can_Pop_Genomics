@@ -9,15 +9,32 @@
 #SBATCH -p general
 #SBATCH --array=0-2
 
+#--------------------------------------------------------------------------------
+
+# Load modules 
 module load python3.12-anaconda/2024.06-1
 source ${ANACONDA_ROOT}/etc/profile.d/conda.sh
 conda activate moments_jcbn
-moment_script="3.nucella.run_moments_admix.py"
+
+#--------------------------------------------------------------------------------
+
+# Define important file locations
+
+# WORKING_FOLDER is the core folder where this pipeline is being run.
+WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
+
+#--------------------------------------------------------------------------------
+
+moment_script="$WORKING_FOLDER/src/03_population_structure/06_simulations_and_inference/01_moments/03_nucella.run_moments_admix.py"
 
   python $moment_script \
 	${SLURM_ARRAY_TASK_ID}
 
+#--------------------------------------------------------------------------------
+
 conda deactivate
+
+#--------------------------------------------------------------------------------
 
 ### Print the time
   echo "ended at"  `date`

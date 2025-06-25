@@ -1,20 +1,18 @@
 #!/bin/sh
 #
-#SBATCH -J moments_3st
+#SBATCH -J genoTrios
 #SBATCH -N 1
 #SBATCH --ntasks-per-node=1
 #SBATCH --mem=20G
 #SBATCH --time=5:00:00
-#SBATCH -o ./slurmOut/admix.%A_%a.out # Standard output
+#SBATCH -o ./slurmOut/genom.%A_%a.out # Standard output
 #SBATCH -p general
-#SBATCH --array=0-2
+#SBATCH --array=1-3
 
 #--------------------------------------------------------------------------------
 
 # Load modules 
-module load python3.12-anaconda/2024.06-1
-source ${ANACONDA_ROOT}/etc/profile.d/conda.sh
-conda activate moments_jcbn
+module load Rgeospatial
 
 #--------------------------------------------------------------------------------
 
@@ -25,16 +23,11 @@ WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
 
 #--------------------------------------------------------------------------------
 
-moment_script="$WORKING_FOLDER/src/03_population_structure/06_simulations_and_inference/01_moments/02_nucella.run_moments_3stepstone.py"
-
-  python $moment_script \
-	${SLURM_ARRAY_TASK_ID}
+guide=$WORKING_FOLDER/guide_files/trios_guide.txt
 
 #--------------------------------------------------------------------------------
 
-conda deactivate
-
-#--------------------------------------------------------------------------------
-
-### Print the time
-  echo "ended at"  `date`
+# Run accompanying R script
+Rscript --vanilla $WORKING_FOLDER/src/03_population_structure/06_simulations_and_inference/01_moments/01_Genomalicious.Trios.Nucella.R \
+${SLURM_ARRAY_TASK_ID} \
+$guide
