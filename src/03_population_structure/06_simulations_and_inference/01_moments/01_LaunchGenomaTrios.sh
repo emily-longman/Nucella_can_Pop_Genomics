@@ -23,6 +23,8 @@ WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
 
 #--------------------------------------------------------------------------------
 
+cd $WORKING_FOLDER
+
 guide=$WORKING_FOLDER/guide_files/trios_guide.txt
 
 #--------------------------------------------------------------------------------
