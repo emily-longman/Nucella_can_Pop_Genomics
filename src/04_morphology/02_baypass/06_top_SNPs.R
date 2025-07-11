@@ -63,7 +63,7 @@ pooldata_prot_g26813@snp.info %>%
 names(snp.info.annot)[1:2] = c("chr","pos")
 
 # Make snp_id column
-snp.info.annot %<>%
+snp.info.annot <- snp.info.annot %>%
   mutate(snp_id = paste(chr, pos, sep = "_"))
 
 # ================================================================================== #
@@ -207,4 +207,65 @@ afs.id.mapped.targets %>%
   scale_fill_gradient2(low = "steelblue", ,high = "firebrick",
                        midpoint = 0.5)  +
   facet_grid(~snp_id) + theme_bw() 
+dev.off()
+
+
+# ================================================================================== #
+# ================================================================================== #
+
+# Graph Baypass outliers and highlight top SNPs
+
+# ================================================================================== #
+
+# Read in Baypass results 
+baypass_morph_CV1 <- read.table("data/processed/morphometrics/baypass/CV_1/NC_baypass_morphology_CV_1_summary_pi_xtx.out", header=T)
+baypass_morph_CV2 <- read.table("data/processed/morphometrics/baypass/CV_2/NC_baypass_morphology_CV_2_summary_pi_xtx.out", header=T)
+snp.meta <- read.table("data/processed/outlier_analyses/baypass/snpdet", header=F)
+
+# Re-name snp metadata
+colnames(snp.meta) <- c("chr", "pos", "allele1", "allele2")
+
+# Join baypass morphology CV results with snp metadata
+baypass_morph_CV1_pos <- cbind(snp.meta, baypass_morph_CV1)
+baypass_morph_CV2_pos <- cbind(snp.meta, baypass_morph_CV2)
+
+# Make snp_id column
+baypass_morph_CV1_pos <- baypass_morph_CV1_pos %>%
+  mutate(snp_id = paste(chr, pos, sep = "_"))
+baypass_morph_CV2_pos <- baypass_morph_CV2_pos %>%
+  mutate(snp_id = paste(chr, pos, sep = "_"))
+
+# ================================================================================== #
+
+# Highlight outliers in graphs
+
+# Set colors for outliers
+baypass_morph_CV1_pos$color <- ifelse(baypass_morph_CV1_pos$log10.1.pval. >= -log10(0.05/dim(baypass_morph_CV1_pos)[1]), "sig", "not.sig")
+baypass_morph_CV2_pos$color <- ifelse(baypass_morph_CV2_pos$log10.1.pval. >= -log10(0.05/dim(baypass_morph_CV2_pos)[1]), "sig", "not.sig")
+
+# Color top SNPS
+baypass_morph_CV1_pos$color[which(baypass_morph_CV1_pos$snp_id == "ntLink_3633_41113" | baypass_morph_CV1_pos$snp_id == "ntLink_3633_41601" )] <- "top"
+baypass_morph_CV2_pos$color[which(baypass_morph_CV2_pos$snp_id == "ntLink_3633_41553" | baypass_morph_CV2_pos$snp_id == "ntLink_3633_41601" | 
+baypass_morph_CV2_pos$snp_id == "ntLink_3633_42901")] <- "top"
+
+# Change to factor
+baypass_morph_CV1_pos$color <- factor(baypass_morph_CV1_pos$color)
+baypass_morph_CV2_pos$color <- factor(baypass_morph_CV2_pos$color)
+
+# CV1
+pdf("output/figures/morphology/baypass/Baypass_xtx_outliers_CV_1_alt_top_SNPs.pdf", width = 10, height = 5)
+par(mar=c(5,5,4,1)+.1) #Adjust margins
+plot(baypass_morph_CV1_pos$log10.1.pval., ylab=expression(-log[10](italic(p))), xlab="Position", 
+col=c("#bebebe93", "black", "red")[baypass_morph_CV1_pos$color], pch=19)
+abline(h=-log10(0.001), lty=2, col="#1515ed") #0.001 p-value threshold
+abline(h=-log10(0.05/dim(baypass_morph_CV1_pos)[1]), lty=1, col="#1515ed") # Bonferroni threshold
+dev.off()
+
+# CV2
+pdf("output/figures/morphology/baypass/Baypass_xtx_outliers_CV_2_alt_top_SNPs.pdf", width = 10, height = 5)
+par(mar=c(5,5,4,1)+.1) #Adjust margins
+plot(baypass_morph_CV2_pos$log10.1.pval., ylab=expression(-log[10](italic(p))), xlab="Position", 
+col=c("#bebebe93", "black", "red")[baypass_morph_CV2_pos$color], pch=19)
+abline(h=-log10(0.001), lty=2, col="#1515ed") #0.001 p-value threshold
+abline(h=-log10(0.05/dim(baypass_morph_CV2_pos)[1]), lty=1, col="#1515ed") # Bonferroni threshold
 dev.off()

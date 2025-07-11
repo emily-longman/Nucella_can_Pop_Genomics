@@ -31,7 +31,6 @@ load("data/processed/pop_structure/pooldata.RData")
 
 # ================================================================================== #
 
-
 # Get the snp.info matrix
 snp_info <- pooldata@snp.info
 
