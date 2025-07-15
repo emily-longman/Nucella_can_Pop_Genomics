@@ -118,11 +118,6 @@ left_join(covs.id.melt, afs.id.melt, by = join_by(snp_id, Site)) %>%
 
 setDT(afs.id.mapped)
 
-# Calculate mean effective coverage ('nEff')
-afs.id.mapped %>% mutate(nEff:=round((COV*2*40 )/(COV+2*40- 1))) %>%
-  mutate(af_nEff:=round(AF*nEff)/nEff) ->
-  afs.id.mapped
-
 # Add demography information - North (N), Admixed (ADMX), South (S)
 afs.id.mapped %<>%
   mutate(cluster = case_when(
