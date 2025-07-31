@@ -39,22 +39,11 @@ pops <- read.table("guide_files/N.canaliculata_pops.vcf_pop_names.txt", header=F
 # Create a pooldata object for Pool-Seq read count data (poolsize = haploid sizes of each pool, # of pools)
 # Note: 20 individuals per pool. N. canaliculata is a diploid species. So haploid size = 40 for most pools
 
-# Read in data and filter (note: the input vcf is the vcf output from 12_filter_vcf.sh - # variants: 26,206,958)
-#pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter.recode.vcf", 
-#poolsizes=rep(40,19), poolnames=pops$V1, 
-#min.cov.per.pool = 15, min.rc = 5, max.cov.per.pool = 120, min.maf = 0.01, nlines.per.readblock = 1e+06)
-# Data consists of 11,656,080 SNPs for 19 Pools
-
-# Read in data and filter (note: the input vcf is the vcf output from 12_filter_vcf.sh - # variants: 14,897,468)
+# Read in data and filter (note: the input vcf is the vcf output from 12_filter_vcf.sh)
 pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter_minQ60_maxmissing1.0.recode.vcf", 
 poolsizes=rep(40,19), poolnames=pops$V1, 
 min.cov.per.pool = 20, min.rc = 5, max.cov.per.pool = 120, min.maf = 0.01, nlines.per.readblock = 1e+06)
 # Data consists of 8,277,206 SNPs for 19 Pools
-
-#pooldata <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_clean/N.canaliculata_pops_filter_minQ50_maxmissing0.9.recode.vcf", 
-#poolsizes=rep(40,19), poolnames=pops$V1, 
-#min.cov.per.pool = 15, min.rc = 5, max.cov.per.pool = 120, min.maf = 0.01, nlines.per.readblock = 1e+06)
-# Data consists of 9,804,957 SNPs for 19 Pools
 
 # min.cov.per.pool = the minimum allowed read count per pool for SNP to be called
 # min.rc =  the minimum # reads that an allele needs to have (across all pools) to be called 
