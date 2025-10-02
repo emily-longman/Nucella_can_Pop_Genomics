@@ -124,6 +124,14 @@ ggplot(data = npstat, aes(log(Pi), color=pop)) +
   theme(legend.position="none")
 dev.off()
 
+pdf("output/figures/pop_structure/npstat/Npstat_density_Pi_taller.pdf", width = 8, height = 7)
+ggplot(data = npstat, aes(log(Pi), color=pop)) + 
+  geom_density(size=2) + 
+  scale_color_manual(values=mycolors) + ylim(NA,0.955) +
+  xlab("log(Pi)") + ylab("Density") + theme_classic(base_size=20) +
+  theme(legend.position="none")
+dev.off()
+
 # Graph Watterson Theta
 pdf("output/figures/pop_structure/npstat/Npstat_boxplot_Watterson.pdf", width = 8, height = 5)
 ggplot(data = npstat, aes(x = pop, y = log(Watterson), fill=pop)) + 
@@ -134,7 +142,7 @@ ggplot(data = npstat, aes(x = pop, y = log(Watterson), fill=pop)) +
 dev.off()
 
 # Graph Watterson Theta - density
-pdf("output/figures/pop_structure/npstat/Npstat_density_Watterson.pdf", width = 8, height = 5)
+pdf("output/figures/pop_structure/npstat/Npstat_density_Watterson.pdf", width = 8, height = 7)
 ggplot(data = npstat, aes(log(Watterson), color=pop)) + 
   geom_density(size=2) + 
   scale_color_manual(values=mycolors) + ylim(NA,0.955) +
@@ -152,7 +160,7 @@ ggplot(data = npstat, aes(x = pop, y = Tajima_D, fill=pop)) +
 dev.off()
 
 # Graph Tajima's D - density
-pdf("output/figures/pop_structure/npstat/Npstat_density_TajimaD.pdf", width = 8, height = 5)
+pdf("output/figures/pop_structure/npstat/Npstat_density_TajimaD.pdf", width = 8, height = 7)
 ggplot(data = npstat, aes(Tajima_D, color=pop)) + 
   geom_density(size=2) + 
   scale_color_manual(values=mycolors) +
