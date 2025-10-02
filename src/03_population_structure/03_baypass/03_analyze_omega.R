@@ -86,9 +86,9 @@ nb.cols <- 19
 mycolors <- rev(colorRampPalette(brewer.pal(11, "RdBu"))(nb.cols))
 
 # Graph tree (no title), color tips by N-S order
-pdf("output/figures/pop_structure/Baypass_omega/Baypass_hier_clustering_colors.pdf", width = 7, height = 9)
-plot(NC.tree, type="p", label.offset = 0.02, cex = 1.6)
-tiplabels(pch = 19, col = mycolors, cex = 1.6)
+pdf("output/figures/pop_structure/Baypass_omega/Baypass_hier_clustering_colors.pdf", width = 6.5, height = 9)
+plot(NC.tree, type="p", label.offset = 0.02, cex = 1.8)
+tiplabels(pch = 21, col="black", bg = mycolors, cex = 2)
 dev.off()
 
 # ================================================================================== #
