@@ -34,6 +34,14 @@ XtX <- read.table("data/processed/outlier_analyses/baypass/omega/NC_baypass_summ
 
 # ================================================================================== #
 
+# Generate Folders and files
+
+# Make data directory
+output_dir="output/figures/pop_structure/Baypass_omega"
+if (!dir.exists(output_dir)) {dir.create(output_dir)}
+
+# ================================================================================== #
+
 # Re-name pool names 
 colnames(NC.omega) <- pops$V1
 rownames(NC.omega) <- pops$V1
@@ -49,11 +57,11 @@ NC.omega_reorder <- as.matrix(read.table("output/tables/NC.omega_reorder.txt", h
 cor.mat <- cov2cor(NC.omega_reorder)
 
 # Graph correlation matrix
-pdf("output/figures/outlier_analyses/Omega/Baypass_omega_cor_matrix_title.pdf", width = 5, height = 5)
+pdf("output/figures/pop_structure/Baypass_omega/Baypass_omega_cor_matrix_title.pdf", width = 5, height = 5)
 corrplot(cor.mat, method = "color", mar=c(2,1,2,2)+0.1, main=expression("Correlation map based on"~hat(Omega)))
 dev.off()
 # Graph correlation matrix (no title)
-pdf("output/figures/outlier_analyses/Omega/Baypass_omega_cor_matrix.pdf", width = 5, height = 5)
+pdf("output/figures/pop_structure/Baypass_omega/Baypass_omega_cor_matrix.pdf", width = 5, height = 5)
 corrplot(cor.mat, method = "color", mar=c(2,1,2,2)+0.1)
 dev.off()
 
@@ -63,14 +71,24 @@ dev.off()
 NC.tree=as.phylo(hclust(as.dist(1-cor.mat**2)))
 
 # Graph tree 
-pdf("output/figures/outlier_analyses/Omega/Baypass_hier_clustering_title.pdf", width = 5, height = 5)
+pdf("output/figures/pop_structure/Baypass_omega/Baypass_hier_clustering_title.pdf", width = 5, height = 5)
 plot(NC.tree,type="p",
      main=expression("Hier. clust. tree based on"~hat(Omega)~"("*d[ij]*"=1-"*rho[ij]*")"))
 dev.off()
 
 # Graph tree (no title)
-pdf("output/figures/outlier_analyses/Omega/Baypass_hier_clustering.pdf", width = 5, height = 5)
+pdf("output/figures/pop_structure/Baypass_omega/Baypass_hier_clustering.pdf", width = 5, height = 5)
 plot(NC.tree,type="p")
+dev.off()
+
+# Specify colors
+nb.cols <- 19
+mycolors <- rev(colorRampPalette(brewer.pal(11, "RdBu"))(nb.cols))
+
+# Graph tree (no title), color tips by N-S order
+pdf("output/figures/pop_structure/Baypass_omega/Baypass_hier_clustering_colors.pdf", width = 7, height = 9)
+plot(NC.tree, type="p", label.offset = 0.02, cex = 1.6)
+tiplabels(pch = 19, col = mycolors, cex = 1.6)
 dev.off()
 
 # ================================================================================== #
@@ -79,18 +97,18 @@ dev.off()
 # Graph estimates of the XtX differentation measure
 
 # Check the behavior of the p-values associated to the XtXst estimator
-pdf("output/figures/outlier_analyses/Omega/Baypass_xtx_hist_omega.pdf", width = 5, height = 5)
+pdf("output/figures/pop_structure/Baypass_omega/Baypass_xtx_hist_omega.pdf", width = 5, height = 5)
 hist(10**(-1*XtX$log10.1.pval.), freq=F, breaks=50)
 abline(h=1, col="red")
 dev.off()
 
 # Graph xtx
-pdf("output/figures/outlier_analyses/Omega/Baypass_xtx_omega.pdf", width = 5, height = 5)
+pdf("output/figures/pop_structure/Baypass_omega/Baypass_xtx_omega.pdf", width = 5, height = 5)
 plot(XtX$XtXst)
 dev.off()
 
 # Graph outliers
-pdf("output/figures/outlier_analyses/Omega/Baypass_xtx_outliers_omega.pdf", width = 5, height = 5)
+pdf("output/figures/pop_structure/Baypass_omega/Baypass_xtx_outliers_omega.pdf", width = 5, height = 5)
 plot(XtX$log10.1.pval., ylab="-log10(XtX P-value)")
 abline(h=3, lty=2, col="red") #0.001 p-value threshold
 dev.off()
