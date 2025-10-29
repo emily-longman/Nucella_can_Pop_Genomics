@@ -150,13 +150,13 @@ done
 
 # -F --min-alternate-fraction N : Require at least this fraction of observations supporting an alternate allele within a single individual in order to evaluate the position.  default: 0.05
 ## In the case of Pool-seq it is better to reduce this value so as not to penalize rare alleles present in a pool.
-## With the default value, any variant represented by <5% of reads in the pool would be ignored. 
+## With the default value, any variant represented by <1% of reads in the pool would be ignored. 
 
 # -C --min-alternate-count N : Require at least this count of observations supporting an alternate allele within a single individual in order to evaluate the position.  default: 2
 ## Reduce to 1 for the same reason as -F
 
 # -G --min-alternate-total N : Require at least this count of observations supporting an alternate allele within the TOTAL population in order to use the allele in analysis.  default: 1
-## Increased to 5. Given that we generally apply to many pools, avoid carrying around ultra rare alleles, which are probably sequencing errors. This also reduces computational costs.
+## Increased to 2. Given that we generally apply to many pools, avoid carrying around ultra rare alleles, which are probably sequencing errors. This also reduces computational costs.
 ## Caution however may have an impact for methods based on SFS.
 
 # --limit-coverage N: Downsample per-sample coverage to this level if greater than this coverage. default: no limit
