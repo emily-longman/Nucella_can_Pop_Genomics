@@ -60,7 +60,7 @@ fi
 
 # Filter vcf
 
-# Filter based on missing data (keep only variants in 75% of pops)
+# Filter based on missing data 
 vcftools --gzvcf $WORKING_FOLDER/data/processed/fastq_to_vcf/vcf_freebayes_relaxed_filt/N.canaliculata_pops.vcf.gz \
 --minQ 60 --maf 0.01 --max-missing 1.0 --remove-indels --recode --recode-INFO-all \
 --out $WORKING_FOLDER/data/processed/fastq_to_vcf/vcf_clean_relaxed_filt/N.canaliculata_pops_filter_minQ60_maxmissing1.0
