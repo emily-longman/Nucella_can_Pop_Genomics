@@ -127,6 +127,16 @@ dev.off()
 # Save PC scores
 pc_scores <- Nucella_pca$x
 
+# Save loadings scores - Note: there is an x and a y for each landmark
+loadings_scores <- Nucella_pca$rotation
+# Example using base R plot
+pdf("output/figures/morphology/PCA_loadings.pdf", width = 8, height = 8)
+        plot(loadings_scores[, 1], loadings_scores[, 2],
+             xlab = "Loading on PC1", ylab = "Loading on PC2")
+        text(loadings_scores[, 1], loadings_scores[, 2],
+             labels = rownames(loadings_scores), cex = 0.7, pos = 3)
+dev.off()
+
 # Merge PC scores with metadata
 pc_scores_metadata <- cbind(metadata, pc_scores)
 
@@ -168,6 +178,17 @@ xlab("PC1 (21.60%)") + ylab("PC2 (19.65%)") +
 theme_classic(base_size = 25) + guides(fill="none")
 dev.off()
 
+# Change sizes of axes
+pdf("output/figures/morphology/PCA_ggplot_PC1_PC2_sites_alt.pdf", width = 8, height = 8)
+par(mar=c(5,5,4,1)+.1) # Adjust margins
+ggplot(pc_scores_metadata, aes(Comp1, Comp2)) + 
+geom_hline(yintercept=0, linetype="dashed", color ="grey") + geom_vline(xintercept=0, linetype="dashed", color ="grey") +
+geom_point(aes(fill=Site.Code), size=3, shape = 21) + 
+scale_fill_manual(values=mycolors) + xlim(-.1, .1) + ylim(-.1, .1) + 
+xlab("PC1 (21.60%)") + ylab("PC2 (19.65%)") + 
+theme_classic(base_size = 25) + guides(fill="none")
+dev.off()
+
 # Graph PCA with ggplot - populations (PC1 vs PC3)
 pdf("output/figures/morphology/PCA_ggplot_PC1_PC3_sites.pdf", width = 8, height = 8)
 par(mar=c(5,5,4,1)+.1) # Adjust margins
@@ -177,6 +198,20 @@ geom_point(aes(fill=Site.Code), size=3, shape = 21) +
 scale_fill_manual(values=mycolors) + xlim(-.1, .1) + ylim(-.1, .1) + 
 xlab("PC1 (21.60%)") + ylab("PC3 (10.90%)") + 
 theme_classic(base_size = 25) + guides(fill="none")
+dev.off()
+
+# Plot grids showing shape chagnes
+pdf("output/figures/morphology/PCA_PC1_shape_min.pdf", width = 8, height = 8)
+plotRefToTarget(Nucella_pca$shapes$shapes.comp1$min, ref, method = "TPS")
+dev.off()
+pdf("output/figures/morphology/PCA_PC1_shape_max.pdf", width = 8, height = 8)
+plotRefToTarget(Nucella_pca$shapes$shapes.comp1$max, ref, method = "TPS")
+dev.off()
+pdf("output/figures/morphology/PCA_PC2_shape_min.pdf", width = 8, height = 8)
+plotRefToTarget(Nucella_pca$shapes$shapes.comp2$min, ref, method = "TPS")
+dev.off()
+pdf("output/figures/morphology/PCA_PC2_shape_max.pdf", width = 8, height = 8)
+plotRefToTarget(Nucella_pca$shapes$shapes.comp2$max, ref, method = "TPS")
 dev.off()
 
 # ================================================================================== #

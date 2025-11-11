@@ -150,7 +150,6 @@ done
 
 # -F --min-alternate-fraction N : Require at least this fraction of observations supporting an alternate allele within a single individual in order to evaluate the position.  default: 0.05
 ## In the case of Pool-seq it is better to reduce this value so as not to penalize rare alleles present in a pool.
-## With the default value, any variant represented by <1% of reads in the pool would be ignored. 
 
 # -C --min-alternate-count N : Require at least this count of observations supporting an alternate allele within a single individual in order to evaluate the position.  default: 2
 ## Reduce to 1 for the same reason as -F

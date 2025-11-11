@@ -43,7 +43,7 @@ pops <- read.table("guide_files/N.canaliculata_relaxed_filt_pops.vcf_pop_names.t
 pooldata_relaxed_filt <-vcf2pooldata(vcf.file="data/processed/fastq_to_vcf/vcf_clean_relaxed_filt/N.canaliculata_pops_filter_minQ60_maxmissing1.0.recode.vcf", 
 poolsizes=rep(40,19), poolnames=pops$V1, 
 min.cov.per.pool = 20, min.rc = 2, max.cov.per.pool = 120, min.maf = 0.01, nlines.per.readblock = 1e+06)
-# Data consists of 8,277,206 SNPs for 19 Pools
+# Data consists of 6,452,877 (strict filt: 8,277,206) SNPs for 19 Pools
 
 # min.cov.per.pool = the minimum allowed read count per pool for SNP to be called
 # min.rc =  the minimum # reads that an allele needs to have (across all pools) to be called 
@@ -85,13 +85,13 @@ load("data/processed/pop_structure/pooldata_relaxed_filt.RData")
 # Use computeFST function (default to using the Anova method)
 pooldata_relaxed_filt.fst <- computeFST(pooldata_relaxed_filt,verbose=FALSE)
 pooldata_relaxed_filt.fst$Fst 
-#     ####0.5801261
+# 0.5717133    ####0.5801261 (strict)
 
 # Block-Jackknife estimation of Fst standard error and confidence intervals
 pooldata_relaxed_filt.fst.bjack <- computeFST(pooldata_relaxed_filt, nsnp.per.bjack.block = 1000, verbose=FALSE)
 pooldata_relaxed_filt.fst.bjack$Fst
 #   Estimate  bjack mean  bjack s.e.     CI95inf     CI95sup 
-#      ####0.580126095 0.582574371 0.001481405 0.579670817 0.585477924 
+# 0.571713252 0.569866454 0.001677914 0.566577743 0.573155166      ####0.580126095 0.582574371 0.001481405 0.579670817 0.585477924 
 
 # Compute multi-locus Fst over sliding window of SNPs
 pooldata_relaxed_filt.fst.sliding.window <- computeFST(pooldata_relaxed_filt, sliding.window.size=1000)
@@ -113,7 +113,7 @@ dev.off()
 pooldata_relaxed_filt.pairwisefst <- compute.pairwiseFST(pooldata_relaxed_filt, verbose=FALSE)
 
 # Graph heatmap
-pdf("output/figures/pop_structure/poolfstat/heatmap.pdf", width = 8, height = 8)
+pdf("output/figures/pop_structure/poolfstat/heatmap_relaxed_filt.pdf", width = 8, height = 8)
 heatmap(pooldata_relaxed_filt.pairwisefst, cexRow=1.7, cexCol=1.7)
 dev.off()
 
@@ -131,7 +131,7 @@ dev.off()
 # Save pairwise matrix as xls for follow-up analyses
 pooldata_relaxed_filt.pairwisefst.matrix <- pooldata_relaxed_filt.pairwisefst@PairwiseFSTmatrix
 pooldata_relaxed_filt.pairwisefst.matrix <- as.data.frame(pooldata_relaxed_filt.pairwisefst.matrix)
-write.csv(pooldata_relaxed_filt.pairwisefst.matrix, "data/processed/pop_structure/Fst/pooldata_relaxed_filt.pairwisefst.matrix.csv")
+#write.csv(pooldata_relaxed_filt.pairwisefst.matrix, "data/processed/pop_structure/Fst/pooldata_relaxed_filt.pairwisefst.matrix.csv")
 
 # Graph Fst heatmap with pheatmap 
 pdf("output/figures/pop_structure/poolfstat/pheatmap_Fst_relaxed_filt.pdf", width = 8, height = 8)
@@ -146,7 +146,7 @@ dev.off()
 # Principle Components Analysis with randomallele.pca
 
 #PCA on the read count data (the object)
-pooldata_relaxed_filt.pca = randomallele.pca(pooldata_relaxed_filt, main="Read Count data")
+pooldata_relaxed_filt.pca = randomallele.pca(pooldata_relaxed_filt)
 
 # Color palette 
 nb.cols <- 19
@@ -174,7 +174,7 @@ abline(h=0,lty=2,col="grey") ; abline(v=0,lty=2,col="grey")
 dev.off()
 
 # Plotting PC5 and PC6
-pdf("output/figures/pop_structure/poolfstat/PCA_all_SNPs_PC5_PC6.pdf", width = 8, height = 8)
+pdf("output/figures/pop_structure/poolfstat/PCA_all_SNPs_PC5_PC6_relaxed_filt.pdf", width = 8, height = 8)
 par(mar=c(5,6,4,1)+.1) # Adjust margins
 pca <- plot(pooldata_relaxed_filt.pca$pop.loadings[,5],pooldata_relaxed_filt.pca$pop.loadings[,6],
 xlab=paste0("PC",5," (",round(pooldata_relaxed_filt.pca$perc.var[5],2),"%)"),
@@ -182,26 +182,3 @@ ylab=paste0("PC",6," (",round(pooldata_relaxed_filt.pca$perc.var[6],2),"%)"),
 col="black", bg=colors.reorder,pch=21, cex = 3, cex.lab = 1.75)
 abline(h=0,lty=2,col="grey") ; abline(v=0,lty=2,col="grey")
 dev.off()
-
-# Plot names on PCAs
-
-# Plotting PC1 and PC2
-pdf("output/figures/pop_structure/poolfstat/PCA_all_SNPs_PC1_PC2_names.pdf", width = 8, height = 8)
-par(mar=c(5,6,4,1)+.1) # Adjust margins
-pca <- plot(pooldata_relaxed_filt.pca$pop.loadings[,1],pooldata_relaxed_filt.pca$pop.loadings[,2],
-xlab=paste0("PC",1," (",round(pooldata_relaxed_filt.pca$perc.var[1],2),"%)"),
-ylab=paste0("PC",2," (",round(pooldata_relaxed_filt.pca$perc.var[2],2),"%)"))
-text(pooldata_relaxed_filt.pca$pop.loadings[,1], pooldata_relaxed_filt.pca$pop.loadings[,2], pooldata_relaxed_filt@poolnames, cex=0.5, cex.lab = 1.75)
-abline(h=0,lty=2,col="grey") ; abline(v=0,lty=2,col="grey")
-dev.off()
-
-# Plotting PC3 and PC4
-pdf("output/figures/pop_structure/poolfstat/PCA_all_SNPs_PC3_PC4_names.pdf", width = 8, height = 8)
-par(mar=c(5,6,4,1)+.1) # Adjust margins
-pca <- plot(pooldata_relaxed_filt.pca$pop.loadings[,3],pooldata_relaxed_filt.pca$pop.loadings[,4],
-xlab=paste0("PC",3," (",round(pooldata_relaxed_filt.pca$perc.var[3],2),"%)"),
-ylab=paste0("PC",4," (",round(pooldata_relaxed_filt.pca$perc.var[4],2),"%)"))
-text(pooldata_relaxed_filt.pca$pop.loadings[,3], pooldata_relaxed_filt.pca$pop.loadings[,4], pooldata_relaxed_filt@poolnames, cex=0.5, cex.lab = 1.75)
-abline(h=0,lty=2,col="grey") ; abline(v=0,lty=2,col="grey")
-dev.off()
-

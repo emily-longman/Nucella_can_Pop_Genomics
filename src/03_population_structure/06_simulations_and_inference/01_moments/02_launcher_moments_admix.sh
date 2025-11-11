@@ -11,10 +11,36 @@
 
 #--------------------------------------------------------------------------------
 
+# Set up environemnt
+#load dependencies
+#module load python3.12-anaconda/2024.06-1
+
+#Step 1. Create conda environemt
+#This needs to be done  only once
+
+#conda create \
+#-n moments_ekl \
+#python=3.12 \
+#dadi \
+#ipykernel \
+#-c conda-forge
+
+# Activates conda environemnt
+#source activate moments_ekl
+
+#Installs moments
+#conda install moments -c bioconda
+
+# install pandas
+#conda install pandas
+
+#--------------------------------------------------------------------------------
+
 # Load modules 
 module load python3.12-anaconda/2024.06-1
 source ${ANACONDA_ROOT}/etc/profile.d/conda.sh
-conda activate moments_jcbn
+#conda activate moments_jcbn
+conda activate moments_ekl
 
 #--------------------------------------------------------------------------------
 
