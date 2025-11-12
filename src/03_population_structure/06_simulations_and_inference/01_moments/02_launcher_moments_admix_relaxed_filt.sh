@@ -71,6 +71,19 @@ WORKING_FOLDER=/gpfs2/scratch/elongman/Nucella_can_Pop_Genomics
 
 #--------------------------------------------------------------------------------
 
+# Generate Folders and files
+
+# Move to working directory
+cd $WORKING_FOLDER/data/processed/pop_structure
+
+# This part of the script will check and generate, if necessary, all of the output folders used in the script
+if [ -d "admix_relaxed_filt" ]
+then echo "Working admix_relaxed_filt folder exist"; echo "Let's move on."; date
+else echo "Working admix_relaxed_filt folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/pop_structure/admix_relaxed_filt; date
+fi
+
+#--------------------------------------------------------------------------------
+
 # Change directory
 cd $WORKING_FOLDER/data/processed/pop_structure
 
