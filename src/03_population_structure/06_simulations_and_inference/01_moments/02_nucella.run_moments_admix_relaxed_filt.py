@@ -134,23 +134,23 @@ upper_bounds = [
 
 print('optimization loop')
 for i in range(int(iterations)): #iterations is imported from sys. argument #1
-    print("starting optimization "+str(i))
+	print("starting optimization "+str(i))
 #This number is 5. i.e., count parameters. 
-    params = len(["nu1", "nu2", "nu3", "T_split", "T_admix", "admix_prop"]) #for use in AIC calculation
-    #Start the run by picking random parameters from a uniform distribution.
-    #popt=[np.random.uniform(lower_bound[x],upper_bound[x]) for x in range(params)]
+	params = len(["nu1", "nu2", "nu3", "T_split", "T_admix", "admix_prop"]) #for use in AIC calculation
+	#Start the run by picking random parameters from a uniform distribution.
+	#popt=[np.random.uniform(lower_bound[x],upper_bound[x]) for x in range(params)]
 	    
 	#This is the optimization step for moments.
 	#popt is the prior.
 	#fs folded is a tranform SFS by folding it. The original SFS loaded in sys.arg #1 is quasi-folded. i.e. polarized to reference genome.
 	#Folding it is a must, because reference is not 100% ancestral
-    params_guess=[np.random.uniform(lower_bounds[x],upper_bounds[x]) for x in range(6)]
-    popt=moments.Inference.optimize_log(params_guess, fs_folded, 
-    func_moments,
-    lower_bound=lower_bounds, 
-    upper_bound=upper_bounds,
-    verbose=True, 
-    maxiter=100)
+	params_guess=[np.random.uniform(lower_bounds[x],upper_bounds[x]) for x in range(6)]
+	popt=moments.Inference.optimize_log(params_guess, fs_folded, 
+	func_moments,
+	lower_bound=lower_bounds, 
+	upper_bound=upper_bounds,
+	verbose=True, 
+	maxiter=100)
 	
 	model = func_moments(popt, ns)
 	
@@ -172,7 +172,7 @@ for i in range(int(iterations)): #iterations is imported from sys. argument #1
 	admix_prop=popt[5] 
 	
 	#Open the output file
-	PMmod=open('admix_relaxed_filt/%s_output.admix.txt' % Pair_name,'a')
+	PMmod=open('admix/%s_output.admix.txt' % Pair_name,'a')
 	    #Dumping output ot outfile
 	PMmod.write(
             str(Pair_name)+'\t'+ #print pair name
