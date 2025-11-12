@@ -57,7 +57,7 @@ cd $WORKING_FOLDER/data/processed/pop_structure
 # Move guide file
 scp $WORKING_FOLDER/guide_files/trios_guide.txt .
 
-moment_script="$WORKING_FOLDER/src/03_population_structure/06_simulations_and_inference/01_moments/03_nucella.run_moments_admix.py"
+moment_script="$WORKING_FOLDER/src/03_population_structure/06_simulations_and_inference/01_moments/02_nucella.run_moments_admix.py"
 
   python $moment_script \
 	${SLURM_ARRAY_TASK_ID}
