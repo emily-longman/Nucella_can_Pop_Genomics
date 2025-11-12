@@ -20,8 +20,8 @@ setwd(root_path)
 
 # ================================================================================== #
 
-SS_3pop <- system("ls data/processed/pop_structure/o3step/*_output.3step.txt", intern = T)
-Admix_3pop <- system("ls data/processed/pop_structure/admix/*_output.admix.txt", intern = T)
+SS_3pop <- system("ls data/processed/pop_structure/o3step_relaxed_filt/*_output.3step.txt", intern = T)
+Admix_3pop <- system("ls data/processed/pop_structure/admix_relaxed_filt/*_output.admix.txt", intern = T)
 
 pop3models_SS = foreach(i=SS_3pop, .combine = "rbind")%do%{
   tmp <- fread(i)
@@ -39,15 +39,12 @@ pop3models_Admix = foreach(i=Admix_3pop, .combine = "rbind")%do%{
     mutate(model = "Admix")
 }
 
-rbind(pop3models_SS, pop3models_Admix) ->
-  AIC_3pop_models
-
-AIC_3pop_models %>%
+pop3models_Admix %>%
   group_by(model,Pair_name) %>%
   summarise(m = mean(log10(AIC)),
             sd = sd(log10(AIC)))
 
-AIC_3pop_models %>%
+pop3models_Admix %>%
   group_by(model,Pair_name) %>%
   slice_min(AIC)
 
