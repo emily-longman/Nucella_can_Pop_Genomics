@@ -20,7 +20,7 @@
 #SBATCH --mem=20G 
 
 # Submit job array
-#SBATCH --array=0-2
+#SBATCH --array=0-9
 
 # Name output of this job using %x=job-name and %j=job-id
 #SBATCH --output=./slurmOutput/%x.%A_%a.out
@@ -71,9 +71,12 @@ cd $WORKING_FOLDER/data/processed/pop_structure
 # Move guide file
 scp $WORKING_FOLDER/guide_files/trios_guide.txt .
 
-moment_script="$WORKING_FOLDER/src/03_population_structure/06_simulations_and_inference/01_moments/02_nucella.run_moments_3stepstone_relaxed_filt.py"
+POP=1
+echo ${POP}
 
-  python $moment_script \
+moment_script="$WORKING_FOLDER/src/03_population_structure/06_simulations_and_inference/01_moments/02_nucella.run_moments_3stepstone_relaxed_filt_PL.py"
+
+  python $moment_script ${POP} \
 	${SLURM_ARRAY_TASK_ID}
 
 #--------------------------------------------------------------------------------
