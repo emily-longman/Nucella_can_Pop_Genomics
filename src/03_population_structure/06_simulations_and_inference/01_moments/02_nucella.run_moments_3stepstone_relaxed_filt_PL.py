@@ -73,7 +73,7 @@ S = fs_folded.S()
 
 ####
 #opening output file to give column names
-PMmod=open('o3step_relaxed_filt/%s_output.3step.txt' % (Pair_name, z),'w')
+PMmod=open('o3step_relaxed_filt/%s_%d_output.3step.txt' % (Pair_name, z),'w')
 PMmod.write(
             str("Pair_name")+'\t'+ #print pair name
             str("L")+'\t'+ #double checking L is working as I want it to
@@ -164,7 +164,7 @@ for i in range(int(iterations)): #iterations is imported from sys. argument #1
 	m23=popt[7]
 	
 	#Open the output file
-	PMmod=open('o3step_relaxed_filt/%s_output.3step.txt' % (Pair_name, z),'a')
+	PMmod=open('o3step_relaxed_filt/%s_%d_output.3step.txt' % (Pair_name, z),'a')
 	    #Dumping output ot outfile
 	PMmod.write(
             str(Pair_name)+'\t'+ #print pair name
