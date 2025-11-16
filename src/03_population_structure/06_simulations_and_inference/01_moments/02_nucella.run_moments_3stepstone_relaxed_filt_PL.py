@@ -19,6 +19,7 @@ from datetime import datetime
 i=int(sys.argv[1])
 z=int(sys.argv[2])
 print("now processing", i)
+print("now processing iteration", z)
 ###
 
 indat = pd.read_csv("trios_guide.txt",header=0,delimiter="\t")

@@ -76,7 +76,8 @@ echo ${POP}
 
 moment_script="$WORKING_FOLDER/src/03_population_structure/06_simulations_and_inference/01_moments/02_nucella.run_moments_3stepstone_relaxed_filt_PL.py"
 
-  python $moment_script ${POP} \
+  python $moment_script \
+  ${POP} \
 	${SLURM_ARRAY_TASK_ID}
 
 #--------------------------------------------------------------------------------
