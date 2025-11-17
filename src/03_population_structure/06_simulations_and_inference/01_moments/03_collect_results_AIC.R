@@ -20,8 +20,14 @@ setwd(root_path)
 
 # ================================================================================== #
 
-SS_3pop <- system("ls data/processed/pop_structure/o3step/*_output.3step.txt", intern = T)
-Admix_3pop <- system("ls data/processed/pop_structure/admix/*_output.admix.txt", intern = T)
+# Load data
+SS_3pop <- list.files(path="data/processed/pop_structure/o3step/", pattern =  "*_output.3step.txt")
+SS_3pop_v = as.vector(unlist(lapply(SS_3pop, function(x) paste0('data/processed/pop_structure/o3step/', x))))
+
+
+Admix_3pop <- list.files(path="data/processed/pop_structure/admix/", pattern =  "*_output.admix.txt")
+Admix_3pop_v = as.vector(unlist(lapply(Admix_3pop, function(x) paste0('data/processed/pop_structure/admix/', x))))
+
 
 pop3models_SS = foreach(i=SS_3pop, .combine = "rbind")%do%{
   tmp <- fread(i)
@@ -39,8 +45,13 @@ pop3models_Admix = foreach(i=Admix_3pop, .combine = "rbind")%do%{
     mutate(model = "Admix")
 }
 
+# ================================================================================== #
+
+# Combine data
 rbind(pop3models_SS, pop3models_Admix) ->
   AIC_3pop_models
+
+# ================================================================================== #
 
 AIC_3pop_models %>%
   group_by(model,Pair_name) %>%
@@ -50,8 +61,6 @@ AIC_3pop_models %>%
 AIC_3pop_models %>%
   group_by(model,Pair_name) %>%
   slice_min(AIC)
-
-
 
 
 AIC_3pop_models %>%
@@ -70,21 +79,30 @@ AIC_3pop_models %>%
 
 ggsave(plot3pop_models, 
        w=4, h =4,
-       file = "/output/figures/plot3pop_models.pdf")
+       file = "output/figures/plot3pop_models.pdf")
 
 AIC_3pop_models %>%
   group_by(model,Pair_name) %>%
   slice_min(AIC)
-  
-####
-all_Admix = foreach(i=Admix_3pop, .combine = "rbind")%do%{
+
+# ================================================================================== #  
+# ================================================================================== #
+
+# Extract estimates for admixed model
+
+# Load all data
+all_Admix = foreach(i=Admix_3pop_v, .combine = "rbind")%do%{
   tmp <- fread(i)
   
   tmp %>%
     mutate(model = "Admix")
 }
+
+# ================================================================================== #
+
 mu=2.8e-9
 g=1
+
 all_Admix %>%
   group_by(Pair_name) %>%
   slice_min(AIC) %>%

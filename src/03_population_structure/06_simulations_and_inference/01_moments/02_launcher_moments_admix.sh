@@ -1,13 +1,33 @@
-#!/bin/sh
-#
-#SBATCH -J moments_admix
-#SBATCH -N 1
-#SBATCH --ntasks-per-node=1
-#SBATCH --mem=20G
-#SBATCH --time=5:00:00
-#SBATCH -o ./slurmOutput/admix.%A_%a.out # Standard output
-#SBATCH -p general
+#!/usr/bin/env bash
+
+# In the command line, run the following command: sbatch path/to/this/file.sh
+
+# Request cluster resources ----------------------------------------------------
+
+# Name this job
+#SBATCH --job-name=moments_admix
+
+# Specify partition
+#SBATCH --partition=general
+
+# Request nodes
+#SBATCH --nodes=1 
+
+# Reserve walltime -- hh:mm:ss --30 hrs max
+#SBATCH --time=5:00:00 
+
+# Request memory for the entire job -- you can request --mem OR --mem-per-cpu
+#SBATCH --mem=20G 
+
+# Submit job array
 #SBATCH --array=0-2
+
+# Name output of this job using %x=job-name and %j=job-id
+#SBATCH --output=./slurmOutput/%x.%A_%a.out
+
+# Receive emails when job begins and ends or fails
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=emily.longman@uvm.edu 
 
 #--------------------------------------------------------------------------------
 
@@ -40,14 +60,26 @@
 module load python3.12-anaconda/2024.06-1
 source ${ANACONDA_ROOT}/etc/profile.d/conda.sh
 #conda activate moments_jcbn
-conda activate moments_ekl
+#conda activate moments_ekl
+
+# Use JCBN conda environment
+# Move to working directory
+#cd $WORKING_FOLDER/guide_files
+#conda env create -f moments_jcbn.environment.yml
+conda activate moments_jcbn
 
 #--------------------------------------------------------------------------------
 
-# Define important file locations
+# Generate Folders and files
 
-# WORKING_FOLDER is the core folder where this pipeline is being run.
-WORKING_FOLDER=.
+# Move to working directory
+cd $WORKING_FOLDER/data/processed/pop_structure
+
+# This part of the script will check and generate, if necessary, all of the output folders used in the script
+if [ -d "admix" ]
+then echo "Working admix folder exist"; echo "Let's move on."; date
+else echo "Working admix folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/pop_structure/admix; date
+fi
 
 #--------------------------------------------------------------------------------
 
