@@ -5,7 +5,7 @@
 # Request cluster resources ----------------------------------------------------
 
 # Name this job
-#SBATCH --job-name=moments_admix
+#SBATCH --job-name=moments_admix_relaxed_filt
 
 # Specify partition
 #SBATCH --partition=general

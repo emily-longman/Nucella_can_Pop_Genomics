@@ -117,3 +117,7 @@ all_Admix %>%
          pop2size = nu2*(theta/(4*mu*L)),
          pop3size = nu3*(theta/(4*mu*L)),
          ) 
+
+
+# Write table
+write.csv(all_Admix, "output/tables/moments_all_Admix_relaxed_filt.csv")

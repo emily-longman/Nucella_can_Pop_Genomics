@@ -5,7 +5,7 @@
 # Request cluster resources ----------------------------------------------------
 
 # Name this job
-#SBATCH --job-name=moments_3st
+#SBATCH --job-name=moments_3st_relaxed_filt
 
 # Specify partition
 #SBATCH --partition=week #general
