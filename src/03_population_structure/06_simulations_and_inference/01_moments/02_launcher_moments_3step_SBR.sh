@@ -5,10 +5,10 @@
 # Request cluster resources ----------------------------------------------------
 
 # Name this job
-#SBATCH --job-name=moments_3st_relaxed_filt
+#SBATCH --job-name=moments_3st_SBR
 
 # Specify partition
-#SBATCH --partition=general 
+#SBATCH --partition=week #general
 
 # Request nodes
 #SBATCH --nodes=1 
@@ -58,9 +58,9 @@ conda activate moments_jcbn
 cd $WORKING_FOLDER/data/processed/pop_structure
 
 # This part of the script will check and generate, if necessary, all of the output folders used in the script
-if [ -d "o3step_relaxed_filt" ]
-then echo "Working o3step_relaxed_filt folder exist"; echo "Let's move on."; date
-else echo "Working o3step_relaxed_filt folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/pop_structure/o3step_relaxed_filt; date
+if [ -d "o3step" ]
+then echo "Working o3step folder exist"; echo "Let's move on."; date
+else echo "Working o3step folder doesnt exist. Let's fix that."; mkdir $WORKING_FOLDER/data/processed/pop_structure/o3step; date
 fi
 
 #--------------------------------------------------------------------------------
@@ -71,13 +71,12 @@ cd $WORKING_FOLDER/data/processed/pop_structure
 # Move guide file
 scp $WORKING_FOLDER/guide_files/trios_guide.txt .
 
-POP=1
+POP=0
 echo ${POP}
 
-moment_script="$WORKING_FOLDER/src/03_population_structure/06_simulations_and_inference/01_moments/02_nucella.run_moments_3stepstone_relaxed_filt_PL.py"
+moment_script="$WORKING_FOLDER/src/03_population_structure/06_simulations_and_inference/01_moments/02_nucella.run_moments_3stepstone_SBR.py"
 
   python $moment_script \
-  ${POP} \
 	${SLURM_ARRAY_TASK_ID}
 
 #--------------------------------------------------------------------------------
