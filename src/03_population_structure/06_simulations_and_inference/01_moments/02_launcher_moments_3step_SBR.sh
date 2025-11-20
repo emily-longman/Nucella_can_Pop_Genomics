@@ -8,7 +8,7 @@
 #SBATCH --job-name=moments_3st_SBR
 
 # Specify partition
-#SBATCH --partition=week #general
+#SBATCH --partition=general
 
 # Request nodes
 #SBATCH --nodes=1 
@@ -18,6 +18,9 @@
 
 # Request memory for the entire job -- you can request --mem OR --mem-per-cpu
 #SBATCH --mem=20G 
+
+# Request CPU
+#SBATCH --cpus-per-task=5
 
 # Submit job array
 #SBATCH --array=0-9
