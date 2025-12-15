@@ -51,11 +51,11 @@ TMP_FOLDER=/gpfs3/scratch/elongman
 cd $TMP_FOLDER
 
 # Copy folder
-scp -r $NETFILES/raw/Population_genomics $TMP_FOLDER
+#scp -r $NETFILES/raw/Population_genomics $TMP_FOLDER
 
 #--------------------------------------------------------------------------------
 
 # Tar and gzip file
-#tar -cvzf Population_genomics.tar.gz Population_genomics
+tar -cvzf Population_genomics.tar.gz Population_genomics
 
 echo "done"
