@@ -57,6 +57,16 @@ pop3models_Admix %>%
   summarise(m = mean(log10(AIC)),
             sd = sd(log10(AIC)))
 
+AIC_3pop_models %>%
+  group_by(model,Pair_name) %>%
+  summarise(m = mean(log10(AIC)),
+            sd = sd(log10(AIC)))
+
+AIC_3pop_models %>%
+  group_by(model,Pair_name) %>%
+  summarise(m = mean(AIC),
+            sd = sd(AIC))
+
 pop3models_Admix %>%
   group_by(model,Pair_name) %>%
   slice_min(AIC)
@@ -78,7 +88,7 @@ AIC_3pop_models %>%
   )) + geom_errorbar(width = 0.08,  position=position_dodge(width=0.5)) + 
   geom_point(size = 2,  position=position_dodge(width=0.5)) + 
   scale_color_manual(values=colors) + 
-  xlab("Population") + ylab("Log10(AIC)") + theme_bw() ->
+  xlab(expression(paste(italic("N. canaliculata"), " Population"))) + ylab(expression(Log[10](AIC))) + theme_bw() ->
   plot3pop_models
 
 pdf("output/figures/pop_structure/plot3pop_models_relaxed_filt.pdf", width = 6, height = 5)
@@ -93,7 +103,7 @@ AIC_3pop_models %>%
 # ================================================================================== #
 
 # Extract estimates for admixed model
-all_Admix = foreach(i=Admix_3pop, .combine = "rbind")%do%{
+all_Admix = foreach(i=Admix_3pop_v, .combine = "rbind")%do%{
   tmp <- fread(i)
   
   tmp %>%

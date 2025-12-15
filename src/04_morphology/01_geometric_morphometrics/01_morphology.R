@@ -137,6 +137,15 @@ pdf("output/figures/morphology/PCA_loadings.pdf", width = 8, height = 8)
              labels = rownames(loadings_scores), cex = 0.7, pos = 3)
 dev.off()
 
+pdf("output/figures/morphology/PCA_loadings.pdf", width = 6, height = 6)
+par(mar=c(5,5,4,1)+.1) # Adjust margins
+plot(loadings_scores[, 1], loadings_scores[, 2],
+             xlab = "Loading on PC1", ylab = "Loading on PC2", cex=1, cex.lab=1.4, 
+             ylim=c(-0.55, 0.55), xlim=c(-0.55, 0.55))
+text(loadings_scores[, 1], loadings_scores[, 2],
+             labels = rownames(loadings_scores), cex = 1, pos = 3)
+dev.off()
+
 # Merge PC scores with metadata
 pc_scores_metadata <- cbind(metadata, pc_scores)
 

@@ -141,6 +141,10 @@ pdf("output/figures/pop_structure/poolfstat/pheatmap_Fst_alt.pdf", width = 8, he
 pheatmap(pooldata.pairwisefst.matrix, border_color = "black", fontsize_col = 16, fontsize_row = 16, color=rev(viridis(n=361, alpha=1,begin=0, end=1, option="viridis")))
 dev.off()
 
+pdf("output/figures/pop_structure/poolfstat/pheatmap_Fst_alt2.pdf", width = 8, height = 8)
+Heatmap(pooldata.pairwisefst.matrix, color=rev(viridis(n=361, alpha=1,begin=0, end=1, option="viridis")), heatmap_legend_side = "top")
+dev.off()
+
 # ================================================================================== #
 
 # Principle Components Analysis with randomallele.pca
