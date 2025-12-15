@@ -53,6 +53,7 @@ cd $TMP_FOLDER
 # Copy folder
 #scp -r $NETFILES/raw/Population_genomics $TMP_FOLDER
 
+
 #--------------------------------------------------------------------------------
 
 # Tar and gzip file
