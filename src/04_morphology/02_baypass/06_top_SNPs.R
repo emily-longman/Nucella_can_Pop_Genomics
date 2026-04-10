@@ -187,7 +187,7 @@ afs.id.mapped.targets %>%
   geom_hline(yintercept = 0) + geom_vline(xintercept = 0) + 
   geom_point(aes(fill = AF), shape = 21, size = 5) + 
   ylab("Mean PC2") + xlab("Mean PC1") +
-  scale_fill_gradient2(low = "#23d458", ,high = "black", midpoint = 0.5)  +
+  scale_fill_gradient2(low = "#23d458", high = "black", midpoint = 0.5)  +
   facet_grid(~pos) + theme_bw(base_size = 25)
 dev.off()
 
